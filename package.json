@@ -1,5 +1,5 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "src/index",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -15,31 +15,41 @@
     "native-base": "^2.12.1",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-navigation": "^3.5.1",
     "react-redux": "^6.0.1",
     "redux": "^4.0.1",
     "redux-observable": "^1.0.0",
     "rxjs": "^6.4.0"
   },
   "devDependencies": {
+    "@types/enzyme": "^3.9.1",
     "@types/expo": "^32.0.9",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
     "@types/react": "^16.8.8",
+    "@types/react-navigation": "^3.0.5",
     "@types/react-redux": "^7.0.5",
     "@types/react-test-renderer": "^16.8.1",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.11.2",
     "jest": "^24.5.0",
+    "jest-enzyme": "^7.0.2",
     "jest-expo": "^32.0.0",
-    "react-test-renderer": "^16.8.5",
+    "jest-haste-map": "^24.5.0",
+    "react-dom": "^16.8.5",
     "ts-jest": "^24.0.0",
     "tslint": "^5.14.0",
     "tslint-config-airbnb": "^5.11.1",
-    "typescript": "^3.3.4000"
+    "tslint-react": "^3.6.0",
+    "typescript": "^3.3.4000",
+    "webpack": "^4.29.6"
   },
   "private": true,
   "jest": {
+    "setupTestFrameworkScriptFile": "<rootDir>/config-overrides/test-setup.js",
     "preset": "jest-expo",
     "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
+      "^.+\\.js$": "<rootDir>/config-overrides/jest.preprocessor.js",
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
