@@ -9,7 +9,7 @@ export interface CardDetailsScreenState {
   loading: boolean;
 }
 
-const initialState: CardDetailsScreenState = {
+export const initialState: CardDetailsScreenState = {
   loading: false,
 };
 

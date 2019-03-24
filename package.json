@@ -46,7 +46,7 @@
   },
   "private": true,
   "jest": {
-    "setupTestFrameworkScriptFile": "<rootDir>/config-overrides/test-setup.js",
+    "setupFilesAfterEnv": ["<rootDir>/config-overrides/test-setup.js"],
     "preset": "jest-expo",
     "transform": {
       "^.+\\.js$": "<rootDir>/config-overrides/jest.preprocessor.js",
@@ -61,6 +61,7 @@
       "ts",
       "tsx"
     ],
+    "modulePaths": ["src"],
     "globals": {
       "ts-jest": {
         "tsConfig": {

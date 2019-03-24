@@ -10,7 +10,7 @@ export interface SetsScreenState {
   loading: boolean;
 }
 
-const initialState: SetsScreenState = {
+export const initialState: SetsScreenState = {
   loading: false,
   sets: [],
 };

@@ -6,10 +6,6 @@ import { setNavigator } from 'navigation/service';
 
 export default () => (
   <AuthNavigator
-    ref={(ref: NavigationProp<{}> | null) => {
-      if (ref) {
-        setNavigator(ref);
-      }
-    }}
+    ref={(ref: NavigationProp<{}> | null) => ref ? setNavigator(ref) : undefined}
   />
 );

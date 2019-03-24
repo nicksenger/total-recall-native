@@ -10,7 +10,7 @@ export interface DecksScreenState {
   loading: boolean;
 }
 
-const initialState: DecksScreenState = {
+export const initialState: DecksScreenState = {
   decks: [],
   loading: false,
 };

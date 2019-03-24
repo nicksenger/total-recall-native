@@ -1,11 +1,10 @@
 import {
-  ActionsObservable,
   combineEpics,
   ofType,
   StateObservable,
 } from 'redux-observable';
-import { of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { STUDY_SCREEN } from '_constants/screens';
 import { apiPost } from '_utils/api';
@@ -19,7 +18,7 @@ import { navigate } from 'navigation/service';
 import { TRState } from 'reducer';
 
 export const rateCardEpic = (
-  action$: ActionsObservable<TRActions>,
+  action$: Observable<TRActions>,
   state$: StateObservable<TRState>,
 ) =>
   action$.pipe(
@@ -34,10 +33,11 @@ export const rateCardEpic = (
     ),
   );
 
-export const studyEpic = (action$: ActionsObservable<TRActions>) =>
+export const studyEpic = (action$: Observable<TRActions>) =>
   action$.pipe(
     ofType<TRActions, ReturnType<typeof SessionActions['study']>>(STUDY),
-    map(() => navigate(STUDY_SCREEN),
-  ));
+    tap(() => navigate(STUDY_SCREEN)),
+    filter(() => false),
+  );
 
 export default combineEpics(rateCardEpic, studyEpic);

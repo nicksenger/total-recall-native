@@ -6,6 +6,7 @@
     ],
     "rules": {
       "no-any": true,
+      "import-name": false,
       "interface-name": false,
       "object-shorthand-properties-first": false,
       "prefer-array-literal": [true, { "allow-type-parameters": true }],

@@ -12,7 +12,7 @@ export const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
 export const ADD_SET_FAILED = 'ADD_SET_FAILED';
 
 export const SetsActions = {
-  addSet: (deckId: number, name: string, cardIds: string[]) =>
+  addSet: (deckId: number, name: string, cardIds: number[]) =>
     createAction(ADD_SET, { deckId, name, card_ids: cardIds.join(',') }),
   addSetFailed: (message: string) => createAction(ADD_SET_FAILED, { message }),
   addSetSuccess: (deckId: number) => createAction(ADD_SET_SUCCESS, { deckId }),

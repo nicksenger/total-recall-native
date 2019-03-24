@@ -1,33 +1,36 @@
 import {
-  ADD_SET,
-  ADD_SET_FAILED,
-  ADD_SET_SUCCESS,
+  DELETE_DECK,
+  DELETE_DECK_FAILED,
+  DELETE_DECK_SUCCESS,
   TRActions,
 } from 'actions';
 
-export interface AddSetScreenState {
+export interface DeckDetailsScreenState {
   loading: boolean;
 }
 
-export const initialState: AddSetScreenState = {
+export const initialState: DeckDetailsScreenState = {
   loading: false,
 };
 
-export default (state: AddSetScreenState = initialState, action: TRActions) => {
+export default (
+  state: DeckDetailsScreenState = initialState,
+  action: TRActions,
+) => {
   switch (action.type) {
-    case ADD_SET:
+    case DELETE_DECK:
       return {
         ...state,
         loading: true,
       };
 
-    case ADD_SET_SUCCESS:
+    case DELETE_DECK_SUCCESS:
       return {
         ...state,
         loading: false,
       };
 
-    case ADD_SET_FAILED:
+    case DELETE_DECK_FAILED:
       return {
         ...state,
         loading: false,

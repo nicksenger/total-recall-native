@@ -40,7 +40,7 @@ export interface EntitiesState {
   sets: { [id: number]: Set };
 }
 
-const initialState: EntitiesState = {
+export const initialState: EntitiesState = {
   cards: {},
   decks: {},
   sets: {},

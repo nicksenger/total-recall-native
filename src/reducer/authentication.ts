@@ -11,7 +11,7 @@ export interface AuthenticationState {
   token?: string;
 }
 
-const initialState: AuthenticationState = {
+export const initialState: AuthenticationState = {
   loading: false,
 };
 

@@ -1,12 +1,12 @@
 import { Card } from 'reducer/entities';
 import { ActionsUnion, createAction } from './_utils';
 
-export const STUDY = 'STUDY';
 export const RATE_CARD = 'RATE_CARD';
 export const RATE_CARD_SUCCESS = 'RATE_CARD_SUCCESS';
 export const RATE_CARD_FAILED = 'RATE_CARD_FAILED';
 export const REVEAL_CARD = 'REVEAL_CARD';
 export const REVIEW_CARD = 'REVIEW_CARD';
+export const STUDY = 'STUDY';
 
 export const SessionActions = {
   rateCard: (cardId: number, rating: number) =>

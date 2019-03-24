@@ -1,0 +1,30 @@
+import { DELETE_DECK, DELETE_DECK_FAILED, DELETE_DECK_SUCCESS } from 'actions';
+import deckDetailsScreen, { initialState } from './deckDetailsScreen';
+
+describe('the deckDetailsScreen reducer', () => {
+  it('should set the loading state when a request to delete a deck is sent', () => {
+    const newState = deckDetailsScreen(initialState, {
+      payload: { deckId: 123 },
+      type: DELETE_DECK,
+    });
+
+    expect(newState.loading).toBeTruthy();
+  });
+
+  it('should reset the loading state if deleting the deck fails', () => {
+    const newState = deckDetailsScreen(initialState, {
+      payload: { message: 'something went wrong' },
+      type: DELETE_DECK_FAILED,
+    });
+
+    expect(newState.loading).toBeFalsy();
+  });
+
+  it('should reset the loading state if the deck is deleted successfully', () => {
+    const newState = deckDetailsScreen(initialState, {
+      type: DELETE_DECK_SUCCESS,
+    });
+
+    expect(newState.loading).toBeFalsy();
+  });
+});

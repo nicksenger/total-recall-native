@@ -9,7 +9,7 @@ export interface AddCardScreenState {
   loading: boolean;
 }
 
-const initialState: AddCardScreenState = {
+export const initialState: AddCardScreenState = {
   loading: false,
 };
 

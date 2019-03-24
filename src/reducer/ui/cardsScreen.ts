@@ -11,7 +11,7 @@ export interface CardsScreenState {
   loading: boolean;
 }
 
-const initialState: CardsScreenState = {
+export const initialState: CardsScreenState = {
   cards: [],
   loading: false,
 };
