@@ -24,12 +24,14 @@
   "devDependencies": {
     "@types/enzyme": "^3.9.1",
     "@types/expo": "^32.0.9",
+    "@types/expo__vector-icons": "^9.0.1",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
     "@types/react": "^16.8.8",
     "@types/react-navigation": "^3.0.5",
     "@types/react-redux": "^7.0.5",
     "@types/react-test-renderer": "^16.8.1",
+    "@types/redux-logger": "^3.0.7",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.11.2",
     "jest": "^24.5.0",
@@ -37,6 +39,7 @@
     "jest-expo": "^32.0.0",
     "jest-haste-map": "^24.5.0",
     "react-dom": "^16.8.5",
+    "redux-logger": "^3.0.6",
     "ts-jest": "^24.0.0",
     "tslint": "^5.14.0",
     "tslint-config-airbnb": "^5.11.1",
@@ -46,7 +49,9 @@
   },
   "private": true,
   "jest": {
-    "setupFilesAfterEnv": ["<rootDir>/config-overrides/test-setup.js"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/config-overrides/test-setup.js"
+    ],
     "preset": "jest-expo",
     "transform": {
       "^.+\\.js$": "<rootDir>/config-overrides/jest.preprocessor.js",
@@ -61,7 +66,9 @@
       "ts",
       "tsx"
     ],
-    "modulePaths": ["src"],
+    "modulePaths": [
+      "src"
+    ],
     "globals": {
       "ts-jest": {
         "tsConfig": {
