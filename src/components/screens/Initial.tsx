@@ -1,7 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Font } from 'expo';
 import { Container, Content, Header, Spinner } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
+
+import { navigate } from 'navigation/service';
 
 interface InitialScreenState {
   loaded: boolean;
@@ -23,6 +26,7 @@ export default class InitialScreen extends React.Component<{}, InitialScreenStat
     });
 
     this.setState({ loaded: true });
+    navigate('Register');
   }
 
   public render() {
