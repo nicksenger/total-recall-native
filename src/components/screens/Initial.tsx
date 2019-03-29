@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Font } from 'expo';
 import { Container, Content, Header, Spinner } from 'native-base';
 import * as React from 'react';

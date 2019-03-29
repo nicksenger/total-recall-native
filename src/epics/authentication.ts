@@ -4,11 +4,12 @@ import { ajax } from 'rxjs/ajax';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { BASE_URI } from '_constants/api';
-import { DECKS_SCREEN } from '_constants/screens';
+import { DECKS_SCREEN, LOGIN_SCREEN } from '_constants/screens';
 import {
   ATTEMPT_LOGIN,
   AuthenticationActions,
   LOGIN_SUCCESS,
+  REGISTER,
   TRActions,
 } from 'actions';
 import { navigate } from 'navigation/service';
@@ -39,4 +40,28 @@ export const loginSuccessEpic = (action$: Observable<TRActions>) =>
     filter(() => false),
   );
 
-export default combineEpics(attemptLoginEpic, loginSuccessEpic);
+export const registrationEpic = (action$: Observable<TRActions>) =>
+    action$.pipe(
+      ofType<TRActions, ReturnType<typeof AuthenticationActions['register']>>(REGISTER),
+      mergeMap(({ payload: { username, password } }) =>
+        ajax
+          .post(`${BASE_URI}/users/`, {
+            format: 'json',
+            password,
+            username,
+          })
+          .pipe(
+            tap(() => navigate(LOGIN_SCREEN)),
+            map(() =>
+              AuthenticationActions.registrationSuccess(),
+            ),
+            catchError((e: Error) => of(AuthenticationActions.registrationFailed(e.message))),
+          ),
+      ),
+    );
+
+export default combineEpics(
+  attemptLoginEpic,
+  loginSuccessEpic,
+  registrationEpic,
+);

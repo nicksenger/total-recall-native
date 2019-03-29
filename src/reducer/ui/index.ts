@@ -7,6 +7,7 @@ import cardDetailsScreen, { CardDetailsScreenState } from './cardDetailsScreen';
 import cardsScreen, { CardsScreenState } from './cardsScreen';
 import deckDetailsScreen, { DeckDetailsScreenState } from './deckDetailsScreen';
 import decksScreen, { DecksScreenState } from './decksScreen';
+import registerScreen, { RegisterScreenState } from './registerScreen';
 import setDetailsScreen, { SetDetailsScreenState } from './setDetailsScreen';
 import setsScreen, { SetsScreenState } from './setsScreen';
 
@@ -18,6 +19,7 @@ export interface UIState {
   cardsScreen: CardsScreenState;
   deckDetailsScreen: DeckDetailsScreenState;
   decksScreen: DecksScreenState;
+  registerScreen: RegisterScreenState;
   setsScreen: SetsScreenState;
   setDetailsScreen: SetDetailsScreenState;
 }
@@ -30,6 +32,7 @@ export default combineReducers({
   cardsScreen,
   deckDetailsScreen,
   decksScreen,
+  registerScreen,
   setDetailsScreen,
   setsScreen,
 });

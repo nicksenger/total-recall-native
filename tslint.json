@@ -8,6 +8,7 @@
       "no-any": true,
       "import-name": false,
       "interface-name": false,
+      "jsx-no-multiline-js": false,
       "object-shorthand-properties-first": false,
       "prefer-array-literal": [true, { "allow-type-parameters": true }],
       "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case", "allow-leading-underscore"]
