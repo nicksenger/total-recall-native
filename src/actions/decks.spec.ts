@@ -9,6 +9,7 @@ import {
   GET_DECKS,
   GET_DECKS_FAILED,
   GET_DECKS_SUCCESS,
+  VIEW_DECK,
 } from './decks';
 
 describe('the decks actions', () => {
@@ -80,5 +81,11 @@ describe('the decks actions', () => {
     const action = DecksActions.getDecksSuccess(decks);
     expect(action.payload).toEqual({ decks });
     expect(action.type).toEqual(GET_DECKS_SUCCESS);
+  });
+
+  it('should create the VIEW_DECK action', () => {
+    const action = DecksActions.viewDeck(decks[0]);
+    expect(action.payload).toEqual({ deck: decks[0] });
+    expect(action.type).toEqual(VIEW_DECK);
   });
 });

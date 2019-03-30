@@ -9,7 +9,6 @@ import {
   fetchCardsEpic,
 } from './cards';
 
-import { CARDS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -43,11 +42,22 @@ describe('the cards epics', () => {
   ];
 
   let scheduler: TestScheduler;
+  let goBackMock: jest.SpyInstance;
+  let navigateMock: jest.SpyInstance;
 
   beforeEach(() => {
     scheduler = new TestScheduler((actual, expected) => {
       expect(actual).toEqual(expected);
     });
+    goBackMock = jest.spyOn(navigationService, 'goBack');
+    goBackMock.mockImplementation(() => 'mocked');
+    navigateMock = jest.spyOn(navigationService, 'navigate');
+    navigateMock.mockImplementation(() => 'mocked!');
+  });
+
+  afterEach(() => {
+    goBackMock.mockReset();
+    navigateMock.mockReset();
   });
 
   describe('the fetch cards epic', () => {
@@ -151,7 +161,7 @@ describe('the cards epics', () => {
     });
 
     describe('the request is successful', () => {
-      it('should navigate to the cards screen', () => {
+      it('should go back', () => {
         const navigationMock = jest.spyOn(navigationService, 'navigate');
         navigationMock.mockImplementation(() => 'mocked');
 
@@ -169,8 +179,7 @@ describe('the cards epics', () => {
           expectObservable(output$);
         });
 
-        expect(navigationMock).toHaveBeenCalled();
-        expect(navigationMock.mock.calls[0][0]).toEqual(CARDS_SCREEN);
+        expect(goBackMock).toHaveBeenCalled();
       });
 
       it('should emit the success action', () => {
@@ -243,9 +252,6 @@ describe('the cards epics', () => {
 
     describe('the request is successful', () => {
       it('should navigate back', () => {
-        const goBackMock = jest.spyOn(navigationService, 'goBack');
-        goBackMock.mockImplementation(() => 'mocked');
-
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
             a: CardsActions.deleteCard(123),

@@ -20,6 +20,7 @@ export default class InitialScreen extends React.Component<{}, InitialScreenStat
 
   public async componentDidMount() {
     await Font.loadAsync({
+      Ionicons: require('native-base/Fonts/Ionicons.ttf'),
       Roboto: require('native-base/Fonts/Roboto.ttf'),
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
     });

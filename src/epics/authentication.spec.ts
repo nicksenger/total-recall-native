@@ -143,7 +143,6 @@ describe('the authentication epics', () => {
       expect(postMock.mock.calls).toHaveLength(1);
       expect(postMock.mock.calls[0][0]).toEqual(`${BASE_URI}/users/`);
       expect(postMock.mock.calls[0][1]).toEqual({
-        decks: [],
         format: 'json',
         password: 'bar',
         username: 'foo',

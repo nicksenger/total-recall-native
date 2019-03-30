@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Container, Fab, Left, List, ListItem, Right, Spinner, Text } from 'native-base';
+import { Container, Fab, List, Spinner, Text } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
@@ -8,6 +8,7 @@ import { PaddedContent } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Deck } from 'reducer/entities';
+import DeckItem from './DeckItem';
 
 export interface DecksScreenProps {
   decks: Deck[];
@@ -37,16 +38,7 @@ export class DecksScreen extends React.Component<DecksScreenProps> {
   public render() {
     const content = this.props.loading ? <Spinner /> : (
       <List>
-        {this.props.decks.map(deck => (
-          <ListItem key={deck.id}>
-            <Left>
-              <Text>{deck.name}</Text>
-            </Left>
-            <Right>
-              <Ionicons name="md-arrow-forward" size={25} color="black" />
-            </Right>
-          </ListItem>
-        ))}
+        {this.props.decks.map(deck => <DeckItem deck={deck} key={deck.id} />)}
       </List>
     );
 

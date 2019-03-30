@@ -11,6 +11,7 @@ export const DELETE_DECK_FAILED = 'DELETE_DECK_FAILED';
 export const GET_DECKS = 'GET_DECKS';
 export const GET_DECKS_SUCCESS = 'GET_DECKS_SUCCESS';
 export const GET_DECKS_FAILED = 'GET_DECKS_FAILED';
+export const VIEW_DECK = 'VIEW_DECK';
 
 export const DecksActions = {
   addDeck: (name: string, language: LanguageCode, username: string) =>
@@ -26,6 +27,7 @@ export const DecksActions = {
     createAction(GET_DECKS_FAILED, { message }),
   getDecksSuccess: (decks: Deck[]) =>
     createAction(GET_DECKS_SUCCESS, { decks }),
+  viewDeck: (deck: Deck) => createAction(VIEW_DECK, { deck }),
 };
 
 export type DecksActions = ActionsUnion<typeof DecksActions>;

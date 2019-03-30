@@ -6,16 +6,16 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 
-import { CARDS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_CARD,
+  ADD_CARD_SUCCESS,
   CardsActions,
   DELETE_CARD,
   GET_CARDS,
   TRActions,
 } from 'actions';
-import { goBack, navigate } from 'navigation/service';
+import { goBack } from 'navigation/service';
 import { TRState } from 'reducer';
 
 export const fetchCardsEpic = (
@@ -23,7 +23,9 @@ export const fetchCardsEpic = (
   state$: StateObservable<TRState>,
 ) =>
   action$.pipe(
-    ofType<TRActions, ReturnType<typeof CardsActions['getCards']>>(GET_CARDS),
+    ofType<TRActions,
+      ReturnType<typeof CardsActions['getCards']> |
+      ReturnType<typeof CardsActions['addCardSuccess']>>(GET_CARDS, ADD_CARD_SUCCESS),
     mergeMap(({ payload: { deckId } }) =>
       apiGet(state$, `/decks/${deckId}/cards/`).pipe(
         map(({ response }) => CardsActions.getCardsSuccess(response)),
@@ -40,7 +42,7 @@ export const addCardEpic = (
     ofType<TRActions, ReturnType<typeof CardsActions['addCard']>>(ADD_CARD),
     mergeMap(({ payload: { deckId, front, back } }) =>
       apiPost(state$, `/decks/${deckId}/cards/`, { front, back }).pipe(
-        tap(() => navigate(CARDS_SCREEN)),
+        tap(() => goBack()),
         map(() => CardsActions.addCardSuccess(deckId)),
         catchError(() => of(CardsActions.addCardFailed('failed!'))),
       ),

@@ -55,7 +55,7 @@ export const registrationEpic = (action$: Observable<TRActions>) =>
             map(() =>
               AuthenticationActions.registrationSuccess(),
             ),
-            catchError((e: Error) => of(AuthenticationActions.registrationFailed(e.message))),
+            catchError(() => of(AuthenticationActions.registrationFailed('failed!'))),
           ),
       ),
     );

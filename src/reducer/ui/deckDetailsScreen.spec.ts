@@ -1,7 +1,24 @@
-import { DELETE_DECK, DELETE_DECK_FAILED, DELETE_DECK_SUCCESS } from 'actions';
+import { DELETE_DECK, DELETE_DECK_FAILED, DELETE_DECK_SUCCESS, VIEW_DECK } from 'actions';
 import deckDetailsScreen, { initialState } from './deckDetailsScreen';
 
 describe('the deckDetailsScreen reducer', () => {
+  const decks = [
+    {
+      created: 'sometime',
+      id: 123,
+      language: 'vi',
+      name: 'foo',
+      owner: 'waldo',
+    },
+    {
+      created: 'sometime',
+      id: 456,
+      language: 'es',
+      name: 'bar',
+      owner: 'waldo',
+    },
+  ];
+
   it('should set the loading state when a request to delete a deck is sent', () => {
     const newState = deckDetailsScreen(initialState, {
       payload: { deckId: 123 },
@@ -26,5 +43,14 @@ describe('the deckDetailsScreen reducer', () => {
     });
 
     expect(newState.loading).toBeFalsy();
+  });
+
+  it('should set the selected deck when a deck is viewed', () => {
+    const newState = deckDetailsScreen(initialState, {
+      payload: { deck: decks[0] },
+      type: VIEW_DECK,
+    });
+
+    expect(newState.selectedDeck).toEqual(decks[0]);
   });
 });

@@ -4,8 +4,9 @@ import {
   StateObservable,
 } from 'redux-observable';
 import { Observable, of } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
+import { DECK_DETAILS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_DECK,
@@ -13,8 +14,9 @@ import {
   DELETE_DECK,
   GET_DECKS,
   TRActions,
+  VIEW_DECK,
 } from 'actions';
-import { goBack } from 'navigation/service';
+import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
 
 export const fetchDecksEpic = (
@@ -63,4 +65,12 @@ export const deleteDeckEpic = (
     ),
   );
 
-export default combineEpics(addDeckEpic, deleteDeckEpic, fetchDecksEpic);
+export const viewDeckEpic = (action$: Observable<TRActions>) => action$.pipe(
+  ofType<TRActions, ReturnType<typeof DecksActions['viewDeck']>>(
+    VIEW_DECK,
+  ),
+  tap(() => navigate(DECK_DETAILS_SCREEN)),
+  filter(() => false),
+);
+
+export default combineEpics(addDeckEpic, deleteDeckEpic, fetchDecksEpic, viewDeckEpic);

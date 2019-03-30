@@ -7,8 +7,10 @@ import {
   addDeckEpic,
   deleteDeckEpic,
   fetchDecksEpic,
+  viewDeckEpic,
 } from './decks';
 
+import { DECK_DETAILS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -33,6 +35,7 @@ describe('the decks epics', () => {
 
   let scheduler: TestScheduler;
   let goBackMock: jest.SpyInstance;
+  let navigateMock: jest.SpyInstance;
 
   beforeEach(() => {
     scheduler = new TestScheduler((actual, expected) => {
@@ -40,10 +43,13 @@ describe('the decks epics', () => {
     });
     goBackMock = jest.spyOn(navigationService, 'goBack');
     goBackMock.mockImplementation(() => 'mocked');
+    navigateMock = jest.spyOn(navigationService, 'navigate');
+    navigateMock.mockImplementation(() => 'mocked!');
   });
 
   afterEach(() => {
     goBackMock.mockReset();
+    navigateMock.mockReset();
   });
 
   describe('the fetch decks epic', () => {
@@ -287,6 +293,22 @@ describe('the decks epics', () => {
           });
         });
       });
+    });
+  });
+
+  describe('the viewDeck epic', () => {
+    it('should navigate to the deck details screen', () => {
+      scheduler.run(({ hot, expectObservable }) => {
+        const action$ = hot('-a', {
+          a: DecksActions.viewDeck(decks[0]),
+        });
+
+        const output$ = viewDeckEpic(action$);
+        expectObservable(output$);
+      });
+
+      expect(navigateMock).toHaveBeenCalled();
+      expect(navigateMock.mock.calls[0][0]).toEqual(DECK_DETAILS_SCREEN);
     });
   });
 });

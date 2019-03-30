@@ -4,6 +4,7 @@ export const ADD_SET_SCREEN = 'ADD_SET_SCREEN';
 export const CARD_DETAILS_SCREEN = 'CARD_DETAILS_SCREEN';
 export const CARDS_SCREEN = 'CARDS_SCREEN';
 export const DECKS_SCREEN = 'My Decks';
+export const DECK_DETAILS_SCREEN = 'DeckDetailsScreen';
 export const LOGIN_SCREEN = 'Sign In';
 export const SET_DETAILS_SCREEN = 'SET_DETAILS_SCREEN';
 export const SETS_SCREEN = 'SETS_SCREEN';
