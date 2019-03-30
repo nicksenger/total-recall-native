@@ -3,8 +3,10 @@ import { Container, Fab, List, Spinner, Text } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
+import { ADD_DECK_SCREEN } from '_constants/screens';
 import { DecksActions } from 'actions';
 import { PaddedContent } from 'components/styled';
+import { navigate } from 'navigation/service';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Deck } from 'reducer/entities';
@@ -54,6 +56,7 @@ export class DecksScreen extends React.Component<DecksScreenProps> {
         {!this.props.loading && (
           <Fab
             containerStyle={{ }}
+            onPress={this.handleAddDeck}
             style={{ backgroundColor: '#1f6899' }}
             position="bottomRight"
           >
@@ -62,6 +65,10 @@ export class DecksScreen extends React.Component<DecksScreenProps> {
         )}
       </Container>
     );
+  }
+
+  private handleAddDeck = () => {
+    navigate(ADD_DECK_SCREEN);
   }
 }
 

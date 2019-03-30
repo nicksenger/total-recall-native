@@ -6,6 +6,7 @@ import {
   REGISTER,
   REGISTRATION_FAILED,
   REGISTRATION_SUCCESS,
+  RETRIEVE_AUTH_INFO,
 } from './authentication';
 
 describe('the authentication actions', () => {
@@ -41,5 +42,10 @@ describe('the authentication actions', () => {
   it('should create the REGISTRATION_SUCCESS action', () => {
     const action = AuthenticationActions.registrationSuccess();
     expect(action.type).toEqual(REGISTRATION_SUCCESS);
+  });
+
+  it('should create the RETRIEVE_AUTH_INFO action', () => {
+    const { type } = AuthenticationActions.retrieveAuthInfo();
+    expect(type).toEqual(RETRIEVE_AUTH_INFO);
   });
 });

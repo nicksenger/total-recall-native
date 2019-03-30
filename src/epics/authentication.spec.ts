@@ -4,10 +4,11 @@ import { BASE_URI } from '_constants/api';
 import { AuthenticationActions } from 'actions';
 import * as navigationService from 'navigation/service';
 import {
-  attemptLoginEpic, loginSuccessEpic, registrationEpic,
+  attemptLoginEpic, loginSuccessEpic, registrationEpic, retrieveAuthInfoEpic,
 } from './authentication';
 
-import { DECKS_SCREEN, LOGIN_SCREEN } from '_constants/screens';
+import { DECKS_SCREEN, LOGIN_SCREEN, REGISTER_SCREEN } from '_constants/screens';
+import * as sync from '_utils/sync';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 describe('the authentication epics', () => {
@@ -203,6 +204,57 @@ describe('the authentication epics', () => {
             a: AuthenticationActions.registrationFailed('failed!'),
           });
         });
+      });
+    });
+  });
+
+  describe('the retrieveAuthInfo epic', () => {
+    let retrieveMock: jest.SpyInstance;
+
+    beforeEach(() => {
+      retrieveMock = jest.spyOn(sync, 'retrieveCredentials');
+    });
+
+    afterEach(() => {
+      retrieveMock.mockReset();
+    });
+
+    describe('the retrieval is successful', () => {
+      it('should emit the login success action', () => {
+        scheduler.run(({ hot, cold, expectObservable }) => {
+          const action$ = hot('-a', {
+            a: AuthenticationActions.retrieveAuthInfo(),
+          });
+
+          retrieveMock.mockImplementation(() => cold('--a', {
+            a: { username: 'foo', token: 'bar' },
+          }));
+
+          const output$ = retrieveAuthInfoEpic(action$);
+
+          expectObservable(output$).toBe('---a', {
+            a: AuthenticationActions.loginSuccess('foo', 'bar'),
+          });
+        });
+      });
+    });
+
+    describe('the retrieval fails', () => {
+      it('should navigate to the registration screen', () => {
+        scheduler.run(({ hot, cold, expectObservable }) => {
+          const action$ = hot('-a', {
+            a: AuthenticationActions.retrieveAuthInfo(),
+          });
+
+          retrieveMock.mockImplementation(() => cold('--#'));
+
+          const output$ = retrieveAuthInfoEpic(action$);
+
+          expectObservable(output$);
+        });
+
+        expect(navigateMock).toHaveBeenCalled();
+        expect(navigateMock.mock.calls[0][0]).toEqual(REGISTER_SCREEN);
       });
     });
   });

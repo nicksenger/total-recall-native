@@ -4,12 +4,14 @@ import { ajax } from 'rxjs/ajax';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { BASE_URI } from '_constants/api';
-import { DECKS_SCREEN, LOGIN_SCREEN } from '_constants/screens';
+import { DECKS_SCREEN, LOGIN_SCREEN, REGISTER_SCREEN } from '_constants/screens';
+import { retrieveCredentials, saveCredentials } from '_utils/sync';
 import {
   ATTEMPT_LOGIN,
   AuthenticationActions,
   LOGIN_SUCCESS,
   REGISTER,
+  RETRIEVE_AUTH_INFO,
   TRActions,
 } from 'actions';
 import { navigate } from 'navigation/service';
@@ -36,6 +38,7 @@ export const attemptLoginEpic = (action$: Observable<TRActions>) =>
 export const loginSuccessEpic = (action$: Observable<TRActions>) =>
   action$.pipe(
     ofType<TRActions, ReturnType<typeof AuthenticationActions['loginSuccess']>>(LOGIN_SUCCESS),
+    tap(({ payload: { username, token } }) => saveCredentials(username, token)),
     tap(() => navigate(DECKS_SCREEN)),
     filter(() => false),
   );
@@ -60,8 +63,25 @@ export const registrationEpic = (action$: Observable<TRActions>) =>
       ),
     );
 
+export const retrieveAuthInfoEpic = (action$: Observable<TRActions>) =>
+    action$.pipe(
+      ofType<TRActions, ReturnType<typeof AuthenticationActions['retrieveAuthInfo']>>(
+        RETRIEVE_AUTH_INFO,
+      ),
+      mergeMap(() =>
+        retrieveCredentials().pipe(
+          map(({ username, token }) => AuthenticationActions.loginSuccess(username, token)),
+          catchError(() => {
+            navigate(REGISTER_SCREEN);
+            return of({ type: 'NO_OP' });
+          }),
+        ),
+      ),
+    );
+
 export default combineEpics(
   attemptLoginEpic,
   loginSuccessEpic,
   registrationEpic,
+  retrieveAuthInfoEpic,
 );

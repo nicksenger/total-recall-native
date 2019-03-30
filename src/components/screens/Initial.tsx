@@ -3,13 +3,18 @@ import { Container, Content, Header, Spinner } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
-import { navigate } from 'navigation/service';
+import { AuthenticationActions } from 'actions';
+import { connect } from 'react-redux';
 
-interface InitialScreenState {
+export interface InitialScreenProps {
+  retrieveAuthInfo: typeof AuthenticationActions.retrieveAuthInfo;
+}
+
+export interface InitialScreenState {
   loaded: boolean;
 }
 
-export default class InitialScreen extends React.Component<{}, InitialScreenState> {
+export class InitialScreen extends React.Component<InitialScreenProps, InitialScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
     title: 'Initializing',
   };
@@ -26,7 +31,7 @@ export default class InitialScreen extends React.Component<{}, InitialScreenStat
     });
 
     this.setState({ loaded: true });
-    navigate('Register');
+    this.props.retrieveAuthInfo();
   }
 
   public render() {
@@ -43,3 +48,8 @@ export default class InitialScreen extends React.Component<{}, InitialScreenStat
     return null;
   }
 }
+
+export default connect(
+  () => ({}),
+  { retrieveAuthInfo: AuthenticationActions.retrieveAuthInfo },
+)(InitialScreen);

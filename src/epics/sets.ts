@@ -4,17 +4,20 @@ import {
   StateObservable,
 } from 'redux-observable';
 import { Observable, of } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
+import { ADD_SET_SCREEN, SETS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_SET,
+  ADD_SET_SUCCESS,
   DELETE_SET,
   GET_SETS,
+  GOTO_ADD_SET,
   SetsActions,
   TRActions,
 } from 'actions';
-import { goBack } from 'navigation/service';
+import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
 
 export const fetchSetsEpic = (
@@ -22,7 +25,9 @@ export const fetchSetsEpic = (
   state$: StateObservable<TRState>,
 ) =>
   action$.pipe(
-    ofType<TRActions, ReturnType<typeof SetsActions['getSets']>>(GET_SETS),
+    ofType<TRActions,
+      ReturnType<typeof SetsActions['getSets']> |
+      ReturnType<typeof SetsActions['addSetSuccess']>>(GET_SETS, ADD_SET_SUCCESS),
     mergeMap(({ payload: { deckId } }) =>
       apiGet(state$, `/decks/${deckId}/sets/`).pipe(
         map(({ response }) => SetsActions.getSetsSuccess(response)),
@@ -39,7 +44,7 @@ export const addSetEpic = (
     ofType<TRActions, ReturnType<typeof SetsActions['addSet']>>(ADD_SET),
     mergeMap(({ payload: { deckId, name, card_ids } }) =>
       apiPost(state$, `/decks/${deckId}/sets/`, { name, card_ids }).pipe(
-        tap(() => goBack()),
+        tap(() => navigate(SETS_SCREEN)),
         map(() => SetsActions.addSetSuccess(deckId)),
         catchError(() => of(SetsActions.addSetFailed('failed!'))),
       ),
@@ -63,8 +68,15 @@ export const deleteSetEpic = (
     ),
   );
 
+export const gotoAddSetEpic = (action$: Observable<TRActions>) => action$.pipe(
+  ofType<TRActions, ReturnType<typeof SetsActions['gotoAddSet']>>(GOTO_ADD_SET),
+  tap(() => navigate(ADD_SET_SCREEN)),
+  filter(() => false),
+);
+
 export default combineEpics(
   fetchSetsEpic,
   addSetEpic,
   deleteSetEpic,
+  gotoAddSetEpic,
 );

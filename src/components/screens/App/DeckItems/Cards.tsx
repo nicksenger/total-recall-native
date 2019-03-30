@@ -4,7 +4,7 @@ import { Button, Fab, List, Spinner, Text } from 'native-base';
 import * as React from 'react';
 
 import { ADD_CARD_SCREEN } from '_constants/screens';
-import { CardsActions } from 'actions';
+import { CardsActions, SessionActions, SetsActions } from 'actions';
 import { PaddedContent } from 'components/styled';
 import { navigate } from 'navigation/service';
 import { connect } from 'react-redux';
@@ -17,12 +17,14 @@ export interface CardsScreenProps {
   cards?: Card[];
   deck: Deck;
   getCards: typeof CardsActions.getCards;
+  gotoAddSet: typeof SetsActions.gotoAddSet;
   loading: boolean;
+  study: typeof SessionActions.study;
 }
 
 export interface CardsScreenState {
   fabActive: boolean;
-  selectedCards: { [cardId: number]: boolean };
+  selectedCards: { [cardId: number]: Card };
 }
 
 export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenState> {
@@ -46,7 +48,7 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
                   card={card}
                   key={card.id}
                   onSelect={this.handleCardSelect}
-                  selected={this.state.selectedCards[card.id]}
+                  selected={Boolean(this.state.selectedCards[card.id])}
                 />
               ))}
             </List>
@@ -65,16 +67,24 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
           >
             {numSelected ? <Text>{numSelected}</Text> : <Ionicons name="md-add" size={25} />}
             {Boolean(numSelected) && this.state.fabActive && [
-              <Button key={1} style={{ backgroundColor: '#34A34F' }}>
+              <Button
+                key={1}
+                onPress={this.handleStudy}
+                style={{ backgroundColor: '#34A34F' }}
+              >
                 <Ionicons name="md-pulse" size={25} color="white" />
               </Button>,
-              <Button key={3} style={{ backgroundColor: '#DD5144' }}>
+              <Button
+                key={3}
+                onPress={this.handleCreateSet}
+                style={{ backgroundColor: '#DD5144' }}
+              >
                 <MaterialCommunityIcons name="cards-outline" size={25} color="white" />
               </Button>,
               <Button
                 key={2}
-                style={{ backgroundColor: '#3B5998' }}
                 onPress={this.handleAddCard}
+                style={{ backgroundColor: '#3B5998' }}
               >
                 <Ionicons name="md-add" size={25} color="white" />
               </Button>,
@@ -87,16 +97,40 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
 
   private handleAddCard = () => {
     navigate(ADD_CARD_SCREEN);
+    this.setState({
+      fabActive: false,
+    });
   }
 
-  private handleCardSelect = ({ id }: Card) => {
+  private handleCreateSet = () => {
+    if (this.props.cards) {
+      this.props.gotoAddSet(
+        Object.keys(this.state.selectedCards).map((id: string) =>
+          this.state.selectedCards[parseInt(id, 10)],
+        ),
+      );
+    }
+
+    this.setState({ fabActive: false });
+  }
+
+  private handleCardSelect = (card: Card) => {
     const { selectedCards } = this.state;
+    const { id } = card;
     this.setState({
       fabActive: false,
       selectedCards: selectedCards[id] ?
         _.omit(selectedCards, id) :
-        { ...selectedCards, [id]: true },
+        { ...selectedCards, [id]: card },
     });
+  }
+
+  private handleStudy = () => {
+    this.props.study(
+      Object.keys(this.state.selectedCards).map((id: string) =>
+          this.state.selectedCards[parseInt(id, 10)],
+      ),
+    );
   }
 
   private toggleFab = () => {
@@ -117,5 +151,9 @@ export default connect(
       loading: ui.cardsScreen.loading,
     };
   },
-  { getCards: CardsActions.getCards },
+  {
+    getCards: CardsActions.getCards,
+    gotoAddSet: SetsActions.gotoAddSet,
+    study: SessionActions.study,
+  },
 )(CardsScreen);

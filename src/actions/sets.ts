@@ -1,4 +1,4 @@
-import { Set } from 'reducer/entities';
+import { Card, Set } from 'reducer/entities';
 import { ActionsUnion, createAction } from './_utils';
 
 export const GET_SETS = 'GET_SETS';
@@ -10,6 +10,7 @@ export const DELETE_SET_FAILED = 'DELETE_SETS_FAILED';
 export const ADD_SET = 'ADD_SET';
 export const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
 export const ADD_SET_FAILED = 'ADD_SET_FAILED';
+export const GOTO_ADD_SET = 'GOTO_ADD_SET';
 
 export const SetsActions = {
   addSet: (deckId: number, name: string, cardIds: number[]) =>
@@ -24,6 +25,7 @@ export const SetsActions = {
   getSetsFailed: (message: string) =>
     createAction(GET_SETS_FAILED, { message }),
   getSetsSuccess: (sets: Set[]) => createAction(GET_SETS_SUCCESS, { sets }),
+  gotoAddSet: (cards: Card[]) => createAction(GOTO_ADD_SET, { cards }),
 };
 
 export type SetsActions = ActionsUnion<typeof SetsActions>;

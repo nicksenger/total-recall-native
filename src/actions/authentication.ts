@@ -6,6 +6,7 @@ export const LOGIN_FAILED = 'AUTHENTICATION/LOGIN_FAILED';
 export const REGISTER = 'REGISTER';
 export const REGISTRATION_SUCCESS = 'REGISTRATION_SUCCESS';
 export const REGISTRATION_FAILED = 'REGISTRATION_FAILED';
+export const RETRIEVE_AUTH_INFO = 'RETRIEVE_AUTH_INFO';
 
 export const AuthenticationActions = {
   attemptLogin: (username: string, password: string) =>
@@ -17,6 +18,7 @@ export const AuthenticationActions = {
     createAction(REGISTER, { username, password }),
   registrationFailed: (message: string) => createAction(REGISTRATION_FAILED, { message }),
   registrationSuccess: () => createAction(REGISTRATION_SUCCESS),
+  retrieveAuthInfo: () => createAction(RETRIEVE_AUTH_INFO),
 };
 
 export type AuthenticationActions = ActionsUnion<typeof AuthenticationActions>;

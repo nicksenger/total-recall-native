@@ -18,7 +18,8 @@ export const DecksActions = {
     createAction(ADD_DECK, { name, language, username }),
   addDeckFailed: (message: string) =>
     createAction(ADD_DECK_FAILED, { message }),
-  addDeckSuccess: (deck: Deck) => createAction(ADD_DECK_SUCCESS, { deck }),
+  addDeckSuccess: (deck: Deck, username: string) =>
+    createAction(ADD_DECK_SUCCESS, { deck, username }),
   deleteDeck: (deckId: number) => createAction(DELETE_DECK, { deckId }),
   deleteDeckFailed: (message: string) => createAction(DELETE_DECK_FAILED, { message }),
   deleteDeckSuccess: () => createAction(DELETE_DECK_SUCCESS),

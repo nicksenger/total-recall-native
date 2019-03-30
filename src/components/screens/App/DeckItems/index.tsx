@@ -23,7 +23,7 @@ export class DeckDetailsScreen extends React.Component<DeckDetailsScreenProps> {
       color: 'white',
       fontWeight: 'bold',
     },
-    title: 'Deck Details',
+    title: 'Deck Items',
   } as unknown as NavigationTabScreenOptions;
 
   public render() {

@@ -10,7 +10,7 @@ import {
   viewDeckEpic,
 } from './decks';
 
-import { DECK_DETAILS_SCREEN } from '_constants/screens';
+import { DECK_ITEMS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -184,7 +184,7 @@ describe('the decks epics', () => {
 
           const output$ = addDeckEpic(action$, state$ as unknown as StateObservable<TRState>);
           expectObservable(output$).toBe('---a', {
-            a: DecksActions.addDeckSuccess(decks[0]),
+            a: DecksActions.addDeckSuccess(decks[0], 'waldo'),
           });
         });
       });
@@ -308,7 +308,7 @@ describe('the decks epics', () => {
       });
 
       expect(navigateMock).toHaveBeenCalled();
-      expect(navigateMock.mock.calls[0][0]).toEqual(DECK_DETAILS_SCREEN);
+      expect(navigateMock.mock.calls[0][0]).toEqual(DECK_ITEMS_SCREEN);
     });
   });
 });

@@ -6,10 +6,11 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
-import { DECK_DETAILS_SCREEN } from '_constants/screens';
+import { DECK_ITEMS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_DECK,
+  ADD_DECK_SUCCESS,
   DecksActions,
   DELETE_DECK,
   GET_DECKS,
@@ -24,7 +25,9 @@ export const fetchDecksEpic = (
   state$: StateObservable<TRState>,
 ) =>
   action$.pipe(
-    ofType<TRActions, ReturnType<typeof DecksActions['getDecks']>>(GET_DECKS),
+    ofType<TRActions,
+      ReturnType<typeof DecksActions['getDecks']> |
+      ReturnType<typeof DecksActions['addDeckSuccess']>>(GET_DECKS, ADD_DECK_SUCCESS),
     mergeMap(({ payload: { username } }) =>
       apiGet(state$, `/user/${username}/decks/`).pipe(
         map(({ response }) => DecksActions.getDecksSuccess(response)),
@@ -42,7 +45,7 @@ export const addDeckEpic = (
     mergeMap(({ payload: { name, language, username } }) =>
       apiPost(state$, `/user/${username}/decks/`, { name, language }).pipe(
         tap(() => goBack()),
-        map(({ response }) => DecksActions.addDeckSuccess(response)),
+        map(({ response: deck }) => DecksActions.addDeckSuccess(deck, username)),
         catchError(() => of(DecksActions.addDeckFailed('failed!'))),
       ),
     ),
@@ -69,7 +72,7 @@ export const viewDeckEpic = (action$: Observable<TRActions>) => action$.pipe(
   ofType<TRActions, ReturnType<typeof DecksActions['viewDeck']>>(
     VIEW_DECK,
   ),
-  tap(() => navigate(DECK_DETAILS_SCREEN)),
+  tap(() => navigate(DECK_ITEMS_SCREEN)),
   filter(() => false),
 );
 

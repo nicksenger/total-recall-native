@@ -7,8 +7,10 @@ import {
   addSetEpic,
   deleteSetEpic,
   fetchSetsEpic,
+  gotoAddSetEpic,
 } from './sets';
 
+import { ADD_SET_SCREEN, SETS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -33,6 +35,7 @@ describe('the sets epics', () => {
 
   let scheduler: TestScheduler;
   let goBackMock: jest.SpyInstance;
+  let navigateMock: jest.SpyInstance;
 
   beforeEach(() => {
     scheduler = new TestScheduler((actual, expected) => {
@@ -40,10 +43,13 @@ describe('the sets epics', () => {
     });
     goBackMock = jest.spyOn(navigationService, 'goBack');
     goBackMock.mockImplementation(() => 'mocked');
+    navigateMock = jest.spyOn(navigationService, 'navigate');
+    navigateMock.mockImplementation(() => 'mocked');
   });
 
   afterEach(() => {
     goBackMock.mockReset();
+    navigateMock.mockReset();
   });
 
   describe('the fetch sets epic', () => {
@@ -150,7 +156,7 @@ describe('the sets epics', () => {
     });
 
     describe('the request is successful', () => {
-      it('should go back', () => {
+      it('should navigate to the sets screen', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
             a: SetsActions.addSet(123, 'foo', [1, 2, 3]),
@@ -165,7 +171,8 @@ describe('the sets epics', () => {
           expectObservable(output$);
         });
 
-        expect(goBackMock).toHaveBeenCalled();
+        expect(navigateMock).toHaveBeenCalled();
+        expect(navigateMock.mock.calls[0][0]).toEqual(SETS_SCREEN);
       });
 
       it('should emit the success action', () => {
@@ -290,6 +297,22 @@ describe('the sets epics', () => {
           });
         });
       });
+    });
+  });
+
+  describe('the gotoAddSetEpic', () => {
+    it('should navigate to the add set screen', () => {
+      scheduler.run(({ hot, expectObservable }) => {
+        const action$ = hot('-a', {
+          a: SetsActions.gotoAddSet([]),
+        });
+
+        const output$ = gotoAddSetEpic(action$);
+        expectObservable(output$);
+      });
+
+      expect(navigateMock).toHaveBeenCalled();
+      expect(navigateMock.mock.calls[0][0]).toEqual(ADD_SET_SCREEN);
     });
   });
 });

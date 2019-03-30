@@ -15,12 +15,12 @@ export class DeckItem extends React.Component<DeckItemProps> {
     const { deck } = this.props;
 
     return (
-      <ListItem key={deck.id} onPress={this.handleSelect}>
+      <ListItem key={deck.id}>
         <Left>
           <Text>{deck.name}</Text>
         </Left>
         <Right>
-          <Ionicons name="md-arrow-forward" size={25} color="black" />
+          <Ionicons name="md-arrow-forward" size={25} color="black" onPress={this.handleSelect} />
         </Right>
       </ListItem>
     );

@@ -8,6 +8,7 @@ import {
   GET_SETS,
   GET_SETS_FAILED,
   GET_SETS_SUCCESS,
+  GOTO_ADD_SET,
   SetsActions,
 } from './sets';
 
@@ -80,5 +81,11 @@ describe('the sets actions', () => {
     const action = SetsActions.getSetsSuccess(sets);
     expect(action.payload).toEqual({ sets });
     expect(action.type).toEqual(GET_SETS_SUCCESS);
+  });
+
+  it('should create the GOTO_ADD_SET action', () => {
+    const { payload, type } = SetsActions.gotoAddSet([]);
+    expect(payload).toEqual({ cards: [] });
+    expect(type).toEqual(GOTO_ADD_SET);
   });
 });

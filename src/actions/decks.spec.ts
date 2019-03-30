@@ -43,7 +43,7 @@ describe('the decks actions', () => {
   });
 
   it('should create the ADD_DECK_SUCCESS action', () => {
-    const action = DecksActions.addDeckSuccess(decks[0]);
+    const action = DecksActions.addDeckSuccess(decks[0], 'foo');
     expect(action.payload).toEqual({ deck: decks[0] });
     expect(action.type).toEqual(ADD_DECK_SUCCESS);
   });
