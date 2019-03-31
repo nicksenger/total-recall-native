@@ -1,4 +1,3 @@
-import { StateObservable } from 'redux-observable';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 import { BASE_URI } from '_constants/api';
@@ -8,7 +7,7 @@ import { mergeMap, withLatestFrom } from 'rxjs/operators';
 
 const apiRequest = (
   method: 'GET' | 'PATCH' | 'POST' | 'DELETE',
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
   path: string,
   body?: object,
   headers?: object,
@@ -41,7 +40,7 @@ const apiRequest = (
  * GET request with the current credentials using the configured BASE_URI
  */
 export const apiGet = (
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
   path: string,
   headers?: object,
 ) => apiRequest('GET', state$, path, undefined, headers);
@@ -50,7 +49,7 @@ export const apiGet = (
  * POST request with the current credentials using the configured BASE_URI
  */
 export const apiPost = (
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
   path: string,
   body?: object,
   headers?: object,
@@ -60,7 +59,7 @@ export const apiPost = (
  * PATCH request with the current credentials using the configured BASE_URI
  */
 export const apiPatch = (
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
   path: string,
   body?: object,
   headers?: object,
@@ -70,7 +69,7 @@ export const apiPatch = (
  * DELETE request with the current credentials using the configured BASE_URI
  */
 export const apiDelete = (
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
   path: string,
   headers?: object,
 ) => apiRequest('DELETE', state$, path, undefined, headers);

@@ -1,13 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Body, Button, Card, CardItem, Container, Fab, Spinner, Text  } from 'native-base';
 import * as React from 'react';
-import { Image } from 'react-native';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { PROMPT, SCORE } from '_constants/session';
-import { playAudio } from '_utils/audio';
-import { SessionActions } from 'actions';
+import { CacheActions, SessionActions } from 'actions';
 import Burger from 'components/Burger';
+import SmartImage from 'components/SmartImage';
 import { PaddedContent } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -26,6 +25,7 @@ const RATING_COLORS = [
 export interface StudyScreenProps {
   card: CardType;
   loading: boolean;
+  playAudio: typeof CacheActions.playAudio;
   revealCard: typeof SessionActions.revealCard;
   status: TRState['session']['status'];
 }
@@ -107,7 +107,7 @@ export class StudyScreen extends React.Component<StudyScreenProps, StudyScreenSt
               </Text>
             </CardItem>
             <CardItem style={{ height: 300 }}>
-              <Image
+              <SmartImage
                 source={{ uri: card.image }}
                 style={{ flex: 1, height: '100%', width: '100%' }}
                 resizeMode="contain"
@@ -149,7 +149,7 @@ export class StudyScreen extends React.Component<StudyScreenProps, StudyScreenSt
   }
 
   private playAudio = () => {
-    playAudio(this.props.card.audio);
+    this.props.playAudio(this.props.card.audio);
   }
 
   private toggleFab = () => {
@@ -163,5 +163,8 @@ export default connect(
     loading: session.loading,
     status: session.status,
   }),
-  { revealCard: SessionActions.revealCard },
+  {
+    playAudio: CacheActions.playAudio,
+    revealCard: SessionActions.revealCard,
+  },
 )(StudyScreen);

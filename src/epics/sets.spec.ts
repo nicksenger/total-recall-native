@@ -1,4 +1,4 @@
-import { StateObservable } from 'redux-observable';
+import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
@@ -75,7 +75,7 @@ describe('the sets epics', () => {
           a: { response: sets } as AjaxResponse,
         }));
 
-        const output$ = fetchSetsEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -95,7 +95,7 @@ describe('the sets epics', () => {
             a: { response: sets } as AjaxResponse,
           }));
 
-          const output$ = fetchSetsEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.getSetsSuccess(sets),
           });
@@ -113,7 +113,7 @@ describe('the sets epics', () => {
 
           getMock.mockImplementation(() => cold('--#'));
 
-          const output$ = fetchSetsEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.getSetsFailed('failed!'),
           });
@@ -144,7 +144,7 @@ describe('the sets epics', () => {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = addSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -168,7 +168,7 @@ describe('the sets epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = addSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$);
         });
 
@@ -186,7 +186,7 @@ describe('the sets epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = addSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.addSetSuccess(123),
           });
@@ -204,7 +204,7 @@ describe('the sets epics', () => {
 
           postMock.mockImplementation(() => cold('--#'));
 
-          const output$ = addSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.addSetFailed('failed!'),
           });
@@ -235,7 +235,7 @@ describe('the sets epics', () => {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = deleteSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -255,7 +255,7 @@ describe('the sets epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$);
         });
 
@@ -273,7 +273,7 @@ describe('the sets epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.deleteSetSuccess(123),
           });
@@ -291,7 +291,7 @@ describe('the sets epics', () => {
 
           deleteMock.mockImplementation(() => cold('--#'));
 
-          const output$ = deleteSetEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.deleteSetFailed('failed!'),
           });

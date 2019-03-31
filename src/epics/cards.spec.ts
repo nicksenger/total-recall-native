@@ -1,4 +1,4 @@
-import { StateObservable } from 'redux-observable';
+import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
@@ -84,7 +84,7 @@ describe('the cards epics', () => {
           a: { response: cards } as AjaxResponse,
         }));
 
-        const output$ = fetchCardsEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -104,7 +104,7 @@ describe('the cards epics', () => {
             a: { response: cards } as AjaxResponse,
           }));
 
-          const output$ = fetchCardsEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.getCardsSuccess(cards),
           });
@@ -122,7 +122,7 @@ describe('the cards epics', () => {
 
           getMock.mockImplementation(() => cold('--#'));
 
-          const output$ = fetchCardsEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.getCardsFailed('failed!'),
           });
@@ -153,7 +153,7 @@ describe('the cards epics', () => {
           a: { response: cards[0] } as AjaxResponse,
         }));
 
-        const output$ = addCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -177,7 +177,7 @@ describe('the cards epics', () => {
             a: { response: cards[0] } as AjaxResponse,
           }));
 
-          const output$ = addCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$);
         });
 
@@ -195,7 +195,7 @@ describe('the cards epics', () => {
             a: { response: cards[0] } as AjaxResponse,
           }));
 
-          const output$ = addCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.addCardSuccess(123),
           });
@@ -213,7 +213,7 @@ describe('the cards epics', () => {
 
           postMock.mockImplementation(() => cold('--#'));
 
-          const output$ = addCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.addCardFailed('failed!'),
           });
@@ -244,7 +244,7 @@ describe('the cards epics', () => {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = deleteCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -264,7 +264,7 @@ describe('the cards epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$);
         });
 
@@ -282,7 +282,7 @@ describe('the cards epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.deleteCardSuccess(123),
           });
@@ -300,7 +300,7 @@ describe('the cards epics', () => {
 
           deleteMock.mockImplementation(() => cold('--#'));
 
-          const output$ = deleteCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.deleteCardFailed('failed!'),
           });

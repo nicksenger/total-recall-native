@@ -1,8 +1,8 @@
-import { StateObservable } from 'redux-observable';
+import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
-import { SessionActions } from 'actions';
+import { CacheActions, SessionActions } from 'actions';
 import {
   rateCardEpic,
   revealCardEpic,
@@ -11,7 +11,6 @@ import {
 
 import { STUDY_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
-import * as audioUtils from '_utils/audio';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
 
@@ -47,7 +46,6 @@ describe('the session epics', () => {
   let goBackMock: jest.SpyInstance;
   let navigateMock: jest.SpyInstance;
   let postMock: jest.SpyInstance;
-  let playAudioMock: jest.SpyInstance;
 
   beforeEach(() => {
     scheduler = new TestScheduler((actual, expected) => {
@@ -58,8 +56,6 @@ describe('the session epics', () => {
     goBackMock.mockImplementation(() => 'mocked');
     navigateMock = jest.spyOn(navigationService, 'navigate');
     navigateMock.mockImplementation(() => 'mocked');
-    playAudioMock = jest.spyOn(audioUtils, 'playAudio');
-    playAudioMock.mockImplementation(() => 'mocked');
     postMock = jest.spyOn(apiUtils, 'apiPost');
   });
 
@@ -67,7 +63,6 @@ describe('the session epics', () => {
     goBackMock.mockReset();
     navigateMock.mockReset();
     postMock.mockReset();
-    playAudioMock.mockReset();
   });
 
   describe('the rate card epic', () => {
@@ -82,7 +77,7 @@ describe('the session epics', () => {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = rateCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+        const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
         expectObservable(output$);
       });
 
@@ -102,7 +97,7 @@ describe('the session epics', () => {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = rateCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SessionActions.rateCardSuccess(123, 5),
           });
@@ -120,7 +115,7 @@ describe('the session epics', () => {
 
           postMock.mockImplementation(() => cold('--#'));
 
-          const output$ = rateCardEpic(action$, state$ as unknown as StateObservable<TRState>);
+          const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
             a: SessionActions.rateCardFailed('failed!'),
           });
@@ -146,18 +141,17 @@ describe('the session epics', () => {
   });
 
   describe('the reveal card epic', () => {
-    it('should play the card audio', () => {
+    it('should emit the play audio action', () => {
       scheduler.run(({ hot, expectObservable }) => {
         const action$ = hot('-a', {
           a: SessionActions.revealCard(cards[0]),
         });
 
         const output$ = revealCardEpic(action$);
-        expectObservable(output$);
+        expectObservable(output$).toBe('-a', {
+          a: CacheActions.playAudio(cards[0].audio),
+        });
       });
-
-      expect(playAudioMock).toHaveBeenCalled();
-      expect(playAudioMock.mock.calls[0][0]).toEqual(cards[0].audio);
     });
   });
 });

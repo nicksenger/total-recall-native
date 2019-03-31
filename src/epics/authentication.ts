@@ -9,6 +9,7 @@ import { clearCredentials, retrieveCredentials, saveCredentials } from '_utils/s
 import {
   ATTEMPT_LOGIN,
   AuthenticationActions,
+  CacheActions,
   LOGIN_SUCCESS,
   LOGOUT,
   REGISTER,
@@ -71,7 +72,7 @@ export const retrieveAuthInfoEpic = (action$: Observable<TRActions>) =>
       ),
       mergeMap(() =>
         retrieveCredentials().pipe(
-          map(({ username, token }) => AuthenticationActions.loginSuccess(username, token)),
+          map(({ auth, cache }) => CacheActions.hydrateCache(cache, auth)),
           catchError(() => {
             navigate(REGISTER_SCREEN);
             return of({ type: 'NO_OP' });

@@ -1,10 +1,14 @@
 import { TestScheduler } from 'rxjs/testing';
 
 import { BASE_URI } from '_constants/api';
-import { AuthenticationActions } from 'actions';
+import { AuthenticationActions, CacheActions } from 'actions';
 import * as navigationService from 'navigation/service';
 import {
-  attemptLoginEpic, loginSuccessEpic, registrationEpic, retrieveAuthInfoEpic,
+  attemptLoginEpic,
+  loginSuccessEpic,
+  logoutEpic,
+  registrationEpic,
+  retrieveAuthInfoEpic,
 } from './authentication';
 
 import { DECKS_SCREEN, LOGIN_SCREEN, REGISTER_SCREEN } from '_constants/screens';
@@ -220,20 +224,20 @@ describe('the authentication epics', () => {
     });
 
     describe('the retrieval is successful', () => {
-      it('should emit the login success action', () => {
+      it('should emit the hydrate cache action', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
             a: AuthenticationActions.retrieveAuthInfo(),
           });
 
           retrieveMock.mockImplementation(() => cold('--a', {
-            a: { username: 'foo', token: 'bar' },
+            a: { cache: {} },
           }));
 
           const output$ = retrieveAuthInfoEpic(action$);
 
           expectObservable(output$).toBe('---a', {
-            a: AuthenticationActions.loginSuccess('foo', 'bar'),
+            a: CacheActions.hydrateCache({}),
           });
         });
       });
@@ -274,12 +278,12 @@ describe('the authentication epics', () => {
       it('should navigate to the login screen', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: AuthenticationActions.retrieveAuthInfo(),
+            a: AuthenticationActions.logout(),
           });
 
           clearMock.mockImplementation(() => cold('--a'));
 
-          const output$ = retrieveAuthInfoEpic(action$);
+          const output$ = logoutEpic(action$);
 
           expectObservable(output$);
         });
@@ -293,12 +297,12 @@ describe('the authentication epics', () => {
       it('should do nothing', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: AuthenticationActions.retrieveAuthInfo(),
+            a: AuthenticationActions.logout(),
           });
 
           clearMock.mockImplementation(() => cold('--#'));
 
-          const output$ = retrieveAuthInfoEpic(action$);
+          const output$ = logoutEpic(action$);
 
           expectObservable(output$);
         });

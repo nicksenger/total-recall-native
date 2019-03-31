@@ -1,15 +1,14 @@
 import {
   combineEpics,
   ofType,
-  StateObservable,
 } from 'redux-observable';
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { STUDY_SCREEN } from '_constants/screens';
 import { apiPost } from '_utils/api';
-import { playAudio } from '_utils/audio';
 import {
+  CacheActions,
   RATE_CARD,
   REVEAL_CARD,
   SessionActions,
@@ -21,7 +20,7 @@ import { TRState } from 'reducer';
 
 export const rateCardEpic = (
   action$: Observable<TRActions>,
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
 ) =>
   action$.pipe(
     ofType<TRActions, ReturnType<typeof SessionActions['rateCard']>>(
@@ -45,8 +44,7 @@ export const studyEpic = (action$: Observable<TRActions>) =>
 export const revealCardEpic = (action$: Observable<TRActions>) =>
     action$.pipe(
       ofType<TRActions, ReturnType<typeof SessionActions['revealCard']>>(REVEAL_CARD),
-      tap(({ payload: { card } }) => playAudio(card.audio)),
-      filter(() => false),
+      map(({ payload: { card } }) => CacheActions.playAudio(card.audio)),
     );
 
 export default combineEpics(rateCardEpic, revealCardEpic, studyEpic);

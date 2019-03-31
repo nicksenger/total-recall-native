@@ -1,5 +1,6 @@
 import {
   ATTEMPT_LOGIN,
+  HYDRATE_CACHE,
   LOGIN_FAILED,
   LOGIN_SUCCESS,
   TRActions,
@@ -41,6 +42,12 @@ export default (
         token: action.payload.token,
         username: action.payload.username,
       };
+    case HYDRATE_CACHE:
+      return action.payload.auth ? {
+        loading: false,
+        token: action.payload.auth.token,
+        username: action.payload.auth.username,
+      } : state;
 
     default:
       return state;

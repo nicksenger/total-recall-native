@@ -1,4 +1,4 @@
-import { ATTEMPT_LOGIN, LOGIN_FAILED, LOGIN_SUCCESS } from 'actions';
+import { ATTEMPT_LOGIN, HYDRATE_CACHE, LOGIN_FAILED, LOGIN_SUCCESS } from 'actions';
 import authentication, { initialState } from './authentication';
 
 describe('the authentication reducer', () => {
@@ -36,6 +36,20 @@ describe('the authentication reducer', () => {
       {
         payload: { username: 'foo', token: 'abc123' },
         type: LOGIN_SUCCESS,
+      },
+    )).toEqual({
+      loading: false,
+      token: 'abc123',
+      username: 'foo',
+    });
+  });
+
+  it('should set the auth info if present when hydrating from cache', () => {
+    expect(authentication(
+      { ...initialState, loading: true },
+      {
+        payload: { auth: { username: 'foo', token: 'abc123' }, cache: {} },
+        type: HYDRATE_CACHE,
       },
     )).toEqual({
       loading: false,

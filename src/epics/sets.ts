@@ -1,7 +1,6 @@
 import {
   combineEpics,
   ofType,
-  StateObservable,
 } from 'redux-observable';
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
@@ -23,7 +22,7 @@ import { TRState } from 'reducer';
 
 export const fetchSetsEpic = (
   action$: Observable<TRActions>,
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
 ) =>
   action$.pipe(
     ofType<TRActions,
@@ -39,7 +38,7 @@ export const fetchSetsEpic = (
 
 export const addSetEpic = (
   action$: Observable<TRActions>,
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
 ) =>
   action$.pipe(
     ofType<TRActions, ReturnType<typeof SetsActions['addSet']>>(ADD_SET),
@@ -54,7 +53,7 @@ export const addSetEpic = (
 
 export const deleteSetEpic = (
   action$: Observable<TRActions>,
-  state$: StateObservable<TRState>,
+  state$: Observable<TRState>,
 ) =>
   action$.pipe(
     ofType<TRActions, ReturnType<typeof SetsActions['deleteSet']>>(
