@@ -2,10 +2,12 @@ import { Body, Card, CardItem, Container, Text  } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
+import Burger from 'components/Burger';
 import { PaddedContent } from 'components/styled';
 
 export default class InitialScreen extends React.Component<{}> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

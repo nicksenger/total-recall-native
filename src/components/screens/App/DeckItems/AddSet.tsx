@@ -3,6 +3,7 @@ import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { SetsActions } from 'actions';
+import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -21,6 +22,7 @@ export interface AddSetScreenState {
 
 export class AddSetScreen extends React.Component<AddSetScreenProps, AddSetScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

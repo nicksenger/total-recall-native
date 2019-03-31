@@ -1,3 +1,4 @@
+import Burger from 'components/Burger';
 import { PaddedContent } from 'components/styled';
 import { Container, Text } from 'native-base';
 import * as React from 'react';
@@ -5,6 +6,7 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 
 export default class UserManual extends React.Component<{}> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

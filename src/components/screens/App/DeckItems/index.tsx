@@ -5,6 +5,7 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Deck } from 'reducer/entities';
 
+import Burger from 'components/Burger';
 import { TRState } from 'reducer';
 import Cards from './Cards';
 import Sets from './Sets';
@@ -16,6 +17,7 @@ export interface DeckDetailsScreenProps {
 
 export class DeckDetailsScreen extends React.Component<DeckDetailsScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

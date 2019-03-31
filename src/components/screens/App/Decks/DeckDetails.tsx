@@ -5,6 +5,7 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { Languages } from '_constants/languages';
 import { DecksActions } from 'actions';
+import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -17,6 +18,7 @@ export interface DeckDetailsScreenProps {
 
 export class DeckDetailsScreen extends React.Component<DeckDetailsScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

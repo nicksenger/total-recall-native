@@ -7,6 +7,7 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 import { PROMPT, SCORE } from '_constants/session';
 import { playAudio } from '_utils/audio';
 import { SessionActions } from 'actions';
+import Burger from 'components/Burger';
 import { PaddedContent } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -35,6 +36,7 @@ export interface StudyScreenState {
 
 export class StudyScreen extends React.Component<StudyScreenProps, StudyScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { CardsActions } from 'actions';
+import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -16,6 +17,7 @@ export interface CardDetailsScreenProps {
 
 export class CardDetailsScreen extends React.Component<CardDetailsScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
+    headerRight: <Burger />,
     headerStyle: {
       backgroundColor: '#1f6899',
     },

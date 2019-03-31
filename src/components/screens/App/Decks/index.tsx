@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Container, Fab, List, Spinner, Text } from 'native-base';
 import * as React from 'react';
-import { NavigationTabScreenOptions } from 'react-navigation';
+import { NavigationScreenProps } from 'react-navigation';
 
 import { ADD_DECK_SCREEN } from '_constants/screens';
 import { DecksActions } from 'actions';
+import Burger from 'components/Burger';
 import { PaddedContent } from 'components/styled';
-import { navigate } from 'navigation/service';
+import { navigate, setDrawerNavigator } from 'navigation/service';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Deck } from 'reducer/entities';
@@ -20,16 +21,20 @@ export interface DecksScreenProps {
 }
 
 export class DecksScreen extends React.Component<DecksScreenProps> {
-  public static navigationOptions: NavigationTabScreenOptions = {
-    headerStyle: {
-      backgroundColor: '#1f6899',
-    },
-    headerTitleStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    title: 'My Decks',
-  } as unknown as NavigationTabScreenOptions;
+  public static navigationOptions = ({ navigation }: NavigationScreenProps<{}>) => {
+    setDrawerNavigator(navigation);
+    return {
+      headerRight: <Burger />,
+      headerStyle: {
+        backgroundColor: '#1f6899',
+      },
+      headerTitleStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+      },
+      title: 'My Decks',
+    };
+  }
 
   public componentDidMount() {
     if (this.props.username) {
