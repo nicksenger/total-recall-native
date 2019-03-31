@@ -1,4 +1,4 @@
-import { GET_SETS, GET_SETS_FAILED, GET_SETS_SUCCESS } from 'actions';
+import { DELETE_SET_SUCCESS, GET_SETS, GET_SETS_FAILED, GET_SETS_SUCCESS } from 'actions';
 import setsScreen, { initialState } from './setsScreen';
 
 describe('the setsScreen reducer', () => {
@@ -57,4 +57,29 @@ describe('the setsScreen reducer', () => {
     });
   });
 
+  describe('retrieving the sets fails', () => {
+    it('should reset the loading state', () => {
+      const newState = setsScreen({ ...initialState, loading: true }, {
+        payload: { message: 'failed!' },
+        type: GET_SETS_FAILED,
+      });
+
+      expect(newState).toEqual({
+        ...initialState,
+        loading: false,
+      });
+    });
+  });
+
+  it('should remove deleted sets from the state', () => {
+    const newState = setsScreen({ ...initialState, sets: [123, 456] }, {
+      payload: { setId: 123 },
+      type: DELETE_SET_SUCCESS,
+    });
+
+    expect(newState).toEqual({
+      ...initialState,
+      sets: [456],
+    });
+  });
 });

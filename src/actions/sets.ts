@@ -11,6 +11,7 @@ export const ADD_SET = 'ADD_SET';
 export const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
 export const ADD_SET_FAILED = 'ADD_SET_FAILED';
 export const GOTO_ADD_SET = 'GOTO_ADD_SET';
+export const VIEW_SET_DETAILS = 'VIEW_SET_DETAILS';
 
 export const SetsActions = {
   addSet: (deckId: number, name: string, cardIds: number[]) =>
@@ -20,12 +21,13 @@ export const SetsActions = {
   deleteSet: (setId: number) => createAction(DELETE_SET, { setId }),
   deleteSetFailed: (message: string) =>
     createAction(DELETE_SET_FAILED, { message }),
-  deleteSetSuccess: () => createAction(DELETE_SET_SUCCESS),
+  deleteSetSuccess: (setId: number) => createAction(DELETE_SET_SUCCESS, { setId }),
   getSets: (deckId: number) => createAction(GET_SETS, { deckId }),
   getSetsFailed: (message: string) =>
     createAction(GET_SETS_FAILED, { message }),
   getSetsSuccess: (sets: Set[]) => createAction(GET_SETS_SUCCESS, { sets }),
   gotoAddSet: (cards: Card[]) => createAction(GOTO_ADD_SET, { cards }),
+  viewSetDetails: (set: Set) => createAction(VIEW_SET_DETAILS, { set }),
 };
 
 export type SetsActions = ActionsUnion<typeof SetsActions>;

@@ -3,7 +3,8 @@ import {
   DELETE_DECK_FAILED,
   DELETE_DECK_SUCCESS,
   TRActions,
-  VIEW_DECK,
+  VIEW_DECK_DETAILS,
+  VIEW_DECK_ITEMS,
 } from 'actions';
 import { Deck } from 'reducer/entities';
 
@@ -39,7 +40,13 @@ export default (
         loading: false,
       };
 
-    case VIEW_DECK:
+    case VIEW_DECK_DETAILS:
+      return {
+        ...state,
+        selectedDeck: action.payload.deck,
+      };
+
+    case VIEW_DECK_ITEMS:
       return {
         ...state,
         selectedDeck: action.payload.deck,

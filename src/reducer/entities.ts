@@ -1,4 +1,9 @@
+import _ from 'lodash';
+
 import {
+  DELETE_CARD_SUCCESS,
+  DELETE_DECK_SUCCESS,
+  DELETE_SET_SUCCESS,
   GET_CARDS_SUCCESS,
   GET_DECKS_SUCCESS,
   GET_SETS_SUCCESS,
@@ -88,6 +93,24 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
           ...state.sets,
           ...setMap,
         },
+      };
+
+    case DELETE_DECK_SUCCESS:
+      return {
+        ...state,
+        decks: _.omit(state.decks, action.payload.deckId),
+      };
+
+    case DELETE_CARD_SUCCESS:
+      return {
+        ...state,
+        cards: _.omit(state.cards, action.payload.cardId),
+      };
+
+    case DELETE_SET_SUCCESS:
+      return {
+        ...state,
+        sets: _.omit(state.sets, action.payload.setId),
       };
 
     default:

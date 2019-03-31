@@ -7,10 +7,11 @@ import {
   addDeckEpic,
   deleteDeckEpic,
   fetchDecksEpic,
-  viewDeckEpic,
+  viewDeckDetailsEpic,
+  viewDeckItemsEpic,
 } from './decks';
 
-import { DECK_ITEMS_SCREEN } from '_constants/screens';
+import { DECK_DETAILS_SCREEN, DECK_ITEMS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -271,7 +272,7 @@ describe('the decks epics', () => {
 
           const output$ = deleteDeckEpic(action$, state$ as unknown as StateObservable<TRState>);
           expectObservable(output$).toBe('---a', {
-            a: DecksActions.deleteDeckSuccess(),
+            a: DecksActions.deleteDeckSuccess(123),
           });
         });
       });
@@ -296,14 +297,30 @@ describe('the decks epics', () => {
     });
   });
 
-  describe('the viewDeck epic', () => {
+  describe('the viewDeckDetails epic', () => {
     it('should navigate to the deck details screen', () => {
       scheduler.run(({ hot, expectObservable }) => {
         const action$ = hot('-a', {
-          a: DecksActions.viewDeck(decks[0]),
+          a: DecksActions.viewDeckDetails(decks[0]),
         });
 
-        const output$ = viewDeckEpic(action$);
+        const output$ = viewDeckDetailsEpic(action$);
+        expectObservable(output$);
+      });
+
+      expect(navigateMock).toHaveBeenCalled();
+      expect(navigateMock.mock.calls[0][0]).toEqual(DECK_DETAILS_SCREEN);
+    });
+  });
+
+  describe('the viewDeckItems epic', () => {
+    it('should navigate to the deck details screen', () => {
+      scheduler.run(({ hot, expectObservable }) => {
+        const action$ = hot('-a', {
+          a: DecksActions.viewDeckItems(decks[0]),
+        });
+
+        const output$ = viewDeckItemsEpic(action$);
         expectObservable(output$);
       });
 

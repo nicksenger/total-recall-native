@@ -6,7 +6,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
-import { ADD_SET_SCREEN, SETS_SCREEN } from '_constants/screens';
+import { ADD_SET_SCREEN, SET_DETAILS_SCREEN, SETS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_SET,
@@ -16,6 +16,7 @@ import {
   GOTO_ADD_SET,
   SetsActions,
   TRActions,
+  VIEW_SET_DETAILS,
 } from 'actions';
 import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
@@ -62,7 +63,7 @@ export const deleteSetEpic = (
     mergeMap(({ payload: { setId } }) =>
       apiDelete(state$, `/sets/${setId}/`).pipe(
         tap(() => goBack()),
-        map(() => SetsActions.deleteSetSuccess()),
+        map(() => SetsActions.deleteSetSuccess(setId)),
         catchError(() => of(SetsActions.deleteSetFailed('failed!'))),
       ),
     ),
@@ -74,9 +75,18 @@ export const gotoAddSetEpic = (action$: Observable<TRActions>) => action$.pipe(
   filter(() => false),
 );
 
+export const viewSetDetailsEpic = (action$: Observable<TRActions>) => action$.pipe(
+  ofType<TRActions, ReturnType<typeof SetsActions['viewSetDetails']>>(
+    VIEW_SET_DETAILS,
+  ),
+  tap(() => navigate(SET_DETAILS_SCREEN)),
+  filter(() => false),
+);
+
 export default combineEpics(
   fetchSetsEpic,
   addSetEpic,
   deleteSetEpic,
   gotoAddSetEpic,
+  viewSetDetailsEpic,
 );

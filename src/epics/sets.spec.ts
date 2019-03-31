@@ -8,9 +8,10 @@ import {
   deleteSetEpic,
   fetchSetsEpic,
   gotoAddSetEpic,
+  viewSetDetailsEpic,
 } from './sets';
 
-import { ADD_SET_SCREEN, SETS_SCREEN } from '_constants/screens';
+import { ADD_SET_SCREEN, SET_DETAILS_SCREEN, SETS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -275,7 +276,7 @@ describe('the sets epics', () => {
 
           const output$ = deleteSetEpic(action$, state$ as unknown as StateObservable<TRState>);
           expectObservable(output$).toBe('---a', {
-            a: SetsActions.deleteSetSuccess(),
+            a: SetsActions.deleteSetSuccess(123),
           });
         });
       });
@@ -313,6 +314,22 @@ describe('the sets epics', () => {
 
       expect(navigateMock).toHaveBeenCalled();
       expect(navigateMock.mock.calls[0][0]).toEqual(ADD_SET_SCREEN);
+    });
+  });
+
+  describe('the view set details epic', () => {
+    it('should navigate to the set details screen', () => {
+      scheduler.run(({ hot, expectObservable }) => {
+        const action$ = hot('-a', {
+          a: SetsActions.viewSetDetails(sets[0]),
+        });
+
+        const output$ = viewSetDetailsEpic(action$);
+        expectObservable(output$);
+      });
+
+      expect(navigateMock).toHaveBeenCalled();
+      expect(navigateMock.mock.calls[0][0]).toEqual(SET_DETAILS_SCREEN);
     });
   });
 });

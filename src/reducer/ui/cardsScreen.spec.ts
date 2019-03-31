@@ -1,4 +1,4 @@
-import { GET_CARDS, GET_CARDS_FAILED, GET_CARDS_SUCCESS } from 'actions';
+import { DELETE_CARD_SUCCESS, GET_CARDS, GET_CARDS_FAILED, GET_CARDS_SUCCESS } from 'actions';
 import cardsScreen, { initialState } from './cardsScreen';
 
 describe('the cardsScreen reducer', () => {
@@ -49,7 +49,7 @@ describe('the cardsScreen reducer', () => {
 
   describe('the cards are retrieved successfully', () => {
     it('should reset the loading state', () => {
-      const newState = cardsScreen(initialState, {
+      const newState = cardsScreen({ ...initialState, loading: true }, {
         payload: { cards },
         type: GET_CARDS_SUCCESS,
       });
@@ -67,4 +67,29 @@ describe('the cardsScreen reducer', () => {
     });
   });
 
+  describe('retrieving the cards fails', () => {
+    it('should reset the loading state', () => {
+      const newState = cardsScreen({ ...initialState, loading: true }, {
+        payload: { message: 'failed!' },
+        type: GET_CARDS_FAILED,
+      });
+
+      expect(newState).toEqual({
+        ...initialState,
+        loading: false,
+      });
+    });
+  });
+
+  it('should remove deleted cards from the state', () => {
+    const newState = cardsScreen({ ...initialState, cards: [123, 456] }, {
+      payload: { cardId: 123 },
+      type: DELETE_CARD_SUCCESS,
+    });
+
+    expect(newState).toEqual({
+      ...initialState,
+      cards: [456],
+    });
+  });
 });

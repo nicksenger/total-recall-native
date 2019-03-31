@@ -43,7 +43,7 @@ export default (
     case DELETE_CARD_SUCCESS:
       return {
         ...state,
-        loading: true,
+        cards: state.cards.filter(id => id !== action.payload.cardId),
       };
 
     default:

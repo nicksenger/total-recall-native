@@ -1,4 +1,4 @@
-import { Container, Form, Icon, Input, Item, Picker, Spinner, Text } from 'native-base';
+import { Container, Form, Input, Item, Picker, Spinner, Text } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 

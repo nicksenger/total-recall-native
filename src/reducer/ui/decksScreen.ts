@@ -1,4 +1,5 @@
 import {
+  DELETE_DECK_SUCCESS,
   GET_DECKS,
   GET_DECKS_FAILED,
   GET_DECKS_SUCCESS,
@@ -37,6 +38,12 @@ export default (
       return {
         ...state,
         loading: false,
+      };
+
+    case DELETE_DECK_SUCCESS:
+      return {
+        ...state,
+        decks: state.decks.filter(id => id !== action.payload.deckId),
       };
 
     default:

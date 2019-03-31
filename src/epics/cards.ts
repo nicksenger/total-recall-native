@@ -4,8 +4,9 @@ import {
   StateObservable,
 } from 'redux-observable';
 import { Observable, of } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
+import { CARD_DETAILS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_CARD,
@@ -14,8 +15,9 @@ import {
   DELETE_CARD,
   GET_CARDS,
   TRActions,
+  VIEW_CARD_DETAILS,
 } from 'actions';
-import { goBack } from 'navigation/service';
+import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
 
 export const fetchCardsEpic = (
@@ -60,14 +62,23 @@ export const deleteCardEpic = (
     mergeMap(({ payload: { cardId } }) =>
       apiDelete(state$, `/cards/${cardId}/`).pipe(
         tap(() => goBack()),
-        map(() => CardsActions.deleteCardSuccess()),
+        map(() => CardsActions.deleteCardSuccess(cardId)),
         catchError(() => of(CardsActions.deleteCardFailed('failed!'))),
       ),
     ),
   );
 
+export const viewCardDetailsEpic = (action$: Observable<TRActions>) => action$.pipe(
+  ofType<TRActions, ReturnType<typeof CardsActions['viewCardDetails']>>(
+    VIEW_CARD_DETAILS,
+  ),
+  tap(() => navigate(CARD_DETAILS_SCREEN)),
+  filter(() => false),
+);
+
 export default combineEpics(
   addCardEpic,
   deleteCardEpic,
   fetchCardsEpic,
+  viewCardDetailsEpic,
 );

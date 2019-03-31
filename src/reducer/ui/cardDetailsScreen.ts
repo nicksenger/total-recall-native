@@ -3,10 +3,13 @@ import {
   DELETE_CARD_FAILED,
   DELETE_CARD_SUCCESS,
   TRActions,
+  VIEW_CARD_DETAILS,
 } from 'actions';
+import { Card } from 'reducer/entities';
 
 export interface CardDetailsScreenState {
   loading: boolean;
+  selectedCard?: Card;
 }
 
 export const initialState: CardDetailsScreenState = {
@@ -34,6 +37,12 @@ export default (
       return {
         ...state,
         loading: false,
+      };
+
+    case VIEW_CARD_DETAILS:
+      return {
+        ...state,
+        selectedCard: action.payload.card,
       };
 
     default:

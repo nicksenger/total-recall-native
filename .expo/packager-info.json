@@ -1,10 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 3261,
   "expoServerNgrokUrl": "https://sw-pzs.anonymous.total-recall-native.exp.direct",
   "packagerNgrokUrl": "https://packager.sw-pzs.anonymous.total-recall-native.exp.direct",
-  "ngrokPid": 2741,
+  "ngrokPid": 3315,
   "webpackServerPort": null
 }

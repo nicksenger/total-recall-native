@@ -22,13 +22,16 @@ describe('the addDeckScreen reducer', () => {
 
   it('should reset the loading state if the deck is added successfully', () => {
     const newState = addDeckScreen(initialState, {
-      payload: { deck: {
-        created: 'sometime',
-        id: 123,
-        language: 'vi',
-        name: 'foo',
-        owner: 'waldo',
-      } },
+      payload: {
+        deck: {
+          created: 'sometime',
+          id: 123,
+          language: 'vi',
+          name: 'foo',
+          owner: 'waldo',
+        },
+        username: 'waldo',
+      },
       type: ADD_DECK_SUCCESS,
     });
 

@@ -10,6 +10,7 @@ export const ADD_CARD_FAILED = 'ADD_CARD_FAILED';
 export const DELETE_CARD = 'DELETE_CARD';
 export const DELETE_CARD_SUCCESS = 'DELETE_CARD_SUCCESS';
 export const DELETE_CARD_FAILED = 'DELETE_CARD_FAILED';
+export const VIEW_CARD_DETAILS = 'VIEW_CARD_DETAILS';
 
 export const CardsActions = {
   addCard: (deckId: number, front: string, back: string) =>
@@ -21,12 +22,13 @@ export const CardsActions = {
   deleteCard: (cardId: number) => createAction(DELETE_CARD, { cardId }),
   deleteCardFailed: (message: string) =>
     createAction(DELETE_CARD_FAILED, { message }),
-  deleteCardSuccess: () => createAction(DELETE_CARD_SUCCESS),
+  deleteCardSuccess: (cardId: number) => createAction(DELETE_CARD_SUCCESS, { cardId }),
   getCards: (deckId: number) => createAction(GET_CARDS, { deckId }),
   getCardsFailed: (message: string) =>
     createAction(GET_CARDS_FAILED, { message }),
   getCardsSuccess: (cards: Card[]) =>
     createAction(GET_CARDS_SUCCESS, { cards }),
+  viewCardDetails: (card: Card) => createAction(VIEW_CARD_DETAILS, { card }),
 };
 
 export type CardsActions = ActionsUnion<typeof CardsActions>;

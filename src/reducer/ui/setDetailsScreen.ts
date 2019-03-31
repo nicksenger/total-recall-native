@@ -3,10 +3,13 @@ import {
   DELETE_SET_FAILED,
   DELETE_SET_SUCCESS,
   TRActions,
+  VIEW_SET_DETAILS,
 } from 'actions';
+import { Set } from 'reducer/entities';
 
 export interface SetDetailsScreenState {
   loading: boolean;
+  selectedSet?: Set;
 }
 
 export const initialState: SetDetailsScreenState = {
@@ -34,6 +37,12 @@ export default (
       return {
         ...state,
         loading: false,
+      };
+
+    case VIEW_SET_DETAILS:
+      return {
+        ...state,
+        selectedSet: action.payload.set,
       };
 
     default:

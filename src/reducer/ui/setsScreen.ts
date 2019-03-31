@@ -1,4 +1,5 @@
 import {
+  DELETE_SET_SUCCESS,
   GET_SETS,
   GET_SETS_FAILED,
   GET_SETS_SUCCESS,
@@ -37,6 +38,12 @@ export default (
         ...state,
         loading: false,
         sets: action.payload.sets.map(({ id }) => id),
+      };
+
+    case DELETE_SET_SUCCESS:
+      return {
+        ...state,
+        sets: state.sets.filter(id => id !== action.payload.setId),
       };
 
     default:

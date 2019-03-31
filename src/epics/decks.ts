@@ -6,7 +6,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
-import { DECK_ITEMS_SCREEN } from '_constants/screens';
+import { DECK_DETAILS_SCREEN, DECK_ITEMS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_DECK,
@@ -15,7 +15,8 @@ import {
   DELETE_DECK,
   GET_DECKS,
   TRActions,
-  VIEW_DECK,
+  VIEW_DECK_DETAILS,
+  VIEW_DECK_ITEMS,
 } from 'actions';
 import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
@@ -27,7 +28,10 @@ export const fetchDecksEpic = (
   action$.pipe(
     ofType<TRActions,
       ReturnType<typeof DecksActions['getDecks']> |
-      ReturnType<typeof DecksActions['addDeckSuccess']>>(GET_DECKS, ADD_DECK_SUCCESS),
+      ReturnType<typeof DecksActions['addDeckSuccess']>>(
+        ADD_DECK_SUCCESS,
+        GET_DECKS,
+      ),
     mergeMap(({ payload: { username } }) =>
       apiGet(state$, `/user/${username}/decks/`).pipe(
         map(({ response }) => DecksActions.getDecksSuccess(response)),
@@ -62,18 +66,32 @@ export const deleteDeckEpic = (
     mergeMap(({ payload: { deckId } }) =>
       apiDelete(state$, `/decks/${deckId}/`).pipe(
         tap(() => goBack()),
-        map(() => DecksActions.deleteDeckSuccess()),
+        map(() => DecksActions.deleteDeckSuccess(deckId)),
         catchError(() => of(DecksActions.deleteDeckFailed('failed!'))),
       ),
     ),
   );
 
-export const viewDeckEpic = (action$: Observable<TRActions>) => action$.pipe(
-  ofType<TRActions, ReturnType<typeof DecksActions['viewDeck']>>(
-    VIEW_DECK,
+export const viewDeckDetailsEpic = (action$: Observable<TRActions>) => action$.pipe(
+  ofType<TRActions, ReturnType<typeof DecksActions['viewDeckDetails']>>(
+    VIEW_DECK_DETAILS,
+  ),
+  tap(() => navigate(DECK_DETAILS_SCREEN)),
+  filter(() => false),
+);
+
+export const viewDeckItemsEpic = (action$: Observable<TRActions>) => action$.pipe(
+  ofType<TRActions, ReturnType<typeof DecksActions['viewDeckItems']>>(
+    VIEW_DECK_ITEMS,
   ),
   tap(() => navigate(DECK_ITEMS_SCREEN)),
   filter(() => false),
 );
 
-export default combineEpics(addDeckEpic, deleteDeckEpic, fetchDecksEpic, viewDeckEpic);
+export default combineEpics(
+  addDeckEpic,
+  deleteDeckEpic,
+  fetchDecksEpic,
+  viewDeckDetailsEpic,
+  viewDeckItemsEpic,
+);

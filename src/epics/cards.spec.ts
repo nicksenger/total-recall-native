@@ -7,8 +7,10 @@ import {
   addCardEpic,
   deleteCardEpic,
   fetchCardsEpic,
+  viewCardDetailsEpic,
 } from './cards';
 
+import { CARD_DETAILS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
@@ -282,7 +284,7 @@ describe('the cards epics', () => {
 
           const output$ = deleteCardEpic(action$, state$ as unknown as StateObservable<TRState>);
           expectObservable(output$).toBe('---a', {
-            a: CardsActions.deleteCardSuccess(),
+            a: CardsActions.deleteCardSuccess(123),
           });
         });
       });
@@ -304,6 +306,22 @@ describe('the cards epics', () => {
           });
         });
       });
+    });
+  });
+
+  describe('the view card details epic', () => {
+    it('should navigate to the card details screen', () => {
+      scheduler.run(({ hot, expectObservable }) => {
+        const action$ = hot('-a', {
+          a: CardsActions.viewCardDetails(cards[0]),
+        });
+
+        const output$ = viewCardDetailsEpic(action$);
+        expectObservable(output$);
+      });
+
+      expect(navigateMock).toHaveBeenCalled();
+      expect(navigateMock.mock.calls[0][0]).toEqual(CARD_DETAILS_SCREEN);
     });
   });
 });

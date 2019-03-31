@@ -9,7 +9,8 @@ import {
   GET_DECKS,
   GET_DECKS_FAILED,
   GET_DECKS_SUCCESS,
-  VIEW_DECK,
+  VIEW_DECK_DETAILS,
+  VIEW_DECK_ITEMS,
 } from './decks';
 
 describe('the decks actions', () => {
@@ -44,7 +45,7 @@ describe('the decks actions', () => {
 
   it('should create the ADD_DECK_SUCCESS action', () => {
     const action = DecksActions.addDeckSuccess(decks[0], 'foo');
-    expect(action.payload).toEqual({ deck: decks[0] });
+    expect(action.payload).toEqual({ deck: decks[0], username: 'foo' });
     expect(action.type).toEqual(ADD_DECK_SUCCESS);
   });
 
@@ -61,8 +62,9 @@ describe('the decks actions', () => {
   });
 
   it('should create the DELETE_DECK_SUCCESS action', () => {
-    const action = DecksActions.deleteDeckSuccess();
+    const action = DecksActions.deleteDeckSuccess(123);
     expect(action.type).toEqual(DELETE_DECK_SUCCESS);
+    expect(action.payload).toEqual({ deckId: 123 });
   });
 
   it('should create the GET_DECKS action', () => {
@@ -83,9 +85,15 @@ describe('the decks actions', () => {
     expect(action.type).toEqual(GET_DECKS_SUCCESS);
   });
 
-  it('should create the VIEW_DECK action', () => {
-    const action = DecksActions.viewDeck(decks[0]);
+  it('should create the VIEW_DECK_DETAILS action', () => {
+    const { payload, type } = DecksActions.viewDeckDetails(decks[0]);
+    expect(payload).toEqual({ deck: decks[0] });
+    expect(type).toEqual(VIEW_DECK_DETAILS);
+  });
+
+  it('should create the VIEW_DECK_ITEMS action', () => {
+    const action = DecksActions.viewDeckItems(decks[0]);
     expect(action.payload).toEqual({ deck: decks[0] });
-    expect(action.type).toEqual(VIEW_DECK);
+    expect(action.type).toEqual(VIEW_DECK_ITEMS);
   });
 });

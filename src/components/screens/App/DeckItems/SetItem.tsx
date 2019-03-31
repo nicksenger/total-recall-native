@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { SessionActions } from 'actions';
+import { SessionActions, SetsActions } from 'actions';
 import { Left, ListItem, Right, Text } from 'native-base';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -10,16 +10,17 @@ export interface SetItemProps {
   cards: Card[];
   set: Set;
   study: typeof SessionActions['study'];
+  viewSetDetails: typeof SetsActions['viewSetDetails'];
 }
 
-export class DeckItem extends React.Component<SetItemProps> {
+export class SetItem extends React.Component<SetItemProps> {
   public render() {
     const { set } = this.props;
 
     return (
       <ListItem key={set.id}>
         <Left>
-          <Text>{set.name}</Text>
+          <Text onPress={this.handleDetails}>{set.name}</Text>
         </Left>
         <Right>
           <Ionicons
@@ -33,14 +34,18 @@ export class DeckItem extends React.Component<SetItemProps> {
     );
   }
 
+  private handleDetails = () => {
+    this.props.viewSetDetails(this.props.set);
+  }
+
   private handleStudy = () => {
     this.props.study(this.props.cards);
   }
 }
 
 export default connect(
-  ({ entities }: TRState, { set }: SetItemProps) => ({
+  ({ entities }: TRState, { set }: { set: Set }) => ({
     cards: set.card_ids.split(',').map(id => entities.cards[parseInt(id, 10)]),
   }),
-  { study: SessionActions.study },
-)(DeckItem);
+  { study: SessionActions.study, viewSetDetails: SetsActions.viewSetDetails },
+)(SetItem);

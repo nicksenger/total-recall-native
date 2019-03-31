@@ -7,7 +7,8 @@ import { Deck } from 'reducer/entities';
 
 export interface DeckItemProps {
   deck: Deck;
-  viewDeck: typeof DecksActions.viewDeck;
+  viewDeckDetails: typeof DecksActions.viewDeckDetails;
+  viewDeckItems: typeof DecksActions.viewDeckItems;
 }
 
 export class DeckItem extends React.Component<DeckItemProps> {
@@ -17,7 +18,7 @@ export class DeckItem extends React.Component<DeckItemProps> {
     return (
       <ListItem key={deck.id}>
         <Left>
-          <Text>{deck.name}</Text>
+          <Text onPress={this.handleDetails}>{deck.name}</Text>
         </Left>
         <Right>
           <Ionicons name="md-arrow-forward" size={25} color="black" onPress={this.handleSelect} />
@@ -26,12 +27,19 @@ export class DeckItem extends React.Component<DeckItemProps> {
     );
   }
 
+  private handleDetails = () => {
+    this.props.viewDeckDetails(this.props.deck);
+  }
+
   private handleSelect = () => {
-    this.props.viewDeck(this.props.deck);
+    this.props.viewDeckItems(this.props.deck);
   }
 }
 
 export default connect(
   () => ({}),
-  { viewDeck: DecksActions.viewDeck },
+  {
+    viewDeckDetails: DecksActions.viewDeckDetails,
+    viewDeckItems: DecksActions.viewDeckItems,
+  },
 )(DeckItem);

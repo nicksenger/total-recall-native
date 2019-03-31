@@ -1,4 +1,10 @@
-import { DELETE_DECK, DELETE_DECK_FAILED, DELETE_DECK_SUCCESS, VIEW_DECK } from 'actions';
+import {
+  DELETE_DECK,
+  DELETE_DECK_FAILED,
+  DELETE_DECK_SUCCESS,
+  VIEW_DECK_DETAILS,
+  VIEW_DECK_ITEMS,
+} from 'actions';
 import deckDetailsScreen, { initialState } from './deckDetailsScreen';
 
 describe('the deckDetailsScreen reducer', () => {
@@ -39,16 +45,26 @@ describe('the deckDetailsScreen reducer', () => {
 
   it('should reset the loading state if the deck is deleted successfully', () => {
     const newState = deckDetailsScreen(initialState, {
+      payload: { deckId: 123 },
       type: DELETE_DECK_SUCCESS,
     });
 
     expect(newState.loading).toBeFalsy();
   });
 
-  it('should set the selected deck when a deck is viewed', () => {
+  it('should set the selected deck when the deck details are viewed', () => {
     const newState = deckDetailsScreen(initialState, {
       payload: { deck: decks[0] },
-      type: VIEW_DECK,
+      type: VIEW_DECK_DETAILS,
+    });
+
+    expect(newState.selectedDeck).toEqual(decks[0]);
+  });
+
+  it('should set the selected deck when a the deck items are viewed', () => {
+    const newState = deckDetailsScreen(initialState, {
+      payload: { deck: decks[0] },
+      type: VIEW_DECK_ITEMS,
     });
 
     expect(newState.selectedDeck).toEqual(decks[0]);
