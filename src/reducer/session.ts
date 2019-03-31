@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { PROMPT, SCORE } from '_constants/session';
 import {
   RATE_CARD,
@@ -33,7 +35,7 @@ export default (
     case STUDY:
       return {
         ...state,
-        rateStack: action.payload.cards.filter(needsReview),
+        rateStack: _.shuffle(action.payload.cards.filter(needsReview)),
         reviewList: [],
         status: PROMPT,
       };

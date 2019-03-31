@@ -9,6 +9,33 @@ import {
 } from './session';
 
 describe('the session actions', () => {
+  const cards = [
+    {
+      audio: 'foo.mp3',
+      back: 'foo',
+      created: 'somehow',
+      deck: 123,
+      front: 'foo',
+      id: 123,
+      image: 'foo.jpg',
+      last_seen: 'somewhere',
+      owner: 'foobar',
+      score: '1,2,3',
+    },
+    {
+      audio: 'bar.mp3',
+      back: 'bar',
+      created: 'somehow',
+      deck: 123,
+      front: 'bar',
+      id: 456,
+      image: 'bar.jpg',
+      last_seen: 'somewhere',
+      owner: 'foobar',
+      score: '1,2,3',
+    },
+  ];
+
   it('should create the RATE_CARD action', () => {
     const action = SessionActions.rateCard(123, 5);
     expect(action.payload).toEqual({ cardId: 123, rating: 5 });
@@ -28,7 +55,8 @@ describe('the session actions', () => {
   });
 
   it('should create the REVEAL_CARD action', () => {
-    const action = SessionActions.revealCard();
+    const action = SessionActions.revealCard(cards[0]);
+    expect(action.payload).toEqual({ card: cards[0] });
     expect(action.type).toEqual(REVEAL_CARD);
   });
 
@@ -39,33 +67,6 @@ describe('the session actions', () => {
   });
 
   it('should create the STUDY action', () => {
-    const cards = [
-      {
-        audio: 'foo.mp3',
-        back: 'foo',
-        created: 'somehow',
-        deck: 123,
-        front: 'foo',
-        id: 123,
-        image: 'foo.jpg',
-        last_seen: 'somewhere',
-        owner: 'foobar',
-        score: '1,2,3',
-      },
-      {
-        audio: 'bar.mp3',
-        back: 'bar',
-        created: 'somehow',
-        deck: 123,
-        front: 'bar',
-        id: 456,
-        image: 'bar.jpg',
-        last_seen: 'somewhere',
-        owner: 'foobar',
-        score: '1,2,3',
-      },
-    ];
-
     const action = SessionActions.study(cards);
     expect(action.payload).toEqual({ cards });
     expect(action.type).toEqual(STUDY);

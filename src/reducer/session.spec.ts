@@ -140,6 +140,7 @@ describe('the session reducer', () => {
 
   it('should change the status to SCORE when a card is revealed', () => {
     const newState = session(initialState, {
+      payload: { card: cards[0] },
       type: REVEAL_CARD,
     });
 

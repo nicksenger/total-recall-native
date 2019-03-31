@@ -5,11 +5,13 @@ import { TestScheduler } from 'rxjs/testing';
 import { SessionActions } from 'actions';
 import {
   rateCardEpic,
+  revealCardEpic,
   studyEpic,
 } from './session';
 
 import { STUDY_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
+import * as audioUtils from '_utils/audio';
 import * as navigationService from 'navigation/service';
 import { TRState } from 'reducer';
 
@@ -45,6 +47,7 @@ describe('the session epics', () => {
   let goBackMock: jest.SpyInstance;
   let navigateMock: jest.SpyInstance;
   let postMock: jest.SpyInstance;
+  let playAudioMock: jest.SpyInstance;
 
   beforeEach(() => {
     scheduler = new TestScheduler((actual, expected) => {
@@ -55,6 +58,8 @@ describe('the session epics', () => {
     goBackMock.mockImplementation(() => 'mocked');
     navigateMock = jest.spyOn(navigationService, 'navigate');
     navigateMock.mockImplementation(() => 'mocked');
+    playAudioMock = jest.spyOn(audioUtils, 'playAudio');
+    playAudioMock.mockImplementation(() => 'mocked');
     postMock = jest.spyOn(apiUtils, 'apiPost');
   });
 
@@ -62,6 +67,7 @@ describe('the session epics', () => {
     goBackMock.mockReset();
     navigateMock.mockReset();
     postMock.mockReset();
+    playAudioMock.mockReset();
   });
 
   describe('the rate card epic', () => {
@@ -136,6 +142,22 @@ describe('the session epics', () => {
 
       expect(navigateMock).toHaveBeenCalled();
       expect(navigateMock.mock.calls[0][0]).toEqual(STUDY_SCREEN);
+    });
+  });
+
+  describe('the reveal card epic', () => {
+    it('should play the card audio', () => {
+      scheduler.run(({ hot, expectObservable }) => {
+        const action$ = hot('-a', {
+          a: SessionActions.revealCard(cards[0]),
+        });
+
+        const output$ = revealCardEpic(action$);
+        expectObservable(output$);
+      });
+
+      expect(playAudioMock).toHaveBeenCalled();
+      expect(playAudioMock.mock.calls[0][0]).toEqual(cards[0].audio);
     });
   });
 });

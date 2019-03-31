@@ -15,7 +15,7 @@ export const SessionActions = {
     createAction(RATE_CARD_FAILED, { message }),
   rateCardSuccess: (cardId: number, rating: number) =>
     createAction(RATE_CARD_SUCCESS, { cardId, rating }),
-  revealCard: () => createAction(REVEAL_CARD),
+  revealCard: (card: Card) => createAction(REVEAL_CARD, { card }),
   reviewCard: (rating: number) => createAction(REVIEW_CARD, { rating }),
   study: (cards: Card[]) => createAction(STUDY, { cards }),
 };

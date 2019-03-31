@@ -5,6 +5,7 @@ import {
   GET_CARDS_SUCCESS,
   GET_DECKS_SUCCESS,
   GET_SETS_SUCCESS,
+  RATE_CARD_SUCCESS,
 } from 'actions';
 import entities, { initialState } from './entities';
 
@@ -177,5 +178,22 @@ describe('the entities reducer', () => {
       ...initialState,
       sets: { 456: sets[1] },
     });
+  });
+
+  it('should update the score of cards when rated successfully', () => {
+    const newState = entities(
+      {
+        ...initialState,
+        cards: {
+          123: cards[0],
+        },
+      },
+      {
+        payload: { cardId: 123, rating: 5 },
+        type: RATE_CARD_SUCCESS,
+      },
+    );
+
+    expect(newState.cards[123].score).toEqual('1,2,3,5');
   });
 });

@@ -1,4 +1,4 @@
-import { Container, Text  } from 'native-base';
+import { Body, Card, CardItem, Container, Text  } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
@@ -20,7 +20,18 @@ export default class InitialScreen extends React.Component<{}> {
     return (
       <Container>
         <PaddedContent>
-          <Text>No cards to find.</Text>
+          <Card>
+              <CardItem header={true}>
+                <Text>Not Implemented</Text>
+              </CardItem>
+              <CardItem>
+                <Body>
+                  <Text>
+                    Browsing other users' cards has not been implemented yet. Check back soon!
+                  </Text>
+                </Body>
+              </CardItem>
+          </Card>
         </PaddedContent>
       </Container>
     );

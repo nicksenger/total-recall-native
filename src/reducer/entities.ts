@@ -7,6 +7,7 @@ import {
   GET_CARDS_SUCCESS,
   GET_DECKS_SUCCESS,
   GET_SETS_SUCCESS,
+  RATE_CARD_SUCCESS,
   TRActions,
 } from 'actions';
 
@@ -111,6 +112,20 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
       return {
         ...state,
         sets: _.omit(state.sets, action.payload.setId),
+      };
+
+    case RATE_CARD_SUCCESS:
+      const { cardId, rating } = action.payload;
+
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [cardId]: state.cards[cardId] ? {
+            ...state.cards[cardId],
+            score: state.cards[cardId].score.split(',').concat([`${rating}`]).join(','),
+          } : undefined,
+        },
       };
 
     default:

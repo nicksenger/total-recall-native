@@ -8,8 +8,10 @@ import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { STUDY_SCREEN } from '_constants/screens';
 import { apiPost } from '_utils/api';
+import { playAudio } from '_utils/audio';
 import {
   RATE_CARD,
+  REVEAL_CARD,
   SessionActions,
   STUDY,
   TRActions,
@@ -40,4 +42,11 @@ export const studyEpic = (action$: Observable<TRActions>) =>
     filter(() => false),
   );
 
-export default combineEpics(rateCardEpic, studyEpic);
+export const revealCardEpic = (action$: Observable<TRActions>) =>
+    action$.pipe(
+      ofType<TRActions, ReturnType<typeof SessionActions['revealCard']>>(REVEAL_CARD),
+      tap(({ payload: { card } }) => playAudio(card.audio)),
+      filter(() => false),
+    );
+
+export default combineEpics(rateCardEpic, revealCardEpic, studyEpic);
