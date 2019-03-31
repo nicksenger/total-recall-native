@@ -55,12 +55,12 @@ export class StudyScreen extends React.Component<StudyScreenProps, StudyScreenSt
     let content = (
       <Card>
           <CardItem header={true}>
-            <Text>No cards selected</Text>
+            <Text>No cards to study</Text>
           </CardItem>
           <CardItem>
             <Body>
               <Text>
-                No remaining cards to study in this session.
+                Add some cards from the decks screen to start a new session.
               </Text>
             </Body>
           </CardItem>

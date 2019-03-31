@@ -11,3 +11,6 @@ export const REGISTER_SCREEN = 'Register';
 export const SET_DETAILS_SCREEN = 'SET_DETAILS_SCREEN';
 export const SETS_SCREEN = 'SETS_SCREEN';
 export const STUDY_SCREEN = 'Study';
+
+export const MAIN_APP = 'MAIN_APP';
+export const USER_MANUAL = 'USER_MANUAL';

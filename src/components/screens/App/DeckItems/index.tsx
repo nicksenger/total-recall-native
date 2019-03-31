@@ -1,4 +1,5 @@
-import { Container, Tab, Tabs, Text } from 'native-base';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Container, Tab, TabHeading, Tabs, Text } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -28,11 +29,29 @@ export class DeckDetailsScreen extends React.Component<DeckDetailsScreenProps> {
 
   public render() {
     const content = this.props.deck ? (
-      <Tabs>
-        <Tab heading="Cards">
+      <Tabs style={{ backgroundColor: '#2a5687' }}>
+        <Tab
+          heading={
+            <TabHeading>
+              <Text>
+                <MaterialCommunityIcons name="cards-outline" size={25} color="white" />
+                {'  '}Cards
+              </Text>
+            </TabHeading>
+          }
+        >
           <Cards deck={this.props.deck} />
         </Tab>
-        <Tab heading="Sets">
+        <Tab
+          heading={
+            <TabHeading>
+              <Text>
+                <FontAwesome name="clone" size={25} color="white" />
+                {'  '}Sets
+              </Text>
+            </TabHeading>
+          }
+        >
           <Sets deck={this.props.deck} />
         </Tab>
       </Tabs>

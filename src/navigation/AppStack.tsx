@@ -1,6 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
+import {
+  createBottomTabNavigator,
+  createDrawerNavigator,
+  createStackNavigator,
+  DrawerNavigatorConfig,
+} from 'react-navigation';
 
 import {
   ADD_CARD_SCREEN,
@@ -10,9 +15,12 @@ import {
   DECK_DETAILS_SCREEN,
   DECK_ITEMS_SCREEN,
   DECKS_SCREEN,
+  MAIN_APP,
   SET_DETAILS_SCREEN,
   STUDY_SCREEN,
+  USER_MANUAL,
 } from '_constants/screens';
+import DrawerContent from 'components/DrawerContent';
 import DeckItemsScreen from 'components/screens/App/DeckItems';
 import AddCardScreen from 'components/screens/App/DeckItems/AddCard';
 import AddSetScreen from 'components/screens/App/DeckItems/AddSet';
@@ -23,6 +31,7 @@ import AddDeckScreen from 'components/screens/App/Decks/AddDeck';
 import DeckDetailsScreen from 'components/screens/App/Decks/DeckDetails';
 import FindCardsScreen from 'components/screens/App/FindCards';
 import StudyScreen from 'components/screens/App/Study';
+import UserManual from 'components/screens/App/UserManual';
 
 const FindStack = createStackNavigator({
   FindCardsScreen,
@@ -48,7 +57,7 @@ const StudyStack = createStackNavigator({
   StudyScreen,
 });
 
-export default createBottomTabNavigator(
+const App = createBottomTabNavigator(
   {
     'My Decks': DecksStack,
     [STUDY_SCREEN]: StudyStack,
@@ -69,4 +78,17 @@ export default createBottomTabNavigator(
       },
     }),
   },
+);
+
+const drawerConfig = {
+  contentComponent: DrawerContent,
+  drawerPosition: 'right',
+} as unknown as DrawerNavigatorConfig;
+
+export default createDrawerNavigator(
+  {
+    [MAIN_APP]: { screen: App },
+    [USER_MANUAL]: createStackNavigator({ UserManual }),
+  },
+  drawerConfig,
 );

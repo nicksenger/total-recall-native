@@ -3,6 +3,7 @@ import {
   AuthenticationActions,
   LOGIN_FAILED,
   LOGIN_SUCCESS,
+  LOGOUT,
   REGISTER,
   REGISTRATION_FAILED,
   REGISTRATION_SUCCESS,
@@ -47,5 +48,10 @@ describe('the authentication actions', () => {
   it('should create the RETRIEVE_AUTH_INFO action', () => {
     const { type } = AuthenticationActions.retrieveAuthInfo();
     expect(type).toEqual(RETRIEVE_AUTH_INFO);
+  });
+
+  it('should create the LOGOUT action', () => {
+    const { type } = AuthenticationActions.logout();
+    expect(type).toEqual(LOGOUT);
   });
 });

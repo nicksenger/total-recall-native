@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import _ from 'lodash';
 import { Button, Fab, List, Spinner, Text } from 'native-base';
 import * as React from 'react';
@@ -57,7 +57,7 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
         {!loading && (
           <Fab
             containerStyle={{ }}
-            style={{ backgroundColor: '#1f6899' }}
+            style={{ backgroundColor: '#1F6899' }}
             onPress={numSelected ? this.toggleFab : this.handleAddCard}
             position="bottomRight"
           >
@@ -73,14 +73,14 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
               <Button
                 key={3}
                 onPress={this.handleCreateSet}
-                style={{ backgroundColor: '#DD5144' }}
+                style={{ backgroundColor: '#EFA128' }}
               >
-                <MaterialCommunityIcons name="cards-outline" size={25} color="white" />
+                <FontAwesome name="clone" size={25} color="white" />
               </Button>,
               <Button
                 key={2}
                 onPress={this.handleAddCard}
-                style={{ backgroundColor: '#3B5998' }}
+                style={{ backgroundColor: '#1F6899' }}
               >
                 <Ionicons name="md-add" size={25} color="white" />
               </Button>,

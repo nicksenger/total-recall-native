@@ -258,4 +258,53 @@ describe('the authentication epics', () => {
       });
     });
   });
+
+  describe('the logout epic', () => {
+    let clearMock: jest.SpyInstance;
+
+    beforeEach(() => {
+      clearMock = jest.spyOn(sync, 'clearCredentials');
+    });
+
+    afterEach(() => {
+      clearMock.mockReset();
+    });
+
+    describe('logging out is successful', () => {
+      it('should navigate to the login screen', () => {
+        scheduler.run(({ hot, cold, expectObservable }) => {
+          const action$ = hot('-a', {
+            a: AuthenticationActions.retrieveAuthInfo(),
+          });
+
+          clearMock.mockImplementation(() => cold('--a'));
+
+          const output$ = retrieveAuthInfoEpic(action$);
+
+          expectObservable(output$);
+        });
+
+        expect(navigateMock).toHaveBeenCalled();
+        expect(navigateMock.mock.calls[0][0]).toEqual(LOGIN_SCREEN);
+      });
+    });
+
+    describe('logging out fails', () => {
+      it('should do nothing', () => {
+        scheduler.run(({ hot, cold, expectObservable }) => {
+          const action$ = hot('-a', {
+            a: AuthenticationActions.retrieveAuthInfo(),
+          });
+
+          clearMock.mockImplementation(() => cold('--#'));
+
+          const output$ = retrieveAuthInfoEpic(action$);
+
+          expectObservable(output$);
+        });
+
+        expect(navigateMock).not.toHaveBeenCalled();
+      });
+    });
+  });
 });

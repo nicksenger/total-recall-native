@@ -5,11 +5,12 @@ import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { BASE_URI } from '_constants/api';
 import { DECKS_SCREEN, LOGIN_SCREEN, REGISTER_SCREEN } from '_constants/screens';
-import { retrieveCredentials, saveCredentials } from '_utils/sync';
+import { clearCredentials, retrieveCredentials, saveCredentials } from '_utils/sync';
 import {
   ATTEMPT_LOGIN,
   AuthenticationActions,
   LOGIN_SUCCESS,
+  LOGOUT,
   REGISTER,
   RETRIEVE_AUTH_INFO,
   TRActions,
@@ -79,9 +80,22 @@ export const retrieveAuthInfoEpic = (action$: Observable<TRActions>) =>
       ),
     );
 
+export const logoutEpic = (action$: Observable<TRActions>) =>
+    action$.pipe(
+      ofType<TRActions, ReturnType<typeof AuthenticationActions['logout']>>(
+        LOGOUT,
+      ),
+      mergeMap(() => clearCredentials().pipe(
+          tap(() => navigate(LOGIN_SCREEN)),
+        ),
+      ),
+      filter(() => false),
+    );
+
 export default combineEpics(
   attemptLoginEpic,
   loginSuccessEpic,
   registrationEpic,
   retrieveAuthInfoEpic,
+  logoutEpic,
 );
