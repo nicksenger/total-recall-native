@@ -57,11 +57,7 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
         {!loading && (
           <Fab
             containerStyle={{ }}
-            style={
-              numSelected ?
-                { backgroundColor: '#34A34F' } :
-                { backgroundColor: '#1f6899' }
-            }
+            style={{ backgroundColor: '#1f6899' }}
             onPress={numSelected ? this.toggleFab : this.handleAddCard}
             position="bottomRight"
           >

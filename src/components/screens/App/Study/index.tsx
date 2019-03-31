@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Body, Card, CardItem, Container, Fab, Spinner, Text  } from 'native-base';
+import { Body, Button, Card, CardItem, Container, Fab, Spinner, Text  } from 'native-base';
 import * as React from 'react';
 import { Image } from 'react-native';
 import { NavigationTabScreenOptions } from 'react-navigation';
@@ -12,6 +12,15 @@ import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Card as CardType } from 'reducer/entities';
 import ScoreButton from './ScoreButton';
+
+const RATING_COLORS = [
+  '#EF3928',
+  '#EF7C28',
+  '#EFA128',
+  '#E0C225',
+  '#AAD824',
+  '#70CA22',
+];
 
 export interface StudyScreenProps {
   card: CardType;
@@ -114,9 +123,9 @@ export class StudyScreen extends React.Component<StudyScreenProps, StudyScreenSt
           >
             <Ionicons name="md-arrow-up" size={25} />
             {this.state.fabActive && [0, 1, 2, 3, 4, 5].map((rating: number) => (
-              <React.Fragment key={rating}>
+              <Button key={rating} style={{ backgroundColor: RATING_COLORS[rating] }}>
                 <ScoreButton cardId={card.id} rating={rating} />
-              </React.Fragment>
+              </Button>
             ))}
           </Fab>
         );

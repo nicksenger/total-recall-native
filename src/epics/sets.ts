@@ -6,7 +6,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
-import { ADD_SET_SCREEN, SET_DETAILS_SCREEN, SETS_SCREEN } from '_constants/screens';
+import { ADD_SET_SCREEN, SET_DETAILS_SCREEN } from '_constants/screens';
 import { apiDelete, apiGet, apiPost } from '_utils/api';
 import {
   ADD_SET,
@@ -45,7 +45,7 @@ export const addSetEpic = (
     ofType<TRActions, ReturnType<typeof SetsActions['addSet']>>(ADD_SET),
     mergeMap(({ payload: { deckId, name, card_ids } }) =>
       apiPost(state$, `/decks/${deckId}/sets/`, { name, card_ids }).pipe(
-        tap(() => navigate(SETS_SCREEN)),
+        tap(() => goBack()),
         map(() => SetsActions.addSetSuccess(deckId)),
         catchError(() => of(SetsActions.addSetFailed('failed!'))),
       ),

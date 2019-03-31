@@ -50,9 +50,10 @@ const StudyStack = createStackNavigator({
 
 export default createBottomTabNavigator(
   {
-    'Find Cards': FindStack,
     'My Decks': DecksStack,
     [STUDY_SCREEN]: StudyStack,
+    // tslint:disable-next-line:object-literal-sort-keys
+    'Find Cards': FindStack,
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
