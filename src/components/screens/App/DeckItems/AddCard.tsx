@@ -20,7 +20,7 @@ export interface AddCardScreenState {
   front: string;
 }
 
-export class AddCardScreen extends React.Component<AddCardScreenProps> {
+export class AddCardScreen extends React.PureComponent<AddCardScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

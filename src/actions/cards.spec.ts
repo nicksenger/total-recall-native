@@ -89,8 +89,8 @@ describe('the cards actions', () => {
   });
 
   it('should create the GET_CARDS_SUCCESS action', () => {
-    const action = CardsActions.getCardsSuccess(cards);
-    expect(action.payload).toEqual({ cards });
+    const action = CardsActions.getCardsSuccess(cards, 123);
+    expect(action.payload).toEqual({ cards, deckId: 123 });
     expect(action.type).toEqual(GET_CARDS_SUCCESS);
   });
 

@@ -1,6 +1,7 @@
 import _ from 'lodash';
-import { List, Spinner } from 'native-base';
+import { Spinner } from 'native-base';
 import * as React from 'react';
+import { FlatList } from 'react-native';
 
 import { SetsActions } from 'actions';
 import { PaddedContent } from 'components/styled';
@@ -11,13 +12,13 @@ import { Deck, Set } from 'reducer/entities';
 import SetItem from './SetItem';
 
 export interface SetsScreenProps {
-  sets?: Set[];
+  sets: Set[];
   deck: Deck;
   getSets: typeof SetsActions.getSets;
   loading: boolean;
 }
 
-export class SetsScreen extends React.Component<SetsScreenProps> {
+export class SetsScreen extends React.PureComponent<SetsScreenProps> {
   public componentDidMount() {
     this.props.getSets(this.props.deck.id);
   }
@@ -28,27 +29,30 @@ export class SetsScreen extends React.Component<SetsScreenProps> {
     return loading ? <PaddedContent><Spinner /></PaddedContent> : (
       <PaddedContent>
         {sets && (
-          <List>
-            {sets.map(set => (
-              <SetItem
-                set={set}
-                key={set.id}
-              />
-            ))}
-          </List>
+          <FlatList
+            data={sets}
+            keyExtractor={this.keyExtractor}
+            renderItem={this.renderItem}
+          />
         )}
       </PaddedContent>
     );
   }
+
+  private keyExtractor = ({ id }: Set) => `${id}`;
+  private renderItem = ({ item: set }: { item: Set }) => (
+    <SetItem
+      set={set}
+    />
+  )
 }
 
 export default connect(
   ({ entities, ui }: TRState) => {
     const { selectedDeck } = ui.deckDetailsScreen;
-    const sets = selectedDeck ?
-      Object.keys(entities.sets)
-        .map((id: string) => entities.sets[parseInt(id, 10)])
-        .filter(set => set.deck === selectedDeck.id) : [];
+    const sets = selectedDeck && entities.deckSets[selectedDeck.id] ?
+      entities.deckSets[selectedDeck.id].map(id => entities.sets[id]) :
+      [];
 
     return {
       loading: ui.setsScreen.loading,

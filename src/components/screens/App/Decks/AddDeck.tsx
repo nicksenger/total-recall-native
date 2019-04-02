@@ -20,7 +20,7 @@ export interface AddDeckScreenState {
   language: LanguageCode;
 }
 
-export class AddDeckScreen extends React.Component<AddDeckScreenProps> {
+export class AddDeckScreen extends React.PureComponent<AddDeckScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

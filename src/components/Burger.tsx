@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { openDrawer } from 'navigation/service';
 import * as React from 'react';
 
-export default class Burger extends React.Component<{}> {
+export default class Burger extends React.PureComponent<{}> {
   public render() {
     return (
       <Ionicons

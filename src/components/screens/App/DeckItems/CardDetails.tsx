@@ -15,7 +15,7 @@ export interface CardDetailsScreenProps {
   card?: Card;
 }
 
-export class CardDetailsScreen extends React.Component<CardDetailsScreenProps> {
+export class CardDetailsScreen extends React.PureComponent<CardDetailsScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

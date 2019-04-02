@@ -106,7 +106,7 @@ describe('the cards epics', () => {
 
           const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
-            a: CardsActions.getCardsSuccess(cards),
+            a: CardsActions.getCardsSuccess(cards, 123),
           });
         });
       });

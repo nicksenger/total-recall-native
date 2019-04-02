@@ -13,7 +13,7 @@ export interface SetItemProps {
   viewSetDetails: typeof SetsActions['viewSetDetails'];
 }
 
-export class SetItem extends React.Component<SetItemProps> {
+export class SetItem extends React.PureComponent<SetItemProps> {
   public render() {
     const { set } = this.props;
 

@@ -97,7 +97,7 @@ describe('the sets epics', () => {
 
           const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
-            a: SetsActions.getSetsSuccess(sets),
+            a: SetsActions.getSetsSuccess(sets, 123),
           });
         });
       });

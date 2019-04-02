@@ -1,11 +1,14 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import _ from 'lodash';
-import { Button, Fab, List, Spinner, Text } from 'native-base';
+import memoizeOne from 'memoize-one';
+import { Button, Fab, Spinner, Text } from 'native-base';
 import * as React from 'react';
+import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 
 import { ADD_CARD_SCREEN } from '_constants/screens';
+import { SCREEN_WIDTH } from '_constants/styles';
 import { CardsActions, SessionActions, SetsActions } from 'actions';
-import { PaddedContent } from 'components/styled';
+import { PaddedContent, PaddedView } from 'components/styled';
 import { navigate } from 'navigation/service';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -14,7 +17,7 @@ import { Card, Deck } from 'reducer/entities';
 import CardItem from './CardItem';
 
 export interface CardsScreenProps {
-  cards?: Card[];
+  cards: Card[];
   deck: Deck;
   getCards: typeof CardsActions.getCards;
   gotoAddSet: typeof SetsActions.gotoAddSet;
@@ -27,8 +30,33 @@ export interface CardsScreenState {
   selectedCards: { [cardId: number]: Card };
 }
 
-export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenState> {
-  public state: CardsScreenState = { fabActive: false, selectedCards: {} };
+export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScreenState> {
+  private getDataProvider = memoizeOne((cards: Card[]) => {
+    const selectedCards = { ...this.state.selectedCards };
+
+    return new DataProvider(
+      (r1: Card, r2: Card) => {
+        const selectionDifferent = this.state.selectedCards[r1.id] !== selectedCards[r1.id];
+        selectedCards[r1.id] = this.state.selectedCards[r1.id];
+
+        return r1 !== r2 || selectionDifferent;
+      },
+    ).cloneWithRows(cards);
+  });
+
+  private layoutProvider = new LayoutProvider(() => 'NORMAL', (type, dim) => {
+    switch (type) {
+      default:
+        dim.width = SCREEN_WIDTH;
+        dim.height = 50;
+    }
+  });
+
+  constructor(props: CardsScreenProps) {
+    super(props);
+
+    this.state = { fabActive: false, selectedCards: {} };
+  }
 
   public componentDidMount() {
     this.props.getCards(this.props.deck.id);
@@ -40,20 +68,15 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
 
     return this.props.loading ? <PaddedContent><Spinner /></PaddedContent> : (
       <React.Fragment>
-        <PaddedContent>
-          {cards && (
-            <List>
-              {cards.map(card => (
-                <CardItem
-                  card={card}
-                  key={card.id}
-                  onSelect={this.handleCardSelect}
-                  selected={Boolean(this.state.selectedCards[card.id])}
-                />
-              ))}
-            </List>
+        <PaddedView style={{ flex: 1 }}>
+          {cards.length > 0 && (
+            <RecyclerListView
+              rowRenderer={this.renderCard}
+              dataProvider={this.getDataProvider(this.props.cards)}
+              layoutProvider={this.layoutProvider}
+            />
           )}
-        </PaddedContent>
+        </PaddedView>
         {!loading && (
           <Fab
             containerStyle={{ }}
@@ -91,6 +114,14 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
     );
   }
 
+  private renderCard = (type: React.ReactText, data: Card) => (
+    <CardItem
+      card={data}
+      onSelect={this.handleCardSelect}
+      selected={Boolean(this.state.selectedCards[data.id]) && !!type}
+    />
+  )
+
   private handleAddCard = () => {
     navigate(ADD_CARD_SCREEN);
     this.setState({
@@ -111,14 +142,13 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
   }
 
   private handleCardSelect = (card: Card) => {
-    const { selectedCards } = this.state;
     const { id } = card;
-    this.setState({
+    this.setState(({ selectedCards }) => ({
       fabActive: false,
       selectedCards: selectedCards[id] ?
         _.omit(selectedCards, id) :
         { ...selectedCards, [id]: card },
-    });
+    }));
   }
 
   private handleStudy = () => {
@@ -130,17 +160,16 @@ export class CardsScreen extends React.Component<CardsScreenProps, CardsScreenSt
   }
 
   private toggleFab = () => {
-    this.setState({ fabActive: !this.state.fabActive });
+    this.setState(state => ({ fabActive: !state.fabActive }));
   }
 }
 
 export default connect(
   ({ entities, ui }: TRState) => {
     const { selectedDeck } = ui.deckDetailsScreen;
-    const cards = selectedDeck ?
-      Object.keys(entities.cards)
-        .map((id: string) => entities.cards[parseInt(id, 10)])
-        .filter(card => card.deck === selectedDeck.id) : [];
+    const cards = selectedDeck && entities.deckCards[selectedDeck.id] ?
+      entities.deckCards[selectedDeck.id].map(id => entities.cards[id]) :
+      [];
 
     return {
       cards,

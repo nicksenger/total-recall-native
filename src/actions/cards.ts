@@ -26,8 +26,8 @@ export const CardsActions = {
   getCards: (deckId: number) => createAction(GET_CARDS, { deckId }),
   getCardsFailed: (message: string) =>
     createAction(GET_CARDS_FAILED, { message }),
-  getCardsSuccess: (cards: Card[]) =>
-    createAction(GET_CARDS_SUCCESS, { cards }),
+  getCardsSuccess: (cards: Card[], deckId: number) =>
+    createAction(GET_CARDS_SUCCESS, { cards, deckId }),
   viewCardDetails: (card: Card) => createAction(VIEW_CARD_DETAILS, { card }),
 };
 

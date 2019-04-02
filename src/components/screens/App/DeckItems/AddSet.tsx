@@ -20,7 +20,7 @@ export interface AddSetScreenState {
   name: string;
 }
 
-export class AddSetScreen extends React.Component<AddSetScreenProps, AddSetScreenState> {
+export class AddSetScreen extends React.PureComponent<AddSetScreenProps, AddSetScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

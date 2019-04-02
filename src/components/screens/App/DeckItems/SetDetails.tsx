@@ -15,7 +15,7 @@ export interface SetDetailsScreenProps {
   set?: Set;
 }
 
-export class SetDetailsScreen extends React.Component<SetDetailsScreenProps> {
+export class SetDetailsScreen extends React.PureComponent<SetDetailsScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

@@ -11,7 +11,7 @@ export interface CardItemProps {
   viewCardDetails: typeof CardsActions.viewCardDetails;
 }
 
-export class CardItem extends React.Component<CardItemProps> {
+export class CardItem extends React.PureComponent<CardItemProps> {
   public render() {
     const { card } = this.props;
 

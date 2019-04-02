@@ -50,7 +50,7 @@ describe('the cardsScreen reducer', () => {
   describe('the cards are retrieved successfully', () => {
     it('should reset the loading state', () => {
       const newState = cardsScreen({ ...initialState, loading: true }, {
-        payload: { cards },
+        payload: { cards, deckId: 123 },
         type: GET_CARDS_SUCCESS,
       });
 
@@ -59,7 +59,7 @@ describe('the cardsScreen reducer', () => {
 
     it('should store an id reference to the retrieved cards', () => {
       const newState = cardsScreen(initialState, {
-        payload: { cards },
+        payload: { cards, deckId: 123 },
         type: GET_CARDS_SUCCESS,
       });
 

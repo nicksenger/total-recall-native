@@ -11,7 +11,7 @@ export interface DeckItemProps {
   viewDeckItems: typeof DecksActions.viewDeckItems;
 }
 
-export class DeckItem extends React.Component<DeckItemProps> {
+export class DeckItem extends React.PureComponent<DeckItemProps> {
   public render() {
     const { deck } = this.props;
 

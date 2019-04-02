@@ -25,7 +25,7 @@ export const SetsActions = {
   getSets: (deckId: number) => createAction(GET_SETS, { deckId }),
   getSetsFailed: (message: string) =>
     createAction(GET_SETS_FAILED, { message }),
-  getSetsSuccess: (sets: Set[]) => createAction(GET_SETS_SUCCESS, { sets }),
+  getSetsSuccess: (sets: Set[], deckId: number) => createAction(GET_SETS_SUCCESS, { sets, deckId }),
   gotoAddSet: (cards: Card[]) => createAction(GOTO_ADD_SET, { cards }),
   viewSetDetails: (set: Set) => createAction(VIEW_SET_DETAILS, { set }),
 };

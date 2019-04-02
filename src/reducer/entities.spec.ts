@@ -71,17 +71,18 @@ describe('the entities reducer', () => {
     },
   ];
 
-  it('should store cards on successful retrieval', () => {
+  it('should store normalized cards on successful retrieval', () => {
     const newState = entities(initialState, {
-      payload: {
-        cards,
-      },
+      payload: { cards, deckId: 123 },
       type: GET_CARDS_SUCCESS,
     });
 
     expect(newState).toEqual({
       ...initialState,
       cards: { 123: cards[0], 456: cards[1]  },
+      deckCards: {
+        123: [123, 456],
+      },
     });
   });
 
@@ -102,14 +103,28 @@ describe('the entities reducer', () => {
     });
   });
 
-  it('should store sets on successful retrieval', () => {
-    const newState = entities(initialState, {
-      payload: { sets },
-      type: GET_SETS_SUCCESS,
-    });
+  it('should store normalized sets on successful retrieval', () => {
+    const newState = entities(
+      {
+        ...initialState,
+        cards: { 1: cards[0], 4: cards[1] },
+      },
+      {
+        payload: { sets, deckId: 123 },
+        type: GET_SETS_SUCCESS,
+      },
+    );
 
     expect(newState).toEqual({
       ...initialState,
+      cards: { 1: cards[0], 4: cards[1] },
+      deckSets: {
+        123: [123, 456],
+      },
+      setCards: {
+        123: [1],
+        456: [4],
+      },
       sets: {
         123: sets[0],
         456: sets[1],
@@ -138,13 +153,19 @@ describe('the entities reducer', () => {
     });
   });
 
-  it('should remove deleted cards', () => {
+  it('should remove deleted cards from all relevant entities', () => {
     const newState = entities(
       {
         ...initialState,
         cards: {
           123: cards[0],
           456: cards[1],
+        },
+        deckCards: {
+          1: [123, 456],
+        },
+        setCards: {
+          1: [123, 456],
         },
       },
       {
@@ -156,13 +177,16 @@ describe('the entities reducer', () => {
     expect(newState).toEqual({
       ...initialState,
       cards: { 456: cards[1] },
+      deckCards: { 1: [456] },
+      setCards: { 1: [456] },
     });
   });
 
-  it('should remove deleted sets', () => {
+  it('should remove deleted sets from all relevant entities', () => {
     const newState = entities(
       {
         ...initialState,
+        deckSets: { 1: [123, 456] },
         sets: {
           123: sets[0],
           456: sets[1],
@@ -176,6 +200,7 @@ describe('the entities reducer', () => {
 
     expect(newState).toEqual({
       ...initialState,
+      deckSets: { 1: [456] },
       sets: { 456: sets[1] },
     });
   });

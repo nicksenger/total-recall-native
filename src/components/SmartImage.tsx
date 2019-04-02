@@ -11,7 +11,7 @@ export interface SmartImageProps extends ImageProps {
   path?: string;
 }
 
-export class SmartImage extends React.Component<SmartImageProps> {
+export class SmartImage extends React.PureComponent<SmartImageProps> {
   public componentDidMount() {
     const { fetchImage, source } = this.props;
     fetchImage(source.uri);

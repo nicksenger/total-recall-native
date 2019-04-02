@@ -6,6 +6,10 @@ export const SubmitButton = styled(Button)`
   margin-top: 16px;
 `;
 
+export const PaddedView = styled.View`
+  padding: 8px;
+`;
+
 export const PaddedContent = styled(Content)`
   padding: 8px;
 `;

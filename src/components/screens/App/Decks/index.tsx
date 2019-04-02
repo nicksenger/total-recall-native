@@ -20,7 +20,7 @@ export interface DecksScreenProps {
   username?: string;
 }
 
-export class DecksScreen extends React.Component<DecksScreenProps> {
+export class DecksScreen extends React.PureComponent<DecksScreenProps> {
   public static navigationOptions = ({ navigation }: NavigationScreenProps<{}>) => {
     setDrawerNavigator(navigation);
     return {

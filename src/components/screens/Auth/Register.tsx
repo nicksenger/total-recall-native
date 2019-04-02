@@ -18,7 +18,7 @@ export interface RegisterScreenState {
   passwordConfirm: string;
 }
 
-export class RegisterScreen extends React.Component<RegisterScreenProps, RegisterScreenState> {
+export class RegisterScreen extends React.PureComponent<RegisterScreenProps, RegisterScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerStyle: {
       backgroundColor: '#1f6899',

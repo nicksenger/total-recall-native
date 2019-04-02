@@ -5,7 +5,7 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 import Burger from 'components/Burger';
 import { PaddedContent } from 'components/styled';
 
-export default class InitialScreen extends React.Component<{}> {
+export default class InitialScreen extends React.PureComponent<{}> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

@@ -14,7 +14,7 @@ export interface InitialScreenState {
   loaded: boolean;
 }
 
-export class InitialScreen extends React.Component<InitialScreenProps, InitialScreenState> {
+export class InitialScreen extends React.PureComponent<InitialScreenProps, InitialScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
     title: 'Initializing',
   };

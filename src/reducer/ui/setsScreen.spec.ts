@@ -40,7 +40,7 @@ describe('the setsScreen reducer', () => {
   describe('the sets are retrieved successfully', () => {
     it('should reset the loading state', () => {
       const newState = setsScreen(initialState, {
-        payload: { sets },
+        payload: { sets, deckId: 123 },
         type: GET_SETS_SUCCESS,
       });
 
@@ -49,7 +49,7 @@ describe('the setsScreen reducer', () => {
 
     it('should store an id reference to the retrieved sets', () => {
       const newState = setsScreen(initialState, {
-        payload: { sets },
+        payload: { sets, deckId: 123 },
         type: GET_SETS_SUCCESS,
       });
 

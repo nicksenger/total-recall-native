@@ -15,7 +15,7 @@ export interface DeckDetailsScreenProps {
   username?: string;
 }
 
-export class DeckDetailsScreen extends React.Component<DeckDetailsScreenProps> {
+export class DeckDetailsScreen extends React.PureComponent<DeckDetailsScreenProps> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

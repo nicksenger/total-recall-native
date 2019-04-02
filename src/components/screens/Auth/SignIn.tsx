@@ -17,7 +17,7 @@ export interface SignInState {
   username: string;
 }
 
-export class SignInScreen extends React.Component<SignInProps, SignInState> {
+export class SignInScreen extends React.PureComponent<SignInProps, SignInState> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerStyle: {
       backgroundColor: '#1f6899',

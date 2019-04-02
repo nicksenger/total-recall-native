@@ -30,7 +30,7 @@ export const fetchSetsEpic = (
       ReturnType<typeof SetsActions['addSetSuccess']>>(GET_SETS, ADD_SET_SUCCESS),
     mergeMap(({ payload: { deckId } }) =>
       apiGet(state$, `/decks/${deckId}/sets/`).pipe(
-        map(({ response }) => SetsActions.getSetsSuccess(response)),
+        map(({ response }) => SetsActions.getSetsSuccess(response, deckId)),
         catchError(() => of(SetsActions.getSetsFailed('failed!'))),
       ),
     ),

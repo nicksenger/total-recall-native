@@ -34,7 +34,7 @@ export interface StudyScreenState {
   fabActive: boolean;
 }
 
-export class StudyScreen extends React.Component<StudyScreenProps, StudyScreenState> {
+export class StudyScreen extends React.PureComponent<StudyScreenProps, StudyScreenState> {
   public static navigationOptions: NavigationTabScreenOptions = {
     headerRight: <Burger />,
     headerStyle: {

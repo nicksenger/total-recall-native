@@ -13,7 +13,7 @@ export interface ScoreButtonProps {
   reviewing: boolean;
 }
 
-export class ScoreButton extends React.Component<ScoreButtonProps> {
+export class ScoreButton extends React.PureComponent<ScoreButtonProps> {
   public render() {
     return (
       <TouchableOpacity

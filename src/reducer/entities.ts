@@ -42,13 +42,19 @@ export interface Card {
 
 export interface EntitiesState {
   cards: { [id: number]: Card };
+  deckCards: { [deckId: number]: number[] };
+  deckSets: { [deckId: number]: number[] };
   decks: { [id: number]: Deck };
+  setCards: { [setId: number]: number[] };
   sets: { [id: number]: Set };
 }
 
 export const initialState: EntitiesState = {
   cards: {},
+  deckCards: {},
+  deckSets: {},
   decks: {},
+  setCards: {},
   sets: {},
 };
 
@@ -65,6 +71,10 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
         cards: {
           ...state.cards,
           ...cardMap,
+        },
+        deckCards: {
+          ...state.deckCards,
+          [action.payload.deckId]: action.payload.cards.map(({ id }) => id),
         },
       };
 
@@ -88,8 +98,26 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
         {},
       );
 
+      const setCardsMap = action.payload.sets.reduce(
+        (acc, cur) => ({
+          ...acc,
+          [cur.id]: cur.card_ids.split(',')
+            .map(id => parseInt(id, 10))
+            .filter(id => Boolean(state.cards[id])),
+        }),
+        {},
+      );
+
       return {
         ...state,
+        deckSets: {
+          ...state.deckSets,
+          [action.payload.deckId]: action.payload.sets.map(({ id }) => id),
+        },
+        setCards: {
+          ...state.setCards,
+          ...setCardsMap,
+        },
         sets: {
           ...state.sets,
           ...setMap,
@@ -106,11 +134,32 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
       return {
         ...state,
         cards: _.omit(state.cards, action.payload.cardId),
+        deckCards: Object.keys(state.deckCards).map(key => parseInt(key, 10)).reduce(
+          (acc, cur) => ({
+            ...acc,
+            [cur]: state.deckCards[cur].filter(id => id !== action.payload.cardId),
+          }),
+          {},
+        ),
+        setCards: Object.keys(state.setCards).map(key => parseInt(key, 10)).reduce(
+          (acc, cur) => ({
+            ...acc,
+            [cur]: state.setCards[cur].filter(id => id !== action.payload.cardId),
+          }),
+          {},
+        ),
       };
 
     case DELETE_SET_SUCCESS:
       return {
         ...state,
+        deckSets: Object.keys(state.deckSets).map(key => parseInt(key, 10)).reduce(
+          (acc, cur) => ({
+            ...acc,
+            [cur]: state.deckSets[cur].filter(id => id !== action.payload.setId),
+          }),
+          {},
+        ),
         sets: _.omit(state.sets, action.payload.setId),
       };
 

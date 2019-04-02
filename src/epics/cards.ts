@@ -29,7 +29,7 @@ export const fetchCardsEpic = (
       ReturnType<typeof CardsActions['addCardSuccess']>>(GET_CARDS, ADD_CARD_SUCCESS),
     mergeMap(({ payload: { deckId } }) =>
       apiGet(state$, `/decks/${deckId}/cards/`).pipe(
-        map(({ response }) => CardsActions.getCardsSuccess(response)),
+        map(({ response }) => CardsActions.getCardsSuccess(response, deckId)),
         catchError(() => of(CardsActions.getCardsFailed('failed!'))),
       ),
     ),
