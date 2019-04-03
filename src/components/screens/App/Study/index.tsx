@@ -4,6 +4,7 @@ import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { PROMPT, SCORE } from '_constants/session';
+import { RATING_COLORS } from '_constants/styles';
 import { CacheActions, SessionActions } from 'actions';
 import Burger from 'components/Burger';
 import SmartImage from 'components/SmartImage';
@@ -12,15 +13,6 @@ import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Card as CardType } from 'reducer/entities';
 import ScoreButton from './ScoreButton';
-
-const RATING_COLORS = [
-  '#EF3928',
-  '#EF7C28',
-  '#EFA128',
-  '#E0C225',
-  '#AAD824',
-  '#70CA22',
-];
 
 export interface StudyScreenProps {
   card: CardType;

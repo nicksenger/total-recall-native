@@ -3,6 +3,7 @@ import { Image, ImageProps } from 'react-native';
 import { connect } from 'react-redux';
 
 import { CacheActions } from 'actions';
+import { Spinner, View } from 'native-base';
 import { TRState } from 'reducer';
 
 export interface SmartImageProps extends ImageProps {
@@ -20,17 +21,31 @@ export class SmartImage extends React.PureComponent<SmartImageProps> {
   public render() {
     const { path } = this.props;
 
-    return (
-      <Image
-        {
-          ...{
-            ...this.props,
-            source: path ? {
-              uri: path,
-            } : require('assets/spinner.gif'),
+    if (path) {
+      return (
+        <Image
+          {
+            ...{
+              ...this.props,
+              source: {
+                uri: path,
+              },
+            }
           }
-        }
-      />
+        />
+      );
+    }
+
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+        }}
+      >
+        <Spinner />
+      </View>
     );
   }
 }

@@ -17,8 +17,9 @@ import { Card, Deck } from 'reducer/entities';
 import CardItem from './CardItem';
 
 export interface CardsScreenProps {
-  cards: Card[];
+  allCards: { [id: number]: Card };
   deck: Deck;
+  deckCards: number[];
   getCards: typeof CardsActions.getCards;
   gotoAddSet: typeof SetsActions.gotoAddSet;
   loading: boolean;
@@ -52,6 +53,11 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
     }
   });
 
+  private getDeckCards = memoizeOne(
+    (allCards: { [id: number]: Card }, deckCards: number[]) =>
+      deckCards.map(id => allCards[id]).filter(card => Boolean(card)),
+  );
+
   constructor(props: CardsScreenProps) {
     super(props);
 
@@ -63,7 +69,9 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
   }
 
   public render() {
-    const { loading, cards } = this.props;
+    const { allCards, deckCards, loading } = this.props;
+    const cards = this.getDeckCards(allCards, deckCards);
+
     const numSelected = Object.keys(this.state.selectedCards).length;
 
     return this.props.loading ? <PaddedContent><Spinner /></PaddedContent> : (
@@ -72,7 +80,7 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
           {cards.length > 0 && (
             <RecyclerListView
               rowRenderer={this.renderCard}
-              dataProvider={this.getDataProvider(this.props.cards)}
+              dataProvider={this.getDataProvider(cards)}
               layoutProvider={this.layoutProvider}
             />
           )}
@@ -130,13 +138,11 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
   }
 
   private handleCreateSet = () => {
-    if (this.props.cards) {
-      this.props.gotoAddSet(
-        Object.keys(this.state.selectedCards).map((id: string) =>
-          this.state.selectedCards[parseInt(id, 10)],
-        ),
-      );
-    }
+    this.props.gotoAddSet(
+      Object.keys(this.state.selectedCards).map((id: string) =>
+        this.state.selectedCards[parseInt(id, 10)],
+      ),
+    );
 
     this.setState({ fabActive: false });
   }
@@ -167,12 +173,11 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
 export default connect(
   ({ entities, ui }: TRState) => {
     const { selectedDeck } = ui.deckDetailsScreen;
-    const cards = selectedDeck && entities.deckCards[selectedDeck.id] ?
-      entities.deckCards[selectedDeck.id].map(id => entities.cards[id]) :
-      [];
+    const deckCards = selectedDeck ? entities.deckCards[selectedDeck.id] : [];
 
     return {
-      cards,
+      allCards: entities.cards,
+      deckCards: deckCards ? deckCards : [],
       loading: ui.cardsScreen.loading,
     };
   },
