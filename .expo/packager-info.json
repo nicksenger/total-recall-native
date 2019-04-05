@@ -3,8 +3,8 @@
   "expoServerPort": null,
   "packagerPort": null,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerNgrokUrl": "https://sw-pzs.nicksenger.total-recall-native.exp.direct",
+  "packagerNgrokUrl": "https://packager.sw-pzs.nicksenger.total-recall-native.exp.direct",
+  "ngrokPid": 31018,
   "webpackServerPort": null
 }

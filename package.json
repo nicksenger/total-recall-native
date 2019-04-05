@@ -4,6 +4,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "build:android": "expo build:android",
+    "build:ios": "expo build:ios",
     "publish": "expo publish",
     "test": "npm run tslint && npm run tsc-test && npm run jest",
     "tslint": "tslint --project .",
