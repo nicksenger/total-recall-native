@@ -1,7 +1,19 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import _ from 'lodash';
 import memoizeOne from 'memoize-one';
-import { Button, Fab, Spinner, Text } from 'native-base';
+import {
+  Body,
+  Button,
+  CheckBox,
+  Fab,
+  Input,
+  Left,
+  ListItem,
+  Picker,
+  Right,
+  Spinner,
+  Text,
+} from 'native-base';
 import * as React from 'react';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 
@@ -12,6 +24,7 @@ import { PaddedContent, PaddedView } from 'components/styled';
 import { navigate } from 'navigation/service';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
+import { needsReview } from 'reducer/_utils/superMemo';
 import { Card, Deck } from 'reducer/entities';
 
 import CardItem from './CardItem';
@@ -29,9 +42,17 @@ export interface CardsScreenProps {
 export interface CardsScreenState {
   fabActive: boolean;
   selectedCards: { [cardId: number]: Card };
+  performanceFilter?: boolean | number;
+  textFilter?: string;
+  textFilterString?: string;
 }
 
 export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScreenState> {
+  private allSelected = memoizeOne(
+    (filteredCards: Card[], selectedCards: { [cardId: number]: Card }) =>
+      filteredCards.filter(card => !selectedCards[card.id]).length === 0,
+  );
+
   private getDataProvider = memoizeOne((cards: Card[]) => {
     const selectedCards = { ...this.state.selectedCards };
 
@@ -58,6 +79,39 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
       deckCards.map(id => allCards[id]).filter(card => Boolean(card)),
   );
 
+  private getFilteredCards = memoizeOne(
+    (cards: Card[], performanceFilter?: boolean | number, textFilter?: string): Card[] =>
+      cards
+        .filter((card) => {
+          if (performanceFilter !== undefined) {
+            if (typeof performanceFilter === 'number') {
+              const lastScore = card.score.split(',').pop();
+              if (lastScore) {
+                return parseInt(lastScore, 10) === performanceFilter;
+              }
+              return false;
+            }
+            if (typeof performanceFilter === 'boolean') {
+              return needsReview(card) === performanceFilter;
+            }
+          }
+          return true;
+        })
+        .filter((card) => {
+          if (textFilter) {
+            return card.front.toLowerCase().indexOf(textFilter.toLowerCase()) > -1;
+          }
+          return true;
+        }),
+  );
+
+  private handleTextFilterChange = _.debounce(
+    (textFilter: string) => {
+      this.setState({ textFilter });
+    },
+    300,
+  );
+
   constructor(props: CardsScreenProps) {
     super(props);
 
@@ -70,20 +124,66 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
 
   public render() {
     const { allCards, deckCards, loading } = this.props;
+    const { performanceFilter, selectedCards, textFilter } = this.state;
+
     const cards = this.getDeckCards(allCards, deckCards);
+    const filteredCards = this.getFilteredCards(
+      cards,
+      performanceFilter,
+      textFilter,
+    );
 
     const numSelected = Object.keys(this.state.selectedCards).length;
 
     return this.props.loading ? <PaddedContent><Spinner /></PaddedContent> : (
       <React.Fragment>
         <PaddedView style={{ flex: 1 }}>
+          <ListItem>
+            <Left>
+              <Picker
+                mode="dropdown"
+                onValueChange={this.handlePerformanceFilterChange}
+                selectedValue={this.state.performanceFilter}
+                style={{ height: 20 }}
+              >
+                <Picker.Item label="No filter" value={undefined} />
+                <Picker.Item label="Review needed" value={true} />
+                <Picker.Item label="No review needed" value={false} />
+                <Picker.Item label="Last score 0" value={0} />
+                <Picker.Item label="Last score 1" value={1} />
+                <Picker.Item label="Last score 2" value={2} />
+                <Picker.Item label="Last score 3" value={3} />
+                <Picker.Item label="Last score 4" value={4} />
+                <Picker.Item label="Last score 5" value={5} />
+              </Picker>
+            </Left>
+            <Body>
+              <Input
+                placeholder="Search"
+                onChangeText={this.handleTextFilterStringChange}
+                value={this.state.textFilterString}
+              />
+            </Body>
+            <Right>
+              <CheckBox
+                checked={this.allSelected(filteredCards, selectedCards)}
+                onPress={this.handleSelectAll}
+              />
+            </Right>
+          </ListItem>
           {cards.length > 0 && (
             <RecyclerListView
               rowRenderer={this.renderCard}
-              dataProvider={this.getDataProvider(cards)}
+              dataProvider={
+                this.getDataProvider(filteredCards)
+              }
               layoutProvider={this.layoutProvider}
             />
           )}
+          <ListItem>
+            <Text>Showing {filteredCards.length} of {cards.length} cards
+            </Text>
+          </ListItem>
         </PaddedView>
         {!loading && (
           <Fab
@@ -157,12 +257,52 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
     }));
   }
 
+  private handlePerformanceFilterChange = (performanceFilter: boolean | number) => {
+    this.setState({ performanceFilter });
+  }
+
+  private handleSelectAll = () => {
+    const { allCards, deckCards } = this.props;
+    const { performanceFilter, selectedCards, textFilter } = this.state;
+
+    const cards = this.getDeckCards(allCards, deckCards);
+    const filteredCards = this.getFilteredCards(
+      cards,
+      performanceFilter,
+      textFilter,
+    );
+
+    if (this.allSelected(filteredCards, selectedCards)) {
+      this.setState({
+        selectedCards: _.omit(selectedCards, filteredCards.map(({ id }) => id)),
+      });
+    } else {
+      this.setState({
+        selectedCards: {
+          ...selectedCards,
+          ...filteredCards.reduce(
+            (acc, cur) => ({
+              ...acc,
+              [cur.id]: cur,
+            }),
+            {},
+          ),
+        },
+      });
+    }
+  }
+
   private handleStudy = () => {
     this.props.study(
       Object.keys(this.state.selectedCards).map((id: string) =>
           this.state.selectedCards[parseInt(id, 10)],
       ),
     );
+  }
+
+  private handleTextFilterStringChange = (textFilterString: string) => {
+    this.handleTextFilterChange(textFilterString);
+    this.setState({ textFilterString });
   }
 
   private toggleFab = () => {
