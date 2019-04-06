@@ -5,7 +5,18 @@ export const getMediaDir = () => FileSystem.documentDirectory;
 
 export const playAudio = (uri: string) => {
   const soundObject = new Audio.Sound();
-  return from(soundObject.loadAsync({ uri }).then(() => soundObject.playAsync()));
+  return from(soundObject.loadAsync({ uri }).then(() => {
+    return soundObject.playAsync().then((playbackStatus) => {
+      soundObject.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded) {
+          if (!status.shouldPlay || !status.isPlaying) {
+            soundObject.unloadAsync();
+          }
+        }
+      });
+      return Promise.resolve(playbackStatus);
+    });
+  }));
 };
 
 export const downloadAsync = (uri: string, path: string) =>
