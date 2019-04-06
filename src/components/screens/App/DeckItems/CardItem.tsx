@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import { CardsActions } from 'actions';
 import RatingIcon from 'components/RatingIcon';
+import { needsReview } from 'reducer/_utils/superMemo';
 import { Card } from 'reducer/entities';
 
 export interface CardItemProps {
@@ -22,6 +23,10 @@ export class CardItem extends React.PureComponent<CardItemProps> {
     },
   );
 
+  private needsReview = memoizeOne(
+    (card: Card) => needsReview(card),
+  );
+
   public render() {
     const { card } = this.props;
 
@@ -34,7 +39,11 @@ export class CardItem extends React.PureComponent<CardItemProps> {
           <Text onPress={this.handleDetails}>{card.front}</Text>
         </Body>
         <Right>
-          <CheckBox checked={this.props.selected} onPress={this.handleSelect} />
+          <CheckBox
+            checked={this.props.selected}
+            onPress={this.handleSelect}
+            color={this.needsReview(card) ? 'red' : undefined}
+          />
         </Right>
       </ListItem>
     );
