@@ -32,7 +32,7 @@ export const attemptLoginEpic = (action$: Observable<TRActions>) =>
           map(({ response }) =>
             AuthenticationActions.loginSuccess(username, response.token),
           ),
-          catchError(() => of(AuthenticationActions.loginFailed())),
+          catchError((e: Error) => of(AuthenticationActions.loginFailed(e.message))),
         ),
     ),
   );
@@ -60,7 +60,7 @@ export const registrationEpic = (action$: Observable<TRActions>) =>
             map(() =>
               AuthenticationActions.registrationSuccess(),
             ),
-            catchError(() => of(AuthenticationActions.registrationFailed('failed!'))),
+            catchError((e: Error) => of(AuthenticationActions.registrationFailed(e.message))),
           ),
       ),
     );

@@ -92,12 +92,12 @@ describe('the authentication epics', () => {
             a: AuthenticationActions.attemptLogin('foo', 'bar'),
           });
 
-          postMock.mockImplementation(() => cold('--#'));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = attemptLoginEpic(action$);
 
           expectObservable(output$).toBe('---a', {
-            a: AuthenticationActions.loginFailed(),
+            a: AuthenticationActions.loginFailed('failed!'),
           });
         });
       });
@@ -200,7 +200,7 @@ describe('the authentication epics', () => {
             a: AuthenticationActions.register('foo', 'bar'),
           });
 
-          postMock.mockImplementation(() => cold('--#'));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = registrationEpic(action$);
 

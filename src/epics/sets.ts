@@ -31,7 +31,7 @@ export const fetchSetsEpic = (
     mergeMap(({ payload: { deckId } }) =>
       apiGet(state$, `/decks/${deckId}/sets/`).pipe(
         map(({ response }) => SetsActions.getSetsSuccess(response, deckId)),
-        catchError(() => of(SetsActions.getSetsFailed('failed!'))),
+        catchError((e: Error) => of(SetsActions.getSetsFailed(e.message))),
       ),
     ),
   );
@@ -46,7 +46,7 @@ export const addSetEpic = (
       apiPost(state$, `/decks/${deckId}/sets/`, { name, card_ids }).pipe(
         tap(() => goBack()),
         map(() => SetsActions.addSetSuccess(deckId)),
-        catchError(() => of(SetsActions.addSetFailed('failed!'))),
+        catchError((e: Error) => of(SetsActions.addSetFailed(e.message))),
       ),
     ),
   );
@@ -63,7 +63,7 @@ export const deleteSetEpic = (
       apiDelete(state$, `/sets/${setId}/`).pipe(
         tap(() => goBack()),
         map(() => SetsActions.deleteSetSuccess(setId)),
-        catchError(() => of(SetsActions.deleteSetFailed('failed!'))),
+        catchError((e: Error) => of(SetsActions.deleteSetFailed(e.message))),
       ),
     ),
   );

@@ -1,3 +1,4 @@
+import { Root } from 'native-base';
 import * as React from 'react';
 import { NavigationProp } from 'react-navigation';
 import { Provider } from 'react-redux';
@@ -16,9 +17,11 @@ const store = createStore(reducer, applyMiddleware(epicMiddleware, createLogger(
 epicMiddleware.run(rootEpic);
 
 export default () => (
-  <Provider store={store}>
-    <RootNavigator
-      ref={(ref: NavigationProp<{}> | null) => ref ? setNavigator(ref) : undefined}
-    />
-  </Provider>
+  <Root>
+    <Provider store={store}>
+      <RootNavigator
+        ref={(ref: NavigationProp<{}> | null) => ref ? setNavigator(ref) : undefined}
+      />
+    </Provider>
+  </Root>
 );

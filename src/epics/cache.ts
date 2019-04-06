@@ -24,7 +24,7 @@ export const addToCacheEpic = (
   withLatestFrom(state$),
   mergeMap(([, { cache }]) => saveCache(cache.cache).pipe(
     filter(() => false),
-    catchError(() => of(CacheActions.addToCacheFailed('failed!'))),
+    catchError((e: Error) => of(CacheActions.addToCacheFailed(e.message))),
   )),
 );
 
@@ -35,7 +35,7 @@ export const fetchImageEpic = (action$: Observable<TRActions>) => action$.pipe(
     const path = `${getMediaDir()}${filename}`;
     return downloadAsync(uri, path).pipe(
       map(() => CacheActions.addToCache(uri, path)),
-      catchError(() => of(CacheActions.fetchImageFailed('failed!'))),
+      catchError((e: Error) => of(CacheActions.fetchImageFailed(e.message))),
     );
   }),
 );
@@ -62,7 +62,7 @@ export const playAudioEpic = (
     if (cache.cache[uri]) {
       return playAudio(cache.cache[uri]).pipe(
         filter(() => false),
-        catchError(() => of(CacheActions.playAudioFailed('failed!'))),
+        catchError((e: Error) => of(CacheActions.playAudioFailed(e.message))),
       );
     }
 
@@ -72,9 +72,9 @@ export const playAudioEpic = (
     return downloadAsync(uri, path).pipe(
       mergeMap(() => playAudio(path).pipe(
         map(() => CacheActions.addToCache(uri, path)),
-        catchError(() => of(CacheActions.playAudioFailed('failed!'))),
+        catchError((e: Error) => of(CacheActions.playAudioFailed(e.message))),
       )),
-      catchError(() => of(CacheActions.playAudioFailed('failed!'))),
+      catchError((e: Error) => of(CacheActions.playAudioFailed(e.message))),
     );
   }),
 );

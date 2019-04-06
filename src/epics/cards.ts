@@ -30,7 +30,7 @@ export const fetchCardsEpic = (
     mergeMap(({ payload: { deckId } }) =>
       apiGet(state$, `/decks/${deckId}/cards/`).pipe(
         map(({ response }) => CardsActions.getCardsSuccess(response, deckId)),
-        catchError(() => of(CardsActions.getCardsFailed('failed!'))),
+        catchError((e: Error) => of(CardsActions.getCardsFailed(e.message))),
       ),
     ),
   );
@@ -45,7 +45,7 @@ export const addCardEpic = (
       apiPost(state$, `/decks/${deckId}/cards/`, { front, back }).pipe(
         tap(() => goBack()),
         map(() => CardsActions.addCardSuccess(deckId)),
-        catchError(() => of(CardsActions.addCardFailed('failed!'))),
+        catchError((e: Error) => of(CardsActions.addCardFailed(e.message))),
       ),
     ),
   );
@@ -62,7 +62,7 @@ export const deleteCardEpic = (
       apiDelete(state$, `/cards/${cardId}/`).pipe(
         tap(() => goBack()),
         map(() => CardsActions.deleteCardSuccess(cardId)),
-        catchError(() => of(CardsActions.deleteCardFailed('failed!'))),
+        catchError((e: Error) => of(CardsActions.deleteCardFailed(e.message))),
       ),
     ),
   );

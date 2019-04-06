@@ -12,7 +12,7 @@ export const RETRIEVE_AUTH_INFO = 'RETRIEVE_AUTH_INFO';
 export const AuthenticationActions = {
   attemptLogin: (username: string, password: string) =>
     createAction(ATTEMPT_LOGIN, { username, password }),
-  loginFailed: () => createAction(LOGIN_FAILED),
+  loginFailed: (message: string) => createAction(LOGIN_FAILED, { message }),
   loginSuccess: (username: string, token: string) =>
     createAction(LOGIN_SUCCESS, { token, username }),
   logout: () => createAction(LOGOUT),

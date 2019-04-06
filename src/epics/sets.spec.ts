@@ -111,7 +111,7 @@ describe('the sets epics', () => {
           });
           const state$ = null;
 
-          getMock.mockImplementation(() => cold('--#'));
+          getMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
@@ -202,7 +202,7 @@ describe('the sets epics', () => {
           });
           const state$ = null;
 
-          postMock.mockImplementation(() => cold('--#'));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
@@ -289,7 +289,7 @@ describe('the sets epics', () => {
           });
           const state$ = null;
 
-          deleteMock.mockImplementation(() => cold('--#'));
+          deleteMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {

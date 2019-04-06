@@ -111,7 +111,7 @@ describe('the decks epics', () => {
           });
           const state$ = null;
 
-          getMock.mockImplementation(() => cold('--#'));
+          getMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = fetchDecksEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
@@ -199,7 +199,7 @@ describe('the decks epics', () => {
           });
           const state$ = null;
 
-          postMock.mockImplementation(() => cold('--#'));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = addDeckEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {
@@ -286,7 +286,7 @@ describe('the decks epics', () => {
           });
           const state$ = null;
 
-          deleteMock.mockImplementation(() => cold('--#'));
+          deleteMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = deleteDeckEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {

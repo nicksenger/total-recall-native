@@ -113,7 +113,7 @@ describe('the session epics', () => {
           });
           const state$ = null;
 
-          postMock.mockImplementation(() => cold('--#'));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
           expectObservable(output$).toBe('---a', {

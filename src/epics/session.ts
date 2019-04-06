@@ -29,7 +29,7 @@ export const rateCardEpic = (
     mergeMap(({ payload: { cardId, rating } }) =>
       apiPost(state$, `/cards/${cardId}/score/`, { rating }).pipe(
         map(() => SessionActions.rateCardSuccess(cardId, rating)),
-        catchError(() => of(SessionActions.rateCardFailed('failed!'))),
+        catchError((e: Error) => of(SessionActions.rateCardFailed(e.message))),
       ),
     ),
   );

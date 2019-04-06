@@ -6,6 +6,7 @@ import cards from './cards';
 import decks from './decks';
 import session from './session';
 import sets from './sets';
+import toast from './toast';
 
 export default combineEpics(
   authentication,
@@ -14,4 +15,5 @@ export default combineEpics(
   decks,
   session,
   sets,
+  toast,
 );

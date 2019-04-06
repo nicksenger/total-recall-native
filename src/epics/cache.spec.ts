@@ -82,7 +82,7 @@ describe('the cache epics', () => {
               cache: { cache: { foo: 'bar', waldo: 'fred' } },
             },
           });
-          saveCacheMock.mockImplementation(() => cold('---#'));
+          saveCacheMock.mockImplementation(() => cold('---#', {}, { message: 'failed!' }));
 
           const output$ = addToCacheEpic(action$, state$);
           expectObservable(output$).toBe('-----a', {
@@ -118,7 +118,7 @@ describe('the cache epics', () => {
             a: CacheActions.fetchImage('foo/bar/baz.jpg'),
           });
 
-          downloadMock.mockImplementation(() => cold('--#'));
+          downloadMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
           const output$ = fetchImageEpic(action$);
           expectObservable(output$).toBe('---a', {
@@ -202,7 +202,7 @@ describe('the cache epics', () => {
                 cache: { cache: { 'baz.mp3': 'foo.mp3' } },
               },
             });
-            audioMock.mockImplementation(() => cold('---#'));
+            audioMock.mockImplementation(() => cold('---#', {}, { message: 'failed!' }));
 
             const output$ = playAudioEpic(action$, state$);
             expectObservable(output$).toBe('-----a', {
@@ -254,7 +254,7 @@ describe('the cache epics', () => {
                 },
               });
               downloadMock.mockImplementation(() => cold('-a'));
-              audioMock.mockImplementation(() => cold('-#'));
+              audioMock.mockImplementation(() => cold('-#', {}, { message: 'failed!' }));
 
               const output$ = playAudioEpic(action$, state$);
               expectObservable(output$).toBe('----a', {
@@ -278,7 +278,7 @@ describe('the cache epics', () => {
                 cache: { cache: {} },
               },
             });
-            downloadMock.mockImplementation(() => cold('---#'));
+            downloadMock.mockImplementation(() => cold('---#', {}, { message: 'failed!' }));
 
             const output$ = playAudioEpic(action$, state$);
             expectObservable(output$).toBe('-----a', {

@@ -18,7 +18,8 @@ describe('the authentication actions', () => {
   });
 
   it('should create the LOGIN_FAILED action', () => {
-    const action = AuthenticationActions.loginFailed();
+    const action = AuthenticationActions.loginFailed('failed!');
+    expect(action.payload).toEqual({ message: 'failed!' });
     expect(action.type).toEqual(LOGIN_FAILED);
   });
 

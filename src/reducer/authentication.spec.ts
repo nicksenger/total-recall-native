@@ -21,6 +21,7 @@ describe('the authentication reducer', () => {
         username: 'foo',
       },
       {
+        payload: { message: 'failed!' },
         type: LOGIN_FAILED,
       },
     )).toEqual({
