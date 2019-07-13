@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { PROMPT, SCORE } from '_constants/session';
+import { insertSecondHalf } from '_utils/session';
 import {
   RATE_CARD,
   RATE_CARD_FAILED,
@@ -55,7 +56,9 @@ export default (
         ...state,
         loading: false,
         rateStack: newRateStack,
-        reviewList: state.reviewList.concat(rating <= 3 && card ? [card] : []),
+        reviewList: rating <= 3 && card ?
+          insertSecondHalf(state.reviewList, card) :
+          state.reviewList,
         status: PROMPT,
       };
 
@@ -78,7 +81,7 @@ export default (
         reviewList:
           action.payload.rating > 3
             ? reviewList.slice(1)
-            : reviewList.slice(1).concat(reviewList[0]),
+            : insertSecondHalf(reviewList.slice(1), reviewList[0]),
         status: PROMPT,
       };
 
