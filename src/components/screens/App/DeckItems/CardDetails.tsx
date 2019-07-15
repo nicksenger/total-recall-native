@@ -3,8 +3,9 @@ import * as React from 'react';
 import { Alert } from 'react-native';
 import { NavigationTabScreenOptions } from 'react-navigation';
 
-import { CardsActions } from 'actions';
+import { CacheActions, CardsActions } from 'actions';
 import Burger from 'components/Burger';
+import CardBody from 'components/CardBody';
 import { PaddedContent, SubmitButton } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -12,6 +13,7 @@ import { Card } from 'reducer/entities';
 
 export interface CardDetailsScreenProps {
   deleteCard: typeof CardsActions.deleteCard;
+  playAudio: typeof CacheActions.playAudio;
   card?: Card;
 }
 
@@ -30,7 +32,7 @@ export class CardDetailsScreen extends React.PureComponent<CardDetailsScreenProp
   } as unknown as NavigationTabScreenOptions;
 
   public render() {
-    const { card } = this.props;
+    const { card, playAudio } = this.props;
 
     if (!card) {
       return <Text>No card! Must be a bug.</Text>;
@@ -39,9 +41,9 @@ export class CardDetailsScreen extends React.PureComponent<CardDetailsScreenProp
     return (
       <Container>
         <PaddedContent>
+          <CardBody card={card} playAudio={playAudio} />
           <Form>
             <Text>Front: {card.front}</Text>
-            <Text>Back: {card.back}</Text>
             <SubmitButton block={true} onPress={this.handleDelete}>
               <Text>Delete Card</Text>
             </SubmitButton>
@@ -73,5 +75,8 @@ export default connect(
   ({ ui }: TRState) => ({
     card: ui.cardDetailsScreen.selectedCard,
   }),
-  { deleteCard: CardsActions.deleteCard },
+  {
+    deleteCard: CardsActions.deleteCard,
+    playAudio: CacheActions.playAudio,
+  },
 )(CardDetailsScreen);

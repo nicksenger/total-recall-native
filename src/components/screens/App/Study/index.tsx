@@ -7,7 +7,7 @@ import { PROMPT, SCORE } from '_constants/session';
 import { RATING_COLORS } from '_constants/styles';
 import { CacheActions, SessionActions } from 'actions';
 import Burger from 'components/Burger';
-import SmartImage from 'components/SmartImage';
+import CardBody from 'components/CardBody';
 import { PaddedContent } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
@@ -42,7 +42,7 @@ export class StudyScreen extends React.PureComponent<StudyScreenProps, StudyScre
   public state = { fabActive: false };
 
   public render() {
-    const { card, loading, status } = this.props;
+    const { card, loading, playAudio, status } = this.props;
 
     let fab;
 
@@ -84,30 +84,7 @@ export class StudyScreen extends React.PureComponent<StudyScreenProps, StudyScre
           </Fab>
         );
       } else if (status === SCORE) {
-        content = (
-          <Card>
-            <CardItem header={true} style={{ justifyContent: 'center' }}>
-              <Text style={{ fontSize: 20 }}>
-                {card.back}
-                {'   '}
-              </Text>
-              <Button transparent={true} onPress={this.playAudio}>
-                <Ionicons
-                  color="#1f6899"
-                  name="md-volume-high"
-                  size={25}
-                />
-              </Button>
-            </CardItem>
-            <CardItem style={{ height: 300 }}>
-              <SmartImage
-                source={{ uri: card.image }}
-                style={{ flex: 1, height: '100%', width: '100%' }}
-                resizeMode="contain"
-              />
-            </CardItem>
-          </Card>
-        );
+        content = <CardBody card={card} playAudio={playAudio} />;
 
         fab = (
           <Fab
@@ -139,10 +116,6 @@ export class StudyScreen extends React.PureComponent<StudyScreenProps, StudyScre
 
   private handleFlip = () => {
     this.props.revealCard(this.props.card);
-  }
-
-  private playAudio = () => {
-    this.props.playAudio(this.props.card.audio);
   }
 
   private toggleFab = () => {
