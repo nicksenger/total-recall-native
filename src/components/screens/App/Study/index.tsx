@@ -90,13 +90,14 @@ export class StudyScreen extends React.PureComponent<StudyScreenProps, StudyScre
               <Text style={{ fontSize: 20 }}>
                 {card.back}
                 {'   '}
+              </Text>
+              <Button transparent={true} onPress={this.playAudio}>
                 <Ionicons
                   color="#1f6899"
                   name="md-volume-high"
-                  onPress={this.playAudio}
                   size={25}
                 />
-              </Text>
+              </Button>
             </CardItem>
             <CardItem style={{ height: 300 }}>
               <SmartImage
