@@ -99,7 +99,11 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
         })
         .filter((card) => {
           if (textFilter) {
-            return card.front.toLowerCase().indexOf(textFilter.toLowerCase()) > -1;
+            const f = textFilter.toLowerCase();
+            return (
+              card.front.toLowerCase().indexOf(f) > -1 ||
+              card.back.toLowerCase().indexOf(f) > -1
+            );
           }
           return true;
         }),
