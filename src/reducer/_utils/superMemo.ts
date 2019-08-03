@@ -50,27 +50,20 @@ function sm2(x: number[]): number {
     return 1;
   }
 
-  let r = 0;
+  let streak = 0;
   const reversed = [...x].reverse();
   for (let i = 0; i < x.length; i = i + 1) {
-    if (reversed[i] >= 3) {
-      r = r + 1;
+    if (reversed[i] > 3) {
+      streak += 1;
     } else {
       break;
     }
   }
 
-  return (
-    a *
-    Math.max(
-      minScore,
-      assumedScore +
-        x.reduce(
-          (result: number, current: number) => {
-            return result + (b + c * current + d * current * current);
-          },
-          0,
-        ) ** (theta * r),
-    )
+  const historySum = x.reduce(
+    (acc: number, cur: number) => acc + (b + (c * cur) + (d * cur * cur)),
+    0,
   );
+
+  return a * Math.pow(Math.max(minScore, assumedScore + historySum), theta * streak);
 }
