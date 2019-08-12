@@ -1,6 +1,5 @@
 import { Container, Form, Input, Item, Picker, Spinner, Text } from 'native-base';
 import * as React from 'react';
-import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { LanguageCode, Languages } from '_constants/languages';
 import { DecksActions } from 'actions';
@@ -15,92 +14,73 @@ export interface AddDeckScreenProps {
   username?: string;
 }
 
-export interface AddDeckScreenState {
-  name: string;
-  language: LanguageCode;
-}
+const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
+  const [language, setLanguage] = React.useState<LanguageCode>('en');
+  const [name, setName] = React.useState('');
 
-export class AddDeckScreen extends React.PureComponent<AddDeckScreenProps> {
-  public static navigationOptions: NavigationTabScreenOptions = {
-    headerRight: <Burger />,
-    headerStyle: {
-      backgroundColor: '#1f6899',
-    },
-    headerTintColor: 'white',
-    headerTitleStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    title: 'Add Deck',
-  } as unknown as NavigationTabScreenOptions;
-
-  public state: AddDeckScreenState = { name: '', language: 'en' };
-
-  public render() {
-    if (!this.props.username) {
-      return <Text>No user! Must be a bug.</Text>;
-    }
-
-    const content = this.props.loading ? <Spinner /> : (
-      <Form>
-        <Item>
-          <Input
-            placeholder="Name"
-            onChangeText={this.handleNameChange}
-            value={this.state.name}
-          />
-        </Item>
-        <Item picker={true}>
-          <Picker
-            mode="dropdown"
-            style={{ width: undefined }}
-            placeholder="Select language"
-            placeholderStyle={{ color: '#bfc6ea' }}
-            placeholderIconColor="#007aff"
-            selectedValue={this.state.language}
-            onValueChange={this.handleLanguageChange}
-          >
-            {Object.keys(Languages).map((key: string) => (
-              <Picker.Item key={key} label={Languages[key]} value={key} />
-            ))}
-          </Picker>
-        </Item>
-        <SubmitButton block={true} onPress={this.handleSubmit}>
-          <Text>Add Deck</Text>
-        </SubmitButton>
-      </Form>
-    );
-
-    return (
-      <Container>
-        <PaddedContent>
-          {content}
-        </PaddedContent>
-      </Container>
-    );
+  if (!username) {
+    return <Text>No user! Must be a bug.</Text>;
   }
 
-  private handleLanguageChange = (language: string) => {
-    this.setState({ language });
-  }
+  const content = loading ? <Spinner /> : (
+    <Form>
+      <Item>
+        <Input
+          placeholder="Name"
+          onChangeText={setName}
+          value={name}
+        />
+      </Item>
+      <Item picker={true}>
+        <Picker
+          mode="dropdown"
+          style={{ width: undefined }}
+          placeholder="Select language"
+          placeholderStyle={{ color: '#bfc6ea' }}
+          placeholderIconColor="#007aff"
+          selectedValue={language}
+          onValueChange={setLanguage}
+        >
+          {Object.keys(Languages).map((key: string) => (
+            <Picker.Item key={key} label={Languages[key]} value={key} />
+          ))}
+        </Picker>
+      </Item>
+      <SubmitButton block={true} onPress={() => addDeck(name, language, username)}>
+        <Text>Add Deck</Text>
+      </SubmitButton>
+    </Form>
+  );
 
-  private handleNameChange = (name: string) => {
-    this.setState({ name });
-  }
+  return (
+    <Container>
+      <PaddedContent>
+        {content}
+      </PaddedContent>
+    </Container>
+  );
+};
 
-  private handleSubmit = () => {
-    const { username } = this.props;
-    if (username) {
-      const { name, language } = this.state;
-      this.props.addDeck(name, language, username);
-    }
-  }
-}
-
-export default connect(
+const connected = connect(
   ({ authentication, ui }: TRState) => ({
     loading: ui.addDeckScreen.loading,
     username: authentication.username,
   }),
   { addDeck: DecksActions.addDeck },
-)(AddDeckScreen);
+)(React.memo(AddDeckScreen));
+
+// @ts-ignore
+connected.navigationOptions = {
+  headerRight: <Burger />,
+  headerStyle: {
+    backgroundColor: '#1f6899',
+  },
+  headerTintColor: 'white',
+  headerTitleStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  title: 'Add Deck',
+};
+
+export default connected;

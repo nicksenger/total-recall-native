@@ -93,4 +93,4 @@ export default connect(
     username: authentication.username,
   }),
   { logout: AuthenticationActions.logout },
-)(DrawerContent);
+)(React.memo(DrawerContent));

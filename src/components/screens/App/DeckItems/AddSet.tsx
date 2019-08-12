@@ -1,6 +1,5 @@
 import { Container, Form, Input, Item, Spinner, Text } from 'native-base';
 import * as React from 'react';
-import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { SetsActions } from 'actions';
 import Burger from 'components/Burger';
@@ -16,73 +15,61 @@ export interface AddSetScreenProps {
   deck?: Deck;
 }
 
-export interface AddSetScreenState {
-  name: string;
-}
+export const AddSetScreen = ({ addSet, cards, loading, deck }: AddSetScreenProps) => {
+  const [name, setName] = React.useState('');
 
-export class AddSetScreen extends React.PureComponent<AddSetScreenProps, AddSetScreenState> {
-  public static navigationOptions: NavigationTabScreenOptions = {
-    headerRight: <Burger />,
-    headerStyle: {
-      backgroundColor: '#1f6899',
-    },
-    headerTintColor: 'white',
-    headerTitleStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    title: 'Create Set',
-  } as unknown as NavigationTabScreenOptions;
-
-  public state: AddSetScreenState = { name: '' };
-
-  public render() {
-    if (!this.props.deck) {
-      return <Text>No deck! Must be a bug.</Text>;
-    }
-
-    const content = this.props.loading ? <Spinner /> : (
-      <Form>
-        <Item>
-          <Input
-            placeholder="Name"
-            onChangeText={this.handleNameChange}
-            value={this.state.name}
-          />
-        </Item>
-        <SubmitButton block={true} onPress={this.handleSubmit}>
-          <Text>Create Set</Text>
-        </SubmitButton>
-      </Form>
-    );
-
-    return (
-      <Container>
-        <PaddedContent>
-          {content}
-        </PaddedContent>
-      </Container>
-    );
+  if (!deck) {
+    return <Text>No deck! Must be a bug.</Text>;
   }
 
-  private handleNameChange = (name: string) => {
-    this.setState({ name });
-  }
+  const content = loading ? <Spinner /> : (
+    <Form>
+      <Item>
+        <Input
+          placeholder="Name"
+          onChangeText={setName}
+          value={name}
+        />
+      </Item>
+      <SubmitButton
+        block={true}
+        onPress={() => addSet(deck.id, name, cards.map(({ id }: Card) => id))}
+      >
+        <Text>Create Set</Text>
+      </SubmitButton>
+    </Form>
+  );
 
-  private handleSubmit = () => {
-    const { deck } = this.props;
-    if (deck) {
-      const { name } = this.state;
-      this.props.addSet(deck.id, name, this.props.cards.map(({ id }: Card) => id));
-    }
-  }
-}
+  return (
+    <Container>
+      <PaddedContent>
+        {content}
+      </PaddedContent>
+    </Container>
+  );
+};
 
-export default connect(
+const connected = connect(
   ({ ui }: TRState) => ({
     cards: ui.addSetScreen.cards,
     deck: ui.deckDetailsScreen.selectedDeck,
     loading: ui.addSetScreen.loading,
   }),
   { addSet: SetsActions.addSet },
-)(AddSetScreen);
+)(React.memo(AddSetScreen));
+
+// @ts-ignore
+connected.navigationOptions = {
+  headerRight: <Burger />,
+  headerStyle: {
+    backgroundColor: '#1f6899',
+  },
+  headerTintColor: 'white',
+  headerTitleStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  title: 'Create Set',
+};
+
+export default connected;

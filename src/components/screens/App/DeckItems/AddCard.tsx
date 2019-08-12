@@ -1,6 +1,5 @@
 import { Container, Form, Input, Item, Spinner, Text } from 'native-base';
 import * as React from 'react';
-import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { CardsActions } from 'actions';
 import Burger from 'components/Burger';
@@ -15,84 +14,65 @@ export interface AddCardScreenProps {
   deck?: Deck;
 }
 
-export interface AddCardScreenState {
-  back: string;
-  front: string;
-}
+const AddCardScreen = ({ addCard, loading, deck }: AddCardScreenProps) => {
+  const [front, setFront] = React.useState('');
+  const [back, setBack] = React.useState('');
 
-export class AddCardScreen extends React.PureComponent<AddCardScreenProps> {
-  public static navigationOptions: NavigationTabScreenOptions = {
-    headerRight: <Burger />,
-    headerStyle: {
-      backgroundColor: '#1f6899',
-    },
-    headerTintColor: 'white',
-    headerTitleStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    title: 'Add Card',
-  } as unknown as NavigationTabScreenOptions;
-
-  public state: AddCardScreenState = { back: '', front: '' };
-
-  public render() {
-    if (!this.props.deck) {
-      return <Text>No deck! Must be a bug.</Text>;
-    }
-
-    const content = this.props.loading ? <Spinner /> : (
-      <Form>
-        <Item>
-          <Input
-            placeholder="Front"
-            onChangeText={this.handleFrontChange}
-            value={this.state.front}
-          />
-        </Item>
-        <Item last={true}>
-          <Input
-            placeholder="Back"
-            onChangeText={this.handleBackChange}
-            value={this.state.back}
-          />
-        </Item>
-        <SubmitButton block={true} onPress={this.handleSubmit}>
-          <Text>Add Card</Text>
-        </SubmitButton>
-      </Form>
-    );
-
-    return (
-      <Container>
-        <PaddedContent>
-          {content}
-        </PaddedContent>
-      </Container>
-    );
+  if (!deck) {
+    return <Text>No deck! Must be a bug.</Text>;
   }
 
-  private handleFrontChange = (front: string) => {
-    this.setState({ front });
-  }
+  const content = loading ? <Spinner /> : (
+    <Form>
+      <Item>
+        <Input
+          placeholder="Front"
+          onChangeText={setFront}
+          value={front}
+        />
+      </Item>
+      <Item last={true}>
+        <Input
+          placeholder="Back"
+          onChangeText={setBack}
+          value={back}
+        />
+      </Item>
+      <SubmitButton block={true} onPress={() => addCard(deck.id, front, back)}>
+        <Text>Add Card</Text>
+      </SubmitButton>
+    </Form>
+  );
 
-  private handleBackChange = (back: string) => {
-    this.setState({ back });
-  }
+  return (
+    <Container>
+      <PaddedContent>
+        {content}
+      </PaddedContent>
+    </Container>
+  );
+};
 
-  private handleSubmit = () => {
-    const { deck } = this.props;
-    if (deck) {
-      const { back, front } = this.state;
-      this.props.addCard(deck.id, front, back);
-    }
-  }
-}
-
-export default connect(
+const connected = connect(
   ({ ui }: TRState) => ({
     deck: ui.deckDetailsScreen.selectedDeck,
     loading: ui.addCardScreen.loading,
   }),
   { addCard: CardsActions.addCard },
-)(AddCardScreen);
+)(React.memo(AddCardScreen));
+
+// @ts-ignore
+connected.navigationOptions = {
+  headerRight: <Burger />,
+  headerStyle: {
+    backgroundColor: '#1f6899',
+  },
+  headerTintColor: 'white',
+  headerTitleStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  title: 'Add Card',
+};
+
+export default connected;
