@@ -1,4 +1,4 @@
-import { Font } from 'expo';
+import * as Font from 'expo-font';
 import { Container, Content, Header, Spinner } from 'native-base';
 import * as React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
@@ -25,9 +25,9 @@ export class InitialScreen extends React.PureComponent<InitialScreenProps, Initi
 
   public async componentDidMount() {
     await Font.loadAsync({
-      Ionicons: require('native-base/Fonts/Ionicons.ttf'),
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      Ionicons: require('../../../node_modules/native-base/Fonts/Ionicons.ttf'),
+      Roboto: require('../../../node_modules/native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('../../../node_modules/native-base/Fonts/Roboto_medium.ttf'),
     });
 
     this.setState({ loaded: true });

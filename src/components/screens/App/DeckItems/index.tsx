@@ -31,7 +31,7 @@ export class DeckDetailsScreen extends React.PureComponent<DeckDetailsScreenProp
 
   public render() {
     const content = this.props.deck ? (
-      <Tabs style={{ backgroundColor: '#2a5687' }}>
+      <Tabs style={{ backgroundColor: '#2a5687' }} scrollWithoutAnimation={false}>
         <Tab
           heading={
             <TabHeading>

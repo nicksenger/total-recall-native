@@ -29,13 +29,8 @@ import SetDetailsScreen from 'components/screens/App/DeckItems/SetDetails';
 import DecksScreen from 'components/screens/App/Decks';
 import AddDeckScreen from 'components/screens/App/Decks/AddDeck';
 import DeckDetailsScreen from 'components/screens/App/Decks/DeckDetails';
-import FindCardsScreen from 'components/screens/App/FindCards';
 import StudyScreen from 'components/screens/App/Study';
 import UserManual from 'components/screens/App/UserManual';
-
-const FindStack = createStackNavigator({
-  FindCardsScreen,
-});
 
 const DecksStack = createStackNavigator(
   {
@@ -61,15 +56,11 @@ const App = createBottomTabNavigator(
   {
     'My Decks': DecksStack,
     [STUDY_SCREEN]: StudyStack,
-    // tslint:disable-next-line:object-literal-sort-keys
-    'Find Cards': FindStack,
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
         switch (navigation.state.routeName) {
-          case 'Find Cards':
-            return <Ionicons name="md-search" size={25} color={focused ? '#1f6899' : 'black'} />;
           case 'My Decks':
             return <Ionicons name="ios-apps" size={25} color={focused ? '#1f6899' : 'black'} />;
           default:

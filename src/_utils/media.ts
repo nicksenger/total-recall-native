@@ -1,4 +1,5 @@
-import { Audio, FileSystem } from 'expo';
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import { from } from 'rxjs';
 
 export const getMediaDir = () => FileSystem.documentDirectory;
