@@ -11,37 +11,29 @@ export interface CardBodyProps {
   playAudio: typeof CacheActions.playAudio;
 }
 
-export default class CardBody extends React.Component<CardBodyProps> {
-  public render() {
-    const { card } = this.props;
+const CardBody = ({ card, playAudio }: CardBodyProps) => (
+  <Card>
+    <CardItem header={true} style={{ justifyContent: 'center' }}>
+      <Text style={{ fontSize: 20 }}>
+        {card.back}
+        {'   '}
+      </Text>
+      <Button transparent={true} onPress={() => playAudio(card.audio)}>
+        <Ionicons
+          color="#1f6899"
+          name="md-volume-high"
+          size={25}
+        />
+      </Button>
+    </CardItem>
+    <CardItem style={{ height: 300 }}>
+      <SmartImage
+        source={{ uri: card.image }}
+        style={{ flex: 1, height: '100%', width: '100%' }}
+        resizeMode="contain"
+      />
+    </CardItem>
+  </Card>
+);
 
-    return (
-      <Card>
-        <CardItem header={true} style={{ justifyContent: 'center' }}>
-          <Text style={{ fontSize: 20 }}>
-            {card.back}
-            {'   '}
-          </Text>
-          <Button transparent={true} onPress={this.playAudio}>
-            <Ionicons
-              color="#1f6899"
-              name="md-volume-high"
-              size={25}
-            />
-          </Button>
-        </CardItem>
-        <CardItem style={{ height: 300 }}>
-          <SmartImage
-            source={{ uri: card.image }}
-            style={{ flex: 1, height: '100%', width: '100%' }}
-            resizeMode="contain"
-          />
-        </CardItem>
-      </Card>
-    );
-  }
-
-  private playAudio = () => {
-    this.props.playAudio(this.props.card.audio);
-  }
-}
+export default React.memo(CardBody);

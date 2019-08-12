@@ -18,34 +18,24 @@ export interface SetsScreenProps {
   loading: boolean;
 }
 
-export class SetsScreen extends React.PureComponent<SetsScreenProps> {
-  public componentDidMount() {
-    this.props.getSets(this.props.deck.id);
-  }
+export const SetsScreen = ({ deck, getSets, loading, sets }: SetsScreenProps) => {
+  React.useEffect(
+    () => { getSets(deck.id); },
+    [deck],
+  );
 
-  public render() {
-    const { loading, sets } = this.props;
-
-    return loading ? <PaddedContent><Spinner /></PaddedContent> : (
-      <PaddedContent>
-        {sets && (
-          <FlatList
-            data={sets}
-            keyExtractor={this.keyExtractor}
-            renderItem={this.renderItem}
-          />
-        )}
-      </PaddedContent>
-    );
-  }
-
-  private keyExtractor = ({ id }: Set) => `${id}`;
-  private renderItem = ({ item: set }: { item: Set }) => (
-    <SetItem
-      set={set}
-    />
-  )
-}
+  return loading ? <PaddedContent><Spinner /></PaddedContent> : (
+    <PaddedContent>
+      {sets && (
+        <FlatList
+          data={sets}
+          keyExtractor={({ id }: Set) => `${id}`}
+          renderItem={({ item: set }: { item: Set }) => <SetItem set={set} />}
+        />
+      )}
+    </PaddedContent>
+  );
+};
 
 export default connect(
   ({ entities, ui }: TRState) => {
@@ -60,4 +50,4 @@ export default connect(
     };
   },
   { getSets: SetsActions.getSets },
-)(SetsScreen);
+)(React.memo(SetsScreen));

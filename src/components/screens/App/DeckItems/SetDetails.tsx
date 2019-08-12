@@ -1,8 +1,6 @@
-import memoizeOne from 'memoize-one';
 import { Container, Form, Text } from 'native-base';
 import * as React from 'react';
 import { Alert } from 'react-native';
-import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { SetsActions } from 'actions';
 import Burger from 'components/Burger';
@@ -19,68 +17,51 @@ export interface SetDetailsScreenProps {
   set?: Set;
 }
 
-export class SetDetailsScreen extends React.PureComponent<SetDetailsScreenProps> {
-  public static navigationOptions: NavigationTabScreenOptions = {
-    headerRight: <Burger />,
-    headerStyle: {
-      backgroundColor: '#1f6899',
-    },
-    headerTintColor: 'white',
-    headerTitleStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    title: 'Set Details',
-  } as unknown as NavigationTabScreenOptions;
+const SetDetailsScreen = (props: SetDetailsScreenProps) => {
+  const { allCards, set, setCards } = props;
 
-  private getReviewCount = memoizeOne(
-    (allCards: { [id: number]: Card }, setCards: number[]): number => (
-      setCards.map(id => allCards[id]).filter(card => needsReview(card)).length
-    ),
+  if (!set) {
+    return <Text>No set! Must be a bug.</Text>;
+  }
+
+  return (
+    <Container>
+      <PaddedContent>
+        <Form>
+          <Text>Name: {set.name}</Text>
+          <Text>Number of cards: {props.setCards.length}</Text>
+          <Text>Cards due for review: {getReviewCount(allCards, setCards)}</Text>
+          <SubmitButton block={true} onPress={handleDelete(props)}>
+            <Text>Delete Set</Text>
+          </SubmitButton>
+        </Form>
+      </PaddedContent>
+    </Container>
   );
+};
 
-  public render() {
-    const { allCards, set, setCards } = this.props;
+const getReviewCount = (allCards: { [id: number]: Card }, setCards: number[]): number => (
+  setCards.map(id => allCards[id]).filter(card => needsReview(card)).length
+);
 
-    if (!set) {
-      return <Text>No set! Must be a bug.</Text>;
-    }
-
-    return (
-      <Container>
-        <PaddedContent>
-          <Form>
-            <Text>Name: {set.name}</Text>
-            <Text>Number of cards: {this.props.setCards.length}</Text>
-            <Text>Cards due for review: {this.getReviewCount(allCards, setCards)}</Text>
-            <SubmitButton block={true} onPress={this.handleDelete}>
-              <Text>Delete Set</Text>
-            </SubmitButton>
-          </Form>
-        </PaddedContent>
-      </Container>
+const handleDelete = (props: SetDetailsScreenProps) => () => {
+  const { deleteSet, set } = props;
+  if (set) {
+    Alert.alert(
+      'Delete Set',
+      'Are you sure you want to delete this set?',
+      [
+        { text: 'No' },
+        {
+          onPress: () => { deleteSet(set.id); },
+          text: 'Yes',
+        },
+      ],
     );
   }
+};
 
-  private handleDelete = () => {
-    const { set } = this.props;
-    if (set) {
-      Alert.alert(
-        'Delete Set',
-        'Are you sure you want to delete this set?',
-        [
-          { text: 'No' },
-          {
-            onPress: () => { this.props.deleteSet(set.id); },
-            text: 'Yes',
-          },
-        ],
-      );
-    }
-  }
-}
-
-export default connect(
+const connected = connect(
   ({ entities, ui }: TRState) => {
     const set = ui.setDetailsScreen.selectedSet;
 
@@ -91,4 +72,20 @@ export default connect(
     };
   },
   { deleteSet: SetsActions.deleteSet },
-)(SetDetailsScreen);
+)(React.memo(SetDetailsScreen));
+
+// @ts-ignore
+connected.navigationOptions = {
+  headerRight: <Burger />,
+  headerStyle: {
+    backgroundColor: '#1f6899',
+  },
+  headerTintColor: 'white',
+  headerTitleStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  title: 'Set Details',
+};
+
+export default connected;

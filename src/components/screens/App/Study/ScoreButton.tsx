@@ -13,26 +13,22 @@ export interface ScoreButtonProps {
   reviewing: boolean;
 }
 
-export class ScoreButton extends React.PureComponent<ScoreButtonProps> {
-  public render() {
-    return (
-      <TouchableOpacity
-        onPress={this.handleScore}
-      >
-        <Text>{this.props.rating}</Text>
-      </TouchableOpacity>
-    );
-  }
+export const ScoreButton = (props: ScoreButtonProps) => (
+  <TouchableOpacity
+    onPress={() => handleScore(props)}
+  >
+    <Text>{props.rating}</Text>
+  </TouchableOpacity>
+);
 
-  private handleScore = () => {
-    const { cardId, rating } = this.props;
-    if (this.props.reviewing) {
-      this.props.reviewCard(rating);
-    } else {
-      this.props.rateCard(cardId, rating);
-    }
+const handleScore = (props: ScoreButtonProps) => {
+  const { cardId, rating } = props;
+  if (props.reviewing) {
+    props.reviewCard(rating);
+  } else {
+    props.rateCard(cardId, rating);
   }
-}
+};
 
 export default connect(
   ({ session }: TRState) => ({
@@ -42,4 +38,4 @@ export default connect(
     rateCard: SessionActions.rateCard,
     reviewCard: SessionActions.reviewCard,
   },
-)(ScoreButton);
+)(React.memo(ScoreButton));

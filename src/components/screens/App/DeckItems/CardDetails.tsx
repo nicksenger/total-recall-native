@@ -1,7 +1,6 @@
 import { Container, Form, Text } from 'native-base';
 import * as React from 'react';
 import { Alert } from 'react-native';
-import { NavigationTabScreenOptions } from 'react-navigation';
 
 import { CacheActions, CardsActions } from 'actions';
 import Burger from 'components/Burger';
@@ -17,61 +16,46 @@ export interface CardDetailsScreenProps {
   card?: Card;
 }
 
-export class CardDetailsScreen extends React.PureComponent<CardDetailsScreenProps> {
-  public static navigationOptions: NavigationTabScreenOptions = {
-    headerRight: <Burger />,
-    headerStyle: {
-      backgroundColor: '#1f6899',
-    },
-    headerTintColor: 'white',
-    headerTitleStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    title: 'Card Details',
-  } as unknown as NavigationTabScreenOptions;
+const CardDetailsScreen = (props: CardDetailsScreenProps) => {
+  const { card, playAudio } = props;
 
-  public render() {
-    const { card, playAudio } = this.props;
+  if (!card) {
+    return <Text>No card! Must be a bug.</Text>;
+  }
 
-    if (!card) {
-      return <Text>No card! Must be a bug.</Text>;
-    }
+  return (
+    <Container>
+      <PaddedContent>
+        <CardBody card={card} playAudio={playAudio} />
+        <Form>
+          <Text>Front: {card.front}</Text>
+          <SubmitButton block={true} onPress={handleDelete(props)}>
+            <Text>Delete Card</Text>
+          </SubmitButton>
+        </Form>
+      </PaddedContent>
+    </Container>
+  );
+};
 
-    return (
-      <Container>
-        <PaddedContent>
-          <CardBody card={card} playAudio={playAudio} />
-          <Form>
-            <Text>Front: {card.front}</Text>
-            <SubmitButton block={true} onPress={this.handleDelete}>
-              <Text>Delete Card</Text>
-            </SubmitButton>
-          </Form>
-        </PaddedContent>
-      </Container>
+const handleDelete = (props: CardDetailsScreenProps) => () => {
+  const { card, deleteCard } = props;
+  if (card) {
+    Alert.alert(
+      'Delete Card',
+      'Are you sure you want to delete this card?',
+      [
+        { text: 'No' },
+        {
+          onPress: () => { deleteCard(card.id); },
+          text: 'Yes',
+        },
+      ],
     );
   }
+};
 
-  private handleDelete = () => {
-    const { card } = this.props;
-    if (card) {
-      Alert.alert(
-        'Delete Card',
-        'Are you sure you want to delete this card?',
-        [
-          { text: 'No' },
-          {
-            onPress: () => { this.props.deleteCard(card.id); },
-            text: 'Yes',
-          },
-        ],
-      );
-    }
-  }
-}
-
-export default connect(
+const connected = connect(
   ({ ui }: TRState) => ({
     card: ui.cardDetailsScreen.selectedCard,
   }),
@@ -79,4 +63,20 @@ export default connect(
     deleteCard: CardsActions.deleteCard,
     playAudio: CacheActions.playAudio,
   },
-)(CardDetailsScreen);
+)(React.memo(CardDetailsScreen));
+
+// @ts-ignore
+connected.navigationOptions = {
+  headerRight: <Burger />,
+  headerStyle: {
+    backgroundColor: '#1f6899',
+  },
+  headerTintColor: 'white',
+  headerTitleStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  title: 'Card Details',
+};
+
+export default connected;

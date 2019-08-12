@@ -12,43 +12,43 @@ export interface SmartImageProps extends ImageProps {
   path?: string;
 }
 
-export class SmartImage extends React.PureComponent<SmartImageProps> {
-  public componentDidMount() {
-    const { fetchImage, source } = this.props;
-    fetchImage(source.uri);
-  }
+const SmartImage = (props: SmartImageProps) => {
+  const { fetchImage, path, source } = props;
 
-  public render() {
-    const { path } = this.props;
+  React.useEffect(
+    () => {
+      fetchImage(source.uri);
+    },
+    [source],
+  );
 
-    if (path) {
-      return (
-        <Image
-          {
-            ...{
-              ...this.props,
-              source: {
-                uri: path,
-              },
-            }
-          }
-        />
-      );
-    }
-
+  if (path) {
     return (
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-        }}
-      >
-        <Spinner />
-      </View>
+      <Image
+        {
+          ...{
+            ...props,
+            source: {
+              uri: path,
+            },
+          }
+        }
+      />
     );
   }
-}
+
+  return (
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+      }}
+    >
+      <Spinner />
+    </View>
+  );
+};
 
 interface OwnProps extends ImageProps {
   source: { uri: string };
@@ -57,4 +57,4 @@ interface OwnProps extends ImageProps {
 export default connect(
   ({ cache }: TRState, { source: { uri } }: OwnProps) => ({ path: cache.cache[uri] }),
   { fetchImage: CacheActions.fetchImage },
-)(SmartImage);
+)(React.memo(SmartImage));

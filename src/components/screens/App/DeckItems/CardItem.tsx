@@ -1,4 +1,3 @@
-import memoizeOne from 'memoize-one';
 import { Body, CheckBox, Left, ListItem, Right, Text } from 'native-base';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -15,50 +14,31 @@ export interface CardItemProps {
   viewCardDetails: typeof CardsActions.viewCardDetails;
 }
 
-export class CardItem extends React.PureComponent<CardItemProps> {
-  private renderStatus = memoizeOne(
-    (card: Card) => {
-      const lastScore = card.score.split(',').pop();
-      return <RatingIcon rating={lastScore} />;
-    },
+const CardItem = (props: CardItemProps) => {
+  const { card } = props;
+
+  const lastScore = card.score.split(',').pop();
+
+  return (
+    <ListItem key={card.id} icon={true}>
+      <Left>
+        <RatingIcon rating={lastScore} />
+      </Left>
+      <Body>
+        <Text onPress={() => props.viewCardDetails(card)}>{card.front}</Text>
+      </Body>
+      <Right>
+        <CheckBox
+          checked={props.selected}
+          onPress={() => props.onSelect(card)}
+          color={needsReview(card) ? 'red' : undefined}
+        />
+      </Right>
+    </ListItem>
   );
-
-  private needsReview = memoizeOne(
-    (card: Card) => needsReview(card),
-  );
-
-  public render() {
-    const { card } = this.props;
-
-    return (
-      <ListItem key={card.id} icon={true}>
-        <Left>
-          {this.renderStatus(card)}
-        </Left>
-        <Body>
-          <Text onPress={this.handleDetails}>{card.front}</Text>
-        </Body>
-        <Right>
-          <CheckBox
-            checked={this.props.selected}
-            onPress={this.handleSelect}
-            color={this.needsReview(card) ? 'red' : undefined}
-          />
-        </Right>
-      </ListItem>
-    );
-  }
-
-  private handleDetails = () => {
-    this.props.viewCardDetails(this.props.card);
-  }
-
-  private handleSelect = () => {
-    this.props.onSelect(this.props.card);
-  }
-}
+};
 
 export default connect(
   () => ({}),
   { viewCardDetails: CardsActions.viewCardDetails },
-)(CardItem);
+)(React.memo(CardItem));
