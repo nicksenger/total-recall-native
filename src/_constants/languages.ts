@@ -1,10 +1,8 @@
 export const Languages: Languages = {
   af: 'Afrikaans',
   ar: 'Arabic',
-  az: 'Azerbaijani',
-  be: 'Belarusian',
-  bg: 'Bulgarian',
   bn: 'Bengali',
+  bs: 'Bosnian',
   ca: 'Catalan',
   cs: 'Czech',
   cy: 'Welsh',
@@ -12,192 +10,154 @@ export const Languages: Languages = {
   de: 'German',
   el: 'Greek',
   en: 'English',
+  'en-au': 'English (Australia)',
+  'en-ca': 'English (Canada)',
+  'en-gb': 'English (UK)',
+  'en-gh': 'English (Ghana)',
+  'en-ie': 'English (Ireland)',
+  'en-in': 'English (India)',
+  'en-ng': 'English (Nigeria)',
+  'en-nz': 'English (New Zealand)',
+  'en-ph': 'English (Philippines)',
+  'en-tz': 'English (Tanzania)',
+  'en-uk': 'English (UK)',
+  'en-us': 'English (US)',
+  'en-za': 'English (South Africa)',
   eo: 'Esperanto',
   es: 'Spanish',
+  'es-es': 'Spanish (Spain)',
+  'es-us': 'Spanish (United States)',
   et: 'Estonian',
-  eu: 'Basque',
   fi: 'Finnish',
   fr: 'French',
-  fy: 'Frisian',
-  ga: 'Irish',
-  gd: 'Scots Gaelic',
-  gl: 'Galician',
+  'fr-ca': 'French (Canada)',
+  'fr-fr': 'French (France)',
   gu: 'Gujarati',
-  ha: 'Hausa',
-  haw: 'Hawaiian',
-  he: 'Hebrew',
   hi: 'Hindi',
-  hmn: 'Hmong',
   hr: 'Croatian',
-  ht: 'Haitian Creole',
   hu: 'Hungarian',
+  hy: 'Armenian',
   id: 'Indonesian',
-  ig: 'Igbo',
   is: 'Icelandic',
   it: 'Italian',
   ja: 'Japanese',
   jw: 'Javanese',
-  ka: 'Georgian',
-  kk: 'Kazakh',
   km: 'Khmer',
   kn: 'Kannada',
   ko: 'Korean',
-  ku: 'Kurdish',
-  ky: 'Kyrgyz',
   la: 'Latin',
-  lb: 'Luxembourgish',
-  lo: 'Lao',
-  lt: 'Lithuanian',
   lv: 'Latvian',
-  mg: 'Malagasy',
-  mi: 'Maori',
   mk: 'Macedonian',
   ml: 'Malayalam',
-  mn: 'Mongolian',
   mr: 'Marathi',
-  ms: 'Malay',
-  mt: 'Maltese',
-  my: 'Burmese',
+  my: 'Myanmar (Burmese)',
   ne: 'Nepali',
   nl: 'Dutch',
   no: 'Norwegian',
-  ny: 'Nyanja',
-  pa: 'Punjabi',
   pl: 'Polish',
-  ps: 'Pashto',
   pt: 'Portuguese',
+  'pt-br': 'Portuguese (Brazil)',
+  'pt-pt': 'Portuguese (Portugal)',
   ro: 'Romanian',
   ru: 'Russian',
-  sd: 'Sindhi',
   si: 'Sinhala',
   sk: 'Slovak',
-  sl: 'Slovenian',
-  sm: 'Samoan',
-  sn: 'Shona',
-  so: 'Somali',
   sq: 'Albanian',
   sr: 'Serbian',
-  st: 'Sesotho',
   su: 'Sundanese',
   sv: 'Swedish',
   sw: 'Swahili',
   ta: 'Tamil',
   te: 'Telugu',
-  tg: 'Tajik',
   th: 'Thai',
   tl: 'Filipino',
   tr: 'Turkish',
   uk: 'Ukrainian',
   ur: 'Urdu',
-  uz: 'Uzbek',
   vi: 'Vietnamese',
-  xh: 'Xhosa',
-  yi: 'Yiddish',
-  yo: 'Yoruba',
-  'zh-CN': 'Chinese Simplified',
-  'zh-TW': 'Chinese Traditional',
-  zu: 'Zulu',
+  'zh-cn': 'Chinese (Mandarin/China)',
+  'zh-tw': 'Chinese (Mandarin/Taiwan)',
 };
 
 export interface Languages {
   'af': 'Afrikaans';
-  'sq': 'Albanian';
   'ar': 'Arabic';
-  'az': 'Azerbaijani';
-  'eu': 'Basque';
   'bn': 'Bengali';
-  'be': 'Belarusian';
-  'bg': 'Bulgarian';
+  'bs': 'Bosnian';
   'ca': 'Catalan';
-  'zh-CN': 'Chinese Simplified';
-  'zh-TW': 'Chinese Traditional';
-  'hr': 'Croatian';
   'cs': 'Czech';
+  'cy': 'Welsh';
   'da': 'Danish';
-  'nl': 'Dutch';
-  'en': 'English';
-  'eo': 'Esperanto';
-  'et': 'Estonian';
-  'tl': 'Filipino';
-  'fi': 'Finnish';
-  'fr': 'French';
-  'fy': 'Frisian';
-  'gl': 'Galician';
-  'ka': 'Georgian';
   'de': 'German';
   'el': 'Greek';
+  'en-au': 'English (Australia)';
+  'en-ca': 'English (Canada)';
+  'en-gb': 'English (UK)';
+  'en-gh': 'English (Ghana)';
+  'en-ie': 'English (Ireland)';
+  'en-in': 'English (India)';
+  'en-ng': 'English (Nigeria)';
+  'en-nz': 'English (New Zealand)';
+  'en-ph': 'English (Philippines)';
+  'en-tz': 'English (Tanzania)';
+  'en-uk': 'English (UK)';
+  'en-us': 'English (US)';
+  'en-za': 'English (South Africa)';
+  'en': 'English';
+  'eo': 'Esperanto';
+  'es-es': 'Spanish (Spain)';
+  'es-us': 'Spanish (United States)';
+  'es': 'Spanish';
+  'et': 'Estonian';
+  'fi': 'Finnish';
+  'fr-ca': 'French (Canada)';
+  'fr-fr': 'French (France)';
+  'fr': 'French';
   'gu': 'Gujarati';
-  'ht': 'Haitian Creole';
-  'ha': 'Hausa';
-  'haw': 'Hawaiian';
-  'he': 'Hebrew';
   'hi': 'Hindi';
-  'hmn': 'Hmong';
+  'hr': 'Croatian';
   'hu': 'Hungarian';
-  'is': 'Icelandic';
-  'ig': 'Igbo';
+  'hy': 'Armenian';
   'id': 'Indonesian';
-  'ga': 'Irish';
+  'is': 'Icelandic';
   'it': 'Italian';
   'ja': 'Japanese';
   'jw': 'Javanese';
-  'kn': 'Kannada';
-  'kk': 'Kazakh';
   'km': 'Khmer';
+  'kn': 'Kannada';
   'ko': 'Korean';
-  'ku': 'Kurdish';
-  'ky': 'Kyrgyz';
-  'lo': 'Lao';
   'la': 'Latin';
   'lv': 'Latvian';
-  'lt': 'Lithuanian';
-  'lb': 'Luxembourgish';
   'mk': 'Macedonian';
-  'mg': 'Malagasy';
-  'ms': 'Malay';
   'ml': 'Malayalam';
-  'mt': 'Maltese';
-  'mi': 'Maori';
   'mr': 'Marathi';
-  'mn': 'Mongolian';
-  'my': 'Burmese';
+  'my': 'Myanmar (Burmese)';
   'ne': 'Nepali';
+  'nl': 'Dutch';
   'no': 'Norwegian';
-  'ny': 'Nyanja';
-  'ps': 'Pashto';
   'pl': 'Polish';
+  'pt-br': 'Portuguese (Brazil)';
+  'pt-pt': 'Portuguese (Portugal)';
   'pt': 'Portuguese';
-  'pa': 'Punjabi';
   'ro': 'Romanian';
   'ru': 'Russian';
-  'sm': 'Samoan';
-  'gd': 'Scots Gaelic';
-  'sr': 'Serbian';
-  'st': 'Sesotho';
-  'sn': 'Shona';
-  'sd': 'Sindhi';
   'si': 'Sinhala';
   'sk': 'Slovak';
-  'sl': 'Slovenian';
-  'so': 'Somali';
-  'es': 'Spanish';
+  'sq': 'Albanian';
+  'sr': 'Serbian';
   'su': 'Sundanese';
-  'sw': 'Swahili';
   'sv': 'Swedish';
-  'tg': 'Tajik';
+  'sw': 'Swahili';
   'ta': 'Tamil';
   'te': 'Telugu';
   'th': 'Thai';
+  'tl': 'Filipino';
   'tr': 'Turkish';
   'uk': 'Ukrainian';
   'ur': 'Urdu';
-  'uz': 'Uzbek';
   'vi': 'Vietnamese';
-  'cy': 'Welsh';
-  'xh': 'Xhosa';
-  'yi': 'Yiddish';
-  'yo': 'Yoruba';
-  'zu': 'Zulu';
+  'zh-cn': 'Chinese (Mandarin/China)';
+  'zh-tw': 'Chinese (Mandarin/Taiwan)';
   [key: string]: string;
 }
 
