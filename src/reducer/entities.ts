@@ -37,8 +37,6 @@ export interface Card {
   score: string;
   audio: string;
   image: string;
-  deck: number;
-  owner: string;
   link: null | string;
 }
 
