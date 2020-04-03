@@ -45,7 +45,7 @@ export default (
       return {
         ...state,
         selectedCard: state.selectedCard && state.selectedCard.id === cardId ? {
-          ...state,
+          ...state.selectedCard,
           link,
         } : state.selectedCard,
       };
