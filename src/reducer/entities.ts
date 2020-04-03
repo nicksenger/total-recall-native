@@ -4,6 +4,7 @@ import {
   DELETE_CARD_SUCCESS,
   DELETE_DECK_SUCCESS,
   DELETE_SET_SUCCESS,
+  EDIT_CARD_LINK_SUCCESS,
   GET_CARDS_SUCCESS,
   GET_DECKS_SUCCESS,
   GET_SETS_SUCCESS,
@@ -38,6 +39,7 @@ export interface Card {
   image: string;
   deck: number;
   owner: string;
+  link: null | string;
 }
 
 export interface EntitiesState {
@@ -163,7 +165,21 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
         sets: _.omit(state.sets, action.payload.setId),
       };
 
-    case RATE_CARD_SUCCESS:
+    case EDIT_CARD_LINK_SUCCESS: {
+      const { cardId, link } = action.payload;
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [cardId]: state.cards[cardId] ? {
+            ...state.cards[cardId],
+            link,
+          } : undefined,
+        },
+      };
+    }
+
+    case RATE_CARD_SUCCESS: {
       const { cardId, rating } = action.payload;
 
       return {
@@ -176,6 +192,7 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
           } : undefined,
         },
       };
+    }
 
     default:
       return state;

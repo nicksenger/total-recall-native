@@ -2,6 +2,7 @@ import {
   DELETE_CARD,
   DELETE_CARD_FAILED,
   DELETE_CARD_SUCCESS,
+  EDIT_CARD_LINK_SUCCESS,
   TRActions,
   VIEW_CARD_DETAILS,
 } from 'actions';
@@ -38,6 +39,17 @@ export default (
         ...state,
         loading: false,
       };
+
+    case EDIT_CARD_LINK_SUCCESS: {
+      const { cardId, link } = action.payload;
+      return {
+        ...state,
+        selectedCard: state.selectedCard && state.selectedCard.id === cardId ? {
+          ...state,
+          link,
+        } : state.selectedCard,
+      };
+    }
 
     case VIEW_CARD_DETAILS:
       return {

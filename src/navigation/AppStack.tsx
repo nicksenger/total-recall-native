@@ -12,9 +12,11 @@ import {
   ADD_DECK_SCREEN,
   ADD_SET_SCREEN,
   CARD_DETAILS_SCREEN,
+  CARD_LINK_SCREEN,
   DECK_DETAILS_SCREEN,
   DECK_ITEMS_SCREEN,
   DECKS_SCREEN,
+  EDIT_CARD_LINK_SCREEN,
   MAIN_APP,
   SET_DETAILS_SCREEN,
   STUDY_SCREEN,
@@ -25,6 +27,8 @@ import DeckItemsScreen from 'components/screens/App/DeckItems';
 import AddCardScreen from 'components/screens/App/DeckItems/AddCard';
 import AddSetScreen from 'components/screens/App/DeckItems/AddSet';
 import CardDetailsScreen from 'components/screens/App/DeckItems/CardDetails';
+import CardLinkScreen from 'components/screens/App/DeckItems/CardLink';
+import EditCardLinkScreen from 'components/screens/App/DeckItems/EditCardLink';
 import SetDetailsScreen from 'components/screens/App/DeckItems/SetDetails';
 import DecksScreen from 'components/screens/App/Decks';
 import AddDeckScreen from 'components/screens/App/Decks/AddDeck';
@@ -38,6 +42,7 @@ const DecksStack = createStackNavigator(
     [ADD_DECK_SCREEN]: AddDeckScreen,
     [ADD_SET_SCREEN]: AddSetScreen,
     [CARD_DETAILS_SCREEN]: CardDetailsScreen,
+    [EDIT_CARD_LINK_SCREEN]: EditCardLinkScreen,
     [DECK_DETAILS_SCREEN]: DeckDetailsScreen,
     [DECK_ITEMS_SCREEN]: DeckItemsScreen,
     [DECKS_SCREEN]: DecksScreen,
@@ -48,9 +53,15 @@ const DecksStack = createStackNavigator(
   },
 );
 
-const StudyStack = createStackNavigator({
-  StudyScreen,
-});
+const StudyStack = createStackNavigator(
+  {
+    [CARD_LINK_SCREEN]: CardLinkScreen,
+    StudyScreen,
+  },
+  {
+    initialRouteName: 'StudyScreen',
+  },
+);
 
 const App = createBottomTabNavigator(
   {

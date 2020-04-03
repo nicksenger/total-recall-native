@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { PROMPT, SCORE } from '_constants/session';
 import { RATING_COLORS } from '_constants/styles';
-import { CacheActions, SessionActions } from 'actions';
+import { CacheActions, CardsActions, SessionActions } from 'actions';
 import Burger from 'components/Burger';
 import CardBody from 'components/CardBody';
 import { PaddedContent } from 'components/styled';
@@ -19,9 +19,17 @@ export interface StudyScreenProps {
   playAudio: typeof CacheActions.playAudio;
   revealCard: typeof SessionActions.revealCard;
   status: TRState['session']['status'];
+  viewCardLink: typeof CardsActions.viewCardLink;
 }
 
-const StudyScreen = ({ card, loading, playAudio, revealCard, status }: StudyScreenProps) => {
+const StudyScreen = ({
+  card,
+  loading,
+  playAudio,
+  revealCard,
+  status,
+  viewCardLink,
+}: StudyScreenProps) => {
   const [fabActive, setFab] = React.useState(false);
 
   let fab;
@@ -64,7 +72,13 @@ const StudyScreen = ({ card, loading, playAudio, revealCard, status }: StudyScre
         </Fab>
       );
     } else if (status === SCORE) {
-      content = <CardBody card={card} playAudio={playAudio} />;
+      content = (
+        <CardBody
+          card={card}
+          playAudio={playAudio}
+          viewCardLink={viewCardLink}
+        />
+      );
 
       fab = (
         <Fab
@@ -102,6 +116,7 @@ const connected = connect(
   {
     playAudio: CacheActions.playAudio,
     revealCard: SessionActions.revealCard,
+    viewCardLink: CardsActions.viewCardLink,
   },
 )(React.memo(StudyScreen));
 
