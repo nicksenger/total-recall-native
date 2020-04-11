@@ -1,10 +1,8 @@
-import { Container } from 'native-base';
 import * as React from 'react';
 import { WebView } from 'react-native';
 import { connect } from 'react-redux';
 
 import Burger from 'components/Burger';
-import { PaddedContent } from 'components/styled';
 import { TRState } from 'reducer';
 
 export interface CardLinkProps {

@@ -18,8 +18,8 @@ export const VIEW_CARD_DETAILS = 'VIEW_CARD_DETAILS';
 export const VIEW_CARD_LINK = 'VIEW_CARD_LINK';
 
 export const CardsActions = {
-  addCard: (deckId: number, front: string, back: string) =>
-  createAction(ADD_CARD, { deckId, front, back }),
+  addCard: (deckId: number, front: string, back: string, link?: string) =>
+  createAction(ADD_CARD, { deckId, front, back, link }),
   addCardFailed: (message: string) =>
     createAction(ADD_CARD_FAILED, { message }),
   addCardSuccess: (deckId: number) =>

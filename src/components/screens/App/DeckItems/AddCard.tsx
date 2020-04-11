@@ -17,6 +17,7 @@ export interface AddCardScreenProps {
 const AddCardScreen = ({ addCard, loading, deck }: AddCardScreenProps) => {
   const [front, setFront] = React.useState('');
   const [back, setBack] = React.useState('');
+  const [link, setLink] = React.useState('');
 
   if (!deck) {
     return <Text>No deck! Must be a bug.</Text>;
@@ -38,7 +39,17 @@ const AddCardScreen = ({ addCard, loading, deck }: AddCardScreenProps) => {
           value={back}
         />
       </Item>
-      <SubmitButton block={true} onPress={() => addCard(deck.id, front, back)}>
+      <Item last={true}>
+        <Input
+          placeholder="Link (optional)"
+          onChangeText={setLink}
+          value={link}
+        />
+      </Item>
+      <SubmitButton
+        block={true}
+        onPress={() => addCard(deck.id, front, back, link ? link : undefined)}
+      >
         <Text>Add Card</Text>
       </SubmitButton>
     </Form>

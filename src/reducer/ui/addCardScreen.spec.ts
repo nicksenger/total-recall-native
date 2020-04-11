@@ -4,7 +4,7 @@ import addCardScreen, { initialState } from './addCardScreen';
 describe('the addCardScreen reducer', () => {
   it('should set the loading state when a request to add card is sent', () => {
     const newState = addCardScreen(initialState, {
-      payload: { deckId: 123, front: 'foo', back: 'bar' },
+      payload: { deckId: 123, front: 'foo', back: 'bar', link: 'baz' },
       type: ADD_CARD,
     });
 

@@ -26,6 +26,7 @@ describe('the cards epics', () => {
       id: 123,
       image: 'foo.jpg',
       last_seen: 'somewhere',
+      link: 'http://some-link.com/',
       owner: 'foobar',
       score: '1,2,3',
     },
@@ -38,6 +39,7 @@ describe('the cards epics', () => {
       id: 456,
       image: 'bar.jpg',
       last_seen: 'somewhere',
+      link: 'http://some-link.com/',
       owner: 'foobar',
       score: '1,2,3',
     },
@@ -142,7 +144,7 @@ describe('the cards epics', () => {
       postMock.mockRestore();
     });
 
-    it('should make a request to the cards endpoint with deck id and cards', () => {
+    it('should make a request to the cards endpoint with deck id and card', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
           a: CardsActions.addCard(123, 'foo', 'bar'),

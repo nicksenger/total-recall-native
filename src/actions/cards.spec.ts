@@ -23,6 +23,7 @@ describe('the cards actions', () => {
       id: 123,
       image: 'foo.jpg',
       last_seen: 'somewhere',
+      link: 'http://some-link.com/',
       owner: 'foobar',
       score: '1,2,3',
     },
@@ -35,14 +36,15 @@ describe('the cards actions', () => {
       id: 456,
       image: 'bar.jpg',
       last_seen: 'somewhere',
+      link: 'http://some-link.com/',
       owner: 'foobar',
       score: '1,2,3',
     },
   ];
 
   it('should create the ADD_CARD action', () => {
-    const action = CardsActions.addCard(123, 'foo', 'bar');
-    expect(action.payload).toEqual({ deckId: 123, front: 'foo', back: 'bar' });
+    const action = CardsActions.addCard(123, 'foo', 'bar', 'baz');
+    expect(action.payload).toEqual({ deckId: 123, front: 'foo', back: 'bar', link: 'baz' });
     expect(action.type).toEqual(ADD_CARD);
   });
 

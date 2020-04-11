@@ -48,8 +48,8 @@ export const addCardEpic = (
 ) =>
   action$.pipe(
     ofType<TRActions, ReturnType<typeof CardsActions['addCard']>>(ADD_CARD),
-    mergeMap(({ payload: { deckId, front, back } }) =>
-      apiPost(state$, `/decks/${deckId}/cards/`, { front, back }).pipe(
+    mergeMap(({ payload: { deckId, front, back, link } }) =>
+      apiPost(state$, `/decks/${deckId}/cards/`, { front, back, link }).pipe(
         tap(() => goBack()),
         map(() => CardsActions.addCardSuccess(deckId)),
         catchError((e: Error) => of(CardsActions.addCardFailed(e.message))),
