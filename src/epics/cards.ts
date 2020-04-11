@@ -1,3 +1,4 @@
+import { identity, pickBy } from 'lodash';
 import {
   combineEpics,
   ofType,
@@ -49,7 +50,7 @@ export const addCardEpic = (
   action$.pipe(
     ofType<TRActions, ReturnType<typeof CardsActions['addCard']>>(ADD_CARD),
     mergeMap(({ payload: { deckId, front, back, link } }) =>
-      apiPost(state$, `/decks/${deckId}/cards/`, { front, back, link }).pipe(
+      apiPost(state$, `/decks/${deckId}/cards/`, pickBy({ front, back, link }), identity).pipe(
         tap(() => goBack()),
         map(() => CardsActions.addCardSuccess(deckId)),
         catchError((e: Error) => of(CardsActions.addCardFailed(e.message))),
