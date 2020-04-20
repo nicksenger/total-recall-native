@@ -755,6 +755,17 @@ export type EditCardLinkMutation = (
   )> }
 );
 
+export type LanguageListQueryVariables = {};
+
+
+export type LanguageListQuery = (
+  { __typename?: 'Query' }
+  & { Languages: Array<(
+    { __typename?: 'Language' }
+    & Pick<Language, 'id' | 'abbreviation' | 'name'>
+  )> }
+);
+
 export type UserDecksQueryVariables = {
   username: Scalars['String'];
 };
@@ -910,6 +921,15 @@ export const EditCardLink = gql`
     mutation EditCardLink($cardId: Int!, $link: String!) {
   UpdateCard(UpdateCard: {id: $cardId, link: $link}) {
     id
+  }
+}
+    `;
+export const LanguageList = gql`
+    query LanguageList {
+  Languages {
+    id
+    abbreviation
+    name
   }
 }
     `;

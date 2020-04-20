@@ -7,6 +7,7 @@ import {
   EDIT_CARD_LINK_SUCCESS,
   GET_CARDS_SUCCESS,
   GET_DECKS_SUCCESS,
+  GET_LANGUAGES_SUCCESS,
   GET_SETS_SUCCESS,
   RATE_CARD_SUCCESS,
   TRActions,
@@ -40,6 +41,12 @@ export interface Card {
   link: null | string;
 }
 
+export interface Language {
+  id: number;
+  abbrebiation: string;
+  name: string;
+}
+
 export interface EntitiesState {
   cards: { [id: number]: Card };
   deckCards: { [deckId: number]: number[] };
@@ -47,6 +54,7 @@ export interface EntitiesState {
   decks: { [id: number]: Deck };
   setCards: { [setId: number]: number[] };
   sets: { [id: number]: Set };
+  languages: { [id: number]: Language };
 }
 
 export const initialState: EntitiesState = {
@@ -54,6 +62,7 @@ export const initialState: EntitiesState = {
   deckCards: {},
   deckSets: {},
   decks: {},
+  languages: {},
   setCards: {},
   sets: {},
 };
@@ -191,6 +200,18 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
         },
       };
     }
+
+    case GET_LANGUAGES_SUCCESS:
+      return {
+        ...state,
+        languages: action.payload.languages.reduce(
+          (acc, cur) => ({
+            ...acc,
+            [cur.id]: cur,
+          }),
+          {} as { [key: number]: Language },
+        ),
+      };
 
     default:
       return state;

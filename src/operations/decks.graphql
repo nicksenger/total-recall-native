@@ -1,3 +1,11 @@
+query LanguageList {
+  Languages {
+    id
+    abbreviation
+    name
+  }
+}
+
 query UserDecks($username: String!) {
   Decks(filter: { owner: { username: { eq: $username } } }) {
     id

@@ -1,12 +1,12 @@
 import { Container, Form, Input, Item, Picker, Spinner, Text } from 'native-base';
 import * as React from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
-import { LanguageCode, Languages } from '_constants/languages';
 import { DecksActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
-import { connect } from 'react-redux';
 import { TRState } from 'reducer';
+import { Language } from 'reducer/entities';
 
 export interface AddDeckScreenProps {
   addDeck: typeof DecksActions['addDeck'];
@@ -15,8 +15,19 @@ export interface AddDeckScreenProps {
 }
 
 const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
-  const [language, setLanguage] = React.useState<LanguageCode>('en');
+  const [language, setLanguage] = React.useState<number>(0);
   const [name, setName] = React.useState('');
+  const languages = useSelector<TRState, Language[]>(
+    state => Object.values(state.entities.languages),
+  );
+  const dispatch = useDispatch();
+
+  React.useEffect(
+    () => {
+      dispatch(DecksActions.getLanguages());
+    },
+    []
+  );
 
   if (!username) {
     return <Text>No user! Must be a bug.</Text>;
@@ -41,8 +52,8 @@ const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
           selectedValue={language}
           onValueChange={setLanguage}
         >
-          {Object.keys(Languages).map((key: string) => (
-            <Picker.Item key={key} label={Languages[key]} value={key} />
+          {languages.map(({ id, name: languageName }) => (
+            <Picker.Item key={id} label={languageName} value={id} />
           ))}
         </Picker>
       </Item>

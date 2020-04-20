@@ -6,13 +6,14 @@ import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { DECK_DETAILS_SCREEN, DECK_ITEMS_SCREEN } from '_constants/screens';
-import { apiDelete, apiGraphQL } from '_utils/api';
+import { apiGraphQL } from '_utils/api';
 import {
   ADD_DECK,
   ADD_DECK_SUCCESS,
   DecksActions,
   DELETE_DECK,
   GET_DECKS,
+  GET_LANGUAGES,
   TRActions,
   VIEW_DECK_DETAILS,
   VIEW_DECK_ITEMS,
@@ -26,10 +27,36 @@ import {
   DeleteDeck,
   DeleteDeckMutation,
   DeleteDeckMutationVariables,
+  LanguageList,
+  LanguageListQuery,
+  LanguageListQueryVariables,
   UserDecks,
   UserDecksQuery,
   UserDecksQueryVariables,
 } from '../generated';
+
+export const fetchLanguagesEpic = (
+  action$: Observable<TRActions>,
+  state$: Observable<TRState>,
+) =>
+  action$.pipe(
+    ofType<TRActions, ReturnType<typeof DecksActions['getLanguages']>>(
+      GET_LANGUAGES,
+    ),
+    mergeMap(() =>
+      apiGraphQL<LanguageListQuery>(
+        state$,
+        { query: LanguageList, variables: {} as LanguageListQueryVariables },
+      ).pipe(
+        map(({ Languages }) => DecksActions.getLanguagesSuccess(Languages.map(l => ({
+          abbrebiation: l.abbreviation,
+          id: l.id,
+          name: l.name,
+        })))),
+        catchError((e: Error) => of(DecksActions.getLanguagesFailure(e.message))),
+      ),
+    ),
+  );
 
 export const fetchDecksEpic = (
   action$: Observable<TRActions>,
@@ -97,7 +124,7 @@ export const deleteDeckEpic = (
       DELETE_DECK,
     ),
     mergeMap(({ payload: { deckId } }) =>
-      apiGraphQL<DeleteDeckMutationVariables>(
+      apiGraphQL<DeleteDeckMutation>(
         state$,
         { query: DeleteDeck, variables: {} as DeleteDeckMutationVariables },
       ).pipe(

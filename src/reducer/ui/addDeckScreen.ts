@@ -2,6 +2,9 @@ import {
   ADD_DECK,
   ADD_DECK_FAILED,
   ADD_DECK_SUCCESS,
+  GET_LANGUAGES,
+  GET_LANGUAGES_FAILURE,
+  GET_LANGUAGES_SUCCESS,
   TRActions,
 } from 'actions';
 
@@ -31,6 +34,24 @@ export default (
       };
 
     case ADD_DECK_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_LANGUAGES:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case GET_LANGUAGES_FAILURE:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case GET_LANGUAGES_SUCCESS:
       return {
         ...state,
         loading: false,
