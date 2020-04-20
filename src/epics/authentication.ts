@@ -5,6 +5,7 @@ import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { BASE_URI } from '_constants/api';
 import { DECKS_SCREEN, LOGIN_SCREEN, REGISTER_SCREEN } from '_constants/screens';
+import { apiGraphQL } from '_utils/api';
 import { clearCredentials, retrieveCredentials, saveCredentials } from '_utils/sync';
 import {
   ATTEMPT_LOGIN,
@@ -17,6 +18,8 @@ import {
   TRActions,
 } from 'actions';
 import { navigate } from 'navigation/service';
+import { TRState } from 'reducer';
+import { Register } from '../generated';
 
 export const attemptLoginEpic = (action$: Observable<TRActions>) =>
   action$.pipe(
@@ -44,23 +47,20 @@ export const loginSuccessEpic = (action$: Observable<TRActions>) =>
     filter(() => false),
   );
 
-export const registrationEpic = (action$: Observable<TRActions>) =>
+export const registrationEpic = (
+  action$: Observable<TRActions>,
+  state$: Observable<TRState>,
+) =>
     action$.pipe(
       ofType<TRActions, ReturnType<typeof AuthenticationActions['register']>>(REGISTER),
       mergeMap(({ payload: { username, password } }) =>
-        ajax
-          .post(`${BASE_URI}/users/`, {
-            format: 'json',
-            password,
-            username,
-          })
-          .pipe(
-            tap(() => navigate(LOGIN_SCREEN)),
-            map(() =>
-              AuthenticationActions.registrationSuccess(),
-            ),
-            catchError((e: Error) => of(AuthenticationActions.registrationFailed(e.message))),
+        apiGraphQL(state$, { query: Register, variables: { username, password } }).pipe(
+          tap(() => navigate(LOGIN_SCREEN)),
+          map(() =>
+            AuthenticationActions.registrationSuccess(),
           ),
+          catchError((e: Error) => of(AuthenticationActions.registrationFailed(e.message))),
+        ),
       ),
     );
 

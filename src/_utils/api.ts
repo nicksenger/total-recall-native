@@ -4,6 +4,7 @@ import { BASE_URI } from '_constants/api';
 import { TRState } from 'reducer';
 import { Observable, of } from 'rxjs';
 import { mergeMap, withLatestFrom } from 'rxjs/operators';
+import { DocumentNode } from 'graphql';
 
 const apiRequest = (
   method: 'GET' | 'PATCH' | 'POST' | 'DELETE',
@@ -73,3 +74,20 @@ export const apiDelete = (
   path: string,
   headers?: object,
 ) => apiRequest('DELETE', state$, path, undefined, headers);
+
+/**
+ * GRAPHQL request with the current credentials using the configured BASE_URI
+ */
+export const apiGraphQL = (
+  state$: Observable<TRState>,
+  body: {
+    query: DocumentNode,
+    operationName?: string,
+    variables?: { [key: string]: any },
+  },
+) => apiPost(
+  state$,
+  '/graphql',
+  { ...body, query: body.query.loc?.source.body },
+  { 'Content-Type': 'application/json' },
+);
