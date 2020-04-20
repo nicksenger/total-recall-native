@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { STUDY_SCREEN } from '_constants/screens';
-import { apiPost } from '_utils/api';
+import { apiGraphQL } from '_utils/api';
 import {
   CacheActions,
   RATE_CARD,
@@ -17,6 +17,11 @@ import {
 } from 'actions';
 import { navigate } from 'navigation/service';
 import { TRState } from 'reducer';
+import {
+  RateCard,
+  RateCardMutation,
+  RateCardMutationVariables,
+} from '../generated';
 
 export const rateCardEpic = (
   action$: Observable<TRActions>,
@@ -27,7 +32,10 @@ export const rateCardEpic = (
       RATE_CARD,
     ),
     mergeMap(({ payload: { cardId, rating } }) =>
-      apiPost(state$, `/cards/${cardId}/score/`, { rating }).pipe(
+      apiGraphQL<RateCardMutation>(
+        state$,
+        { query: RateCard, variables: {} as RateCardMutationVariables },
+      ).pipe(
         map(() => SessionActions.rateCardSuccess(cardId, rating)),
         catchError((e: Error) => of(SessionActions.rateCardFailed(e.message))),
       ),

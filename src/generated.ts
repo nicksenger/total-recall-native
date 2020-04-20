@@ -803,6 +803,20 @@ export type DeleteDeckMutation = (
   )> }
 );
 
+export type RateCardMutationVariables = {
+  cardId: Scalars['Int'];
+  rating: ScoreValue;
+};
+
+
+export type RateCardMutation = (
+  { __typename?: 'Mutation' }
+  & { CreateScore?: Maybe<(
+    { __typename?: 'Score' }
+    & Pick<Score, 'id'>
+  )> }
+);
+
 export type UserSetsQueryVariables = {
   deckId: Scalars['Int'];
 };
@@ -925,6 +939,13 @@ export const DeleteDeck = gql`
     mutation DeleteDeck($id: Int!) {
   DeleteDeck(DeleteDeck: {id: $id}) {
     count
+  }
+}
+    `;
+export const RateCard = gql`
+    mutation RateCard($cardId: Int!, $rating: ScoreValue!) {
+  CreateScore(NewScore: {card: $cardId, value: $rating}) {
+    id
   }
 }
     `;
