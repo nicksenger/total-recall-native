@@ -692,6 +692,69 @@ export type RegisterMutation = (
   )> }
 );
 
+export type DeckCardsQueryVariables = {
+  deckId: Scalars['Int'];
+};
+
+
+export type DeckCardsQuery = (
+  { __typename?: 'Query' }
+  & { Cards: Array<(
+    { __typename?: 'Card' }
+    & Pick<Card, 'id' | 'created_at' | 'front' | 'link'>
+    & { back: (
+      { __typename?: 'Back' }
+      & Pick<Back, 'text' | 'audio' | 'image'>
+    ), scores: Array<(
+      { __typename?: 'Score' }
+      & Pick<Score, 'value' | 'created_at'>
+    )> }
+  )> }
+);
+
+export type CreateCardMutationVariables = {
+  deckId: Scalars['Int'];
+  front: Scalars['String'];
+  back: Scalars['String'];
+  link?: Maybe<Scalars['String']>;
+};
+
+
+export type CreateCardMutation = (
+  { __typename?: 'Mutation' }
+  & { CreateCard?: Maybe<(
+    { __typename?: 'Card' }
+    & Pick<Card, 'id'>
+  )> }
+);
+
+export type DeleteCardMutationVariables = {
+  cardId: Scalars['Int'];
+};
+
+
+export type DeleteCardMutation = (
+  { __typename?: 'Mutation' }
+  & { DeleteCard?: Maybe<(
+    { __typename?: 'DeletedCount' }
+    & Pick<DeletedCount, 'count'>
+  )> }
+);
+
+export type EditCardLinkMutationVariables = {
+  cardId: Scalars['Int'];
+  link: Scalars['String'];
+};
+
+
+export type EditCardLinkMutation = (
+  { __typename?: 'Mutation' }
+  & { UpdateCard?: Maybe<(
+    { __typename?: 'Card' }
+    & Pick<Card, 'id'>
+  )> }
+);
+
 export type UserDecksQueryVariables = {
   username: Scalars['String'];
 };
@@ -744,6 +807,46 @@ export type DeleteDeckMutation = (
 export const Register = gql`
     mutation Register($username: String!, $password: String!) {
   CreateUser(NewUser: {username: $username, password: $password}) {
+    id
+  }
+}
+    `;
+export const DeckCards = gql`
+    query DeckCards($deckId: Int!) {
+  Cards(filter: {deck: {id: {eq: $deckId}}}) {
+    id
+    created_at
+    front
+    back {
+      text
+      audio
+      image
+    }
+    scores {
+      value
+      created_at
+    }
+    link
+  }
+}
+    `;
+export const CreateCard = gql`
+    mutation CreateCard($deckId: Int!, $front: String!, $back: String!, $link: String) {
+  CreateCard(NewCard: {deck: $deckId, front: $front, back: $back, link: $link}) {
+    id
+  }
+}
+    `;
+export const DeleteCard = gql`
+    mutation DeleteCard($cardId: Int!) {
+  DeleteCard(DeleteCard: {id: $cardId}) {
+    count
+  }
+}
+    `;
+export const EditCardLink = gql`
+    mutation EditCardLink($cardId: Int!, $link: String!) {
+  UpdateCard(UpdateCard: {id: $cardId, link: $link}) {
     id
   }
 }
