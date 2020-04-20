@@ -3,7 +3,6 @@ import * as React from 'react';
 import { NavigationProp } from 'react-navigation';
 import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
-import { createLogger } from 'redux-logger';
 import { createEpicMiddleware } from 'redux-observable';
 
 import RootNavigator from 'navigation';
@@ -13,7 +12,7 @@ import rootEpic from 'epics';
 import reducer from 'reducer';
 
 const epicMiddleware = createEpicMiddleware();
-const store = createStore(reducer, applyMiddleware(epicMiddleware, createLogger()));
+const store = createStore(reducer, applyMiddleware(epicMiddleware));
 epicMiddleware.run(rootEpic);
 
 export default () => (
