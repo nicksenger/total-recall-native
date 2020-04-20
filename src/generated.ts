@@ -803,6 +803,54 @@ export type DeleteDeckMutation = (
   )> }
 );
 
+export type UserSetsQueryVariables = {
+  deckId: Scalars['Int'];
+};
+
+
+export type UserSetsQuery = (
+  { __typename?: 'Query' }
+  & { Sets: Array<(
+    { __typename?: 'Set' }
+    & Pick<Set, 'id' | 'name'>
+    & { owner: (
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    ), cards: Array<(
+      { __typename?: 'SetCard' }
+      & Pick<SetCard, 'id'>
+    )> }
+  )> }
+);
+
+export type CreateSetMutationVariables = {
+  deckId: Scalars['Int'];
+  name: Scalars['String'];
+  card_ids: Array<Scalars['Int']>;
+};
+
+
+export type CreateSetMutation = (
+  { __typename?: 'Mutation' }
+  & { CreateSet?: Maybe<(
+    { __typename?: 'Set' }
+    & Pick<Set, 'id'>
+  )> }
+);
+
+export type DeleteSetMutationVariables = {
+  setId: Scalars['Int'];
+};
+
+
+export type DeleteSetMutation = (
+  { __typename?: 'Mutation' }
+  & { DeleteSet?: Maybe<(
+    { __typename?: 'DeletedCount' }
+    & Pick<DeletedCount, 'count'>
+  )> }
+);
+
 
 export const Register = gql`
     mutation Register($username: String!, $password: String!) {
@@ -876,6 +924,34 @@ export const CreateDeck = gql`
 export const DeleteDeck = gql`
     mutation DeleteDeck($id: Int!) {
   DeleteDeck(DeleteDeck: {id: $id}) {
+    count
+  }
+}
+    `;
+export const UserSets = gql`
+    query UserSets($deckId: Int!) {
+  Sets(filter: {deck: {id: {eq: $deckId}}}) {
+    id
+    name
+    owner {
+      username
+    }
+    cards {
+      id
+    }
+  }
+}
+    `;
+export const CreateSet = gql`
+    mutation CreateSet($deckId: Int!, $name: String!, $card_ids: [Int!]!) {
+  CreateSet(NewSet: {deck: $deckId, name: $name, cards: $card_ids}) {
+    id
+  }
+}
+    `;
+export const DeleteSet = gql`
+    mutation DeleteSet($setId: Int!) {
+  DeleteSet(DeleteSet: {id: $setId}) {
     count
   }
 }
