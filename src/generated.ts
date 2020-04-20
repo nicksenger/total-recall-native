@@ -692,11 +692,88 @@ export type RegisterMutation = (
   )> }
 );
 
+export type UserDecksQueryVariables = {
+  username: Scalars['String'];
+};
+
+
+export type UserDecksQuery = (
+  { __typename?: 'Query' }
+  & { Decks: Array<(
+    { __typename?: 'Deck' }
+    & Pick<Deck, 'id' | 'name'>
+    & { language: (
+      { __typename?: 'Language' }
+      & Pick<Language, 'name'>
+    ) }
+  )> }
+);
+
+export type CreateDeckMutationVariables = {
+  name: Scalars['String'];
+  language: Scalars['Int'];
+};
+
+
+export type CreateDeckMutation = (
+  { __typename?: 'Mutation' }
+  & { CreateDeck?: Maybe<(
+    { __typename?: 'Deck' }
+    & Pick<Deck, 'id' | 'name'>
+    & { language: (
+      { __typename?: 'Language' }
+      & Pick<Language, 'name'>
+    ) }
+  )> }
+);
+
+export type DeleteDeckMutationVariables = {
+  id: Scalars['Int'];
+};
+
+
+export type DeleteDeckMutation = (
+  { __typename?: 'Mutation' }
+  & { DeleteDeck?: Maybe<(
+    { __typename?: 'DeletedCount' }
+    & Pick<DeletedCount, 'count'>
+  )> }
+);
+
 
 export const Register = gql`
     mutation Register($username: String!, $password: String!) {
   CreateUser(NewUser: {username: $username, password: $password}) {
     id
+  }
+}
+    `;
+export const UserDecks = gql`
+    query UserDecks($username: String!) {
+  Decks(filter: {owner: {username: {eq: $username}}}) {
+    id
+    name
+    language {
+      name
+    }
+  }
+}
+    `;
+export const CreateDeck = gql`
+    mutation CreateDeck($name: String!, $language: Int!) {
+  CreateDeck(NewDeck: {name: $name, language: $language}) {
+    id
+    name
+    language {
+      name
+    }
+  }
+}
+    `;
+export const DeleteDeck = gql`
+    mutation DeleteDeck($id: Int!) {
+  DeleteDeck(DeleteDeck: {id: $id}) {
+    count
   }
 }
     `;

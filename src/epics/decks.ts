@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
 import { DECK_DETAILS_SCREEN, DECK_ITEMS_SCREEN } from '_constants/screens';
-import { apiDelete, apiGet, apiPost } from '_utils/api';
+import { apiDelete, apiGraphQL } from '_utils/api';
 import {
   ADD_DECK,
   ADD_DECK_SUCCESS,
@@ -19,6 +19,17 @@ import {
 } from 'actions';
 import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
+import {
+  CreateDeck,
+  CreateDeckMutation,
+  CreateDeckMutationVariables,
+  DeleteDeck,
+  DeleteDeckMutation,
+  DeleteDeckMutationVariables,
+  UserDecks,
+  UserDecksQuery,
+  UserDecksQueryVariables,
+} from '../generated';
 
 export const fetchDecksEpic = (
   action$: Observable<TRActions>,
@@ -32,8 +43,17 @@ export const fetchDecksEpic = (
         GET_DECKS,
       ),
     mergeMap(({ payload: { username } }) =>
-      apiGet(state$, `/user/${username}/decks/`).pipe(
-        map(({ response }) => DecksActions.getDecksSuccess(response)),
+      apiGraphQL<UserDecksQuery>(
+        state$,
+        { query: UserDecks, variables: { username } as UserDecksQueryVariables },
+      ).pipe(
+        map(({ Decks }) => DecksActions.getDecksSuccess(Decks.map(d => ({
+          created: '',
+          id: d.id,
+          language: d.language.name,
+          name: d.name,
+          owner: username,
+        })))),
         catchError((e: Error) => of(DecksActions.getDecksFailed(e.message))),
       ),
     ),
@@ -46,9 +66,23 @@ export const addDeckEpic = (
   action$.pipe(
     ofType<TRActions, ReturnType<typeof DecksActions['addDeck']>>(ADD_DECK),
     mergeMap(({ payload: { name, language, username } }) =>
-      apiPost(state$, `/user/${username}/decks/`, { name, language }).pipe(
+      apiGraphQL<CreateDeckMutation>(
+        state$,
+        { query: CreateDeck, variables: { name, language } as CreateDeckMutationVariables },
+      ).pipe(
         tap(() => goBack()),
-        map(({ response: deck }) => DecksActions.addDeckSuccess(deck, username)),
+        map(
+          (result: CreateDeckMutation) => DecksActions.addDeckSuccess(
+            {
+              created: '' as string,
+              id: result.CreateDeck?.id as number,
+              language: result.CreateDeck?.language.name as string,
+              name: result.CreateDeck?.name as string,
+              owner: username,
+            },
+            username,
+          ),
+        ),
         catchError((e: Error) => of(DecksActions.addDeckFailed(e.message))),
       ),
     ),
@@ -63,7 +97,10 @@ export const deleteDeckEpic = (
       DELETE_DECK,
     ),
     mergeMap(({ payload: { deckId } }) =>
-      apiDelete(state$, `/decks/${deckId}/`).pipe(
+      apiGraphQL<DeleteDeckMutationVariables>(
+        state$,
+        { query: DeleteDeck, variables: {} as DeleteDeckMutationVariables },
+      ).pipe(
         tap(() => goBack()),
         map(() => DecksActions.deleteDeckSuccess(deckId)),
         catchError((e: Error) => of(DecksActions.deleteDeckFailed(e.message))),

@@ -2,8 +2,8 @@ import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 import { BASE_URI } from '_constants/api';
 import { TRState } from 'reducer';
-import { Observable, of } from 'rxjs';
-import { mergeMap, withLatestFrom } from 'rxjs/operators';
+import { Observable, of, identity } from 'rxjs';
+import { mergeMap, withLatestFrom, map } from 'rxjs/operators';
 import { DocumentNode } from 'graphql';
 
 const apiRequest = (
@@ -78,7 +78,7 @@ export const apiDelete = (
 /**
  * GRAPHQL request with the current credentials using the configured BASE_URI
  */
-export const apiGraphQL = (
+export const apiGraphQL = <T>(
   state$: Observable<TRState>,
   body: {
     query: DocumentNode,
@@ -90,4 +90,6 @@ export const apiGraphQL = (
   '/graphql',
   { ...body, query: body.query.loc?.source.body },
   { 'Content-Type': 'application/json' },
+).pipe(
+  map<AjaxResponse, T>(({ response }) => response.data),
 );
