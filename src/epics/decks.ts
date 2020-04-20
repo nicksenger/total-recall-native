@@ -155,6 +155,7 @@ export default combineEpics(
   addDeckEpic,
   deleteDeckEpic,
   fetchDecksEpic,
+  fetchLanguagesEpic,
   viewDeckDetailsEpic,
   viewDeckItemsEpic,
 );

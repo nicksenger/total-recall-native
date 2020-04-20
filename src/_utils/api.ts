@@ -19,9 +19,7 @@ const apiRequest = (
       const fullPath = `${BASE_URI}${path}`;
       const modHeaders = {
         ...headers,
-        Authorization: authentication.token
-          ? `Token ${authentication.token}`
-          : undefined,
+        Authorization: authentication.token,
       };
 
       switch (method) {
