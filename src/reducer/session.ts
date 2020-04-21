@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { PROMPT, SCORE } from '_constants/session';
+import { PROMPT, SCORE, SCORE_TO_NUMBER } from '_constants/session';
 import { insertSecondHalf } from '_utils/session';
 import {
   RATE_CARD,
@@ -47,7 +47,7 @@ export default (
         loading: true,
       };
 
-    case RATE_CARD_SUCCESS:
+    case RATE_CARD_SUCCESS: {
       const { rating } = action.payload;
       const newRateStack = [...state.rateStack];
       const card = newRateStack.shift();
@@ -56,11 +56,12 @@ export default (
         ...state,
         loading: false,
         rateStack: newRateStack,
-        reviewList: rating <= 3 && card ?
+        reviewList: (SCORE_TO_NUMBER[rating] <= 3) && card ?
           insertSecondHalf(state.reviewList, card) :
           state.reviewList,
         status: PROMPT,
       };
+    }
 
     case RATE_CARD_FAILED:
       return {
@@ -74,16 +75,18 @@ export default (
         status: SCORE,
       };
 
-    case REVIEW_CARD:
+    case REVIEW_CARD: {
       const { reviewList } = state;
+      const { rating } = action.payload;
       return {
         ...state,
         reviewList:
-          action.payload.rating > 3
+          (SCORE_TO_NUMBER[rating] > 3)
             ? reviewList.slice(1)
             : insertSecondHalf(reviewList.slice(1), reviewList[0]),
         status: PROMPT,
       };
+    }
 
     default:
       return state;

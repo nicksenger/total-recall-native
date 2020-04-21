@@ -15,7 +15,7 @@ export const VIEW_SET_DETAILS = 'VIEW_SET_DETAILS';
 
 export const SetsActions = {
   addSet: (deckId: number, name: string, cardIds: number[]) =>
-    createAction(ADD_SET, { deckId, name, card_ids: cardIds.join(',') }),
+    createAction(ADD_SET, { deckId, name, card_ids: cardIds }),
   addSetFailed: (message: string) => createAction(ADD_SET_FAILED, { message }),
   addSetSuccess: (deckId: number) => createAction(ADD_SET_SUCCESS, { deckId }),
   deleteSet: (setId: number) => createAction(DELETE_SET, { setId }),

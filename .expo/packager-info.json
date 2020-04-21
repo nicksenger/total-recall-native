@@ -1,10 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 10481,
-  "expoServerNgrokUrl": "https://sz-6df.synthego.total-recall-native.exp.direct",
-  "packagerNgrokUrl": "https://packager.sz-6df.synthego.total-recall-native.exp.direct",
-  "ngrokPid": 10515,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
   "webpackServerPort": null
 }

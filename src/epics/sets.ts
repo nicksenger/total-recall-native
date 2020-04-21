@@ -73,7 +73,7 @@ export const addSetEpic = (
         {
           query: CreateSet,
           variables: {
-            card_ids: card_ids.split('').map(i => parseInt(i, 10)),
+            card_ids,
             deckId,
             name,
           } as CreateSetMutationVariables },

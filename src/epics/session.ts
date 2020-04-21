@@ -5,6 +5,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 
+import { BASE_URI } from '_constants/api';
 import { STUDY_SCREEN } from '_constants/screens';
 import { apiGraphQL } from '_utils/api';
 import {
@@ -34,7 +35,7 @@ export const rateCardEpic = (
     mergeMap(({ payload: { cardId, rating } }) =>
       apiGraphQL<RateCardMutation>(
         state$,
-        { query: RateCard, variables: {} as RateCardMutationVariables },
+        { query: RateCard, variables: { cardId, rating } as RateCardMutationVariables },
       ).pipe(
         map(() => SessionActions.rateCardSuccess(cardId, rating)),
         catchError((e: Error) => of(SessionActions.rateCardFailed(e.message))),
@@ -52,7 +53,7 @@ export const studyEpic = (action$: Observable<TRActions>) =>
 export const revealCardEpic = (action$: Observable<TRActions>) =>
     action$.pipe(
       ofType<TRActions, ReturnType<typeof SessionActions['revealCard']>>(REVEAL_CARD),
-      map(({ payload: { card } }) => CacheActions.playAudio(card.audio)),
+      map(({ payload: { card } }) => CacheActions.playAudio(`${BASE_URI}/${card.audio}`)),
     );
 
 export default combineEpics(rateCardEpic, revealCardEpic, studyEpic);

@@ -10,6 +10,7 @@ import {
   CARD_LINK_SCREEN,
   EDIT_CARD_LINK_SCREEN,
 } from '_constants/screens';
+import { SCORE_TO_NUMBER } from '_constants/session';
 import { apiGraphQL } from '_utils/api';
 import {
   ADD_CARD,
@@ -61,9 +62,11 @@ export const fetchCardsEpic = (
             front: c.front,
             id: c.id,
             image: c.back.image ? c.back.image : '',
-            last_seen: (new Date(c.scores.pop()?.created_at)).toUTCString(),
+            last_seen: c.scores.length ?
+              new Date(c.scores[c.scores.length - 1].created_at).toUTCString() :
+              new Date(0).toUTCString(),
             link: c.link ? c.link : '',
-            score: `${c.scores.map(s => s.value).join('')}`,
+            score: `${c.scores.map(s => SCORE_TO_NUMBER[s.value]).join(',')}`,
           })),
           deckId,
         )),

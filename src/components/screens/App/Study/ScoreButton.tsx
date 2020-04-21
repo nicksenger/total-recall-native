@@ -1,4 +1,5 @@
 import { SessionActions } from 'actions';
+import { ScoreValue } from 'generated';
 import { Text } from 'native-base';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -7,7 +8,8 @@ import { TRState } from 'reducer';
 
 export interface ScoreButtonProps {
   cardId: number;
-  rating: number;
+  index: number;
+  rating: ScoreValue;
   rateCard: typeof SessionActions.rateCard;
   reviewCard: typeof SessionActions.reviewCard;
   reviewing: boolean;
@@ -17,7 +19,7 @@ export const ScoreButton = (props: ScoreButtonProps) => (
   <TouchableOpacity
     onPress={() => handleScore(props)}
   >
-    <Text>{props.rating}</Text>
+    <Text>{props.index}</Text>
   </TouchableOpacity>
 );
 
