@@ -26,7 +26,7 @@ const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
     () => {
       dispatch(DecksActions.getLanguages());
     },
-    []
+    [],
   );
 
   if (!username) {

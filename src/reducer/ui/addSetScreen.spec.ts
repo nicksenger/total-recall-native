@@ -33,7 +33,7 @@ describe('the addSetScreen reducer', () => {
 
   it('should set the loading state when a request to add set is sent', () => {
     const newState = addSetScreen(initialState, {
-      payload: { deckId: 123, name: 'foo', card_ids: '1,2,3' },
+      payload: { deckId: 123, name: 'foo', card_ids: [1, 2, 3] },
       type: ADD_SET,
     });
 

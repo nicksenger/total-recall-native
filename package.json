@@ -9,7 +9,7 @@
     "build:ios": "expo build:ios",
     "publish": "expo publish",
     "test": "npm run tslint && npm run tsc-test && npm run jest",
-    "tslint": "tslint --project .",
+    "tslint": "tslint --exclude ./src/generated.ts --project .",
     "tsc-test": "tsc --project .",
     "jest": "jest"
   },

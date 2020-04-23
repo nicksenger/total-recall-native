@@ -1,7 +1,8 @@
 import { TestScheduler } from 'rxjs/testing';
 
 import { BASE_URI } from '_constants/api';
-import { AuthenticationActions, CacheActions } from 'actions';
+import * as apiUtils from '_utils/api';
+import { AuthenticationActions, CacheActions, TRActions } from 'actions';
 import * as navigationService from 'navigation/service';
 import {
   attemptLoginEpic,
@@ -13,6 +14,9 @@ import {
 
 import { DECKS_SCREEN, LOGIN_SCREEN, REGISTER_SCREEN } from '_constants/screens';
 import * as sync from '_utils/sync';
+import { Register, RegisterMutation, RegisterMutationVariables } from 'generated';
+import reducer, { TRState } from 'reducer';
+import { Observable } from 'rxjs';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 describe('the authentication epics', () => {
@@ -57,9 +61,8 @@ describe('the authentication epics', () => {
       });
 
       expect(postMock.mock.calls).toHaveLength(1);
-      expect(postMock.mock.calls[0][0]).toEqual(`${BASE_URI}/api-token-auth/`);
+      expect(postMock.mock.calls[0][0]).toEqual(`${BASE_URI}/login`);
       expect(postMock.mock.calls[0][1]).toEqual({
-        format: 'json',
         password: 'bar',
         username: 'foo',
       });
@@ -124,33 +127,38 @@ describe('the authentication epics', () => {
     let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      postMock = jest.spyOn(ajax, 'post');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
       postMock.mockRestore();
     });
 
-    it('should make a request to the users endpoint with username and password', () => {
+    it('should make a Registration mutation', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
           a: AuthenticationActions.register('foo', 'bar'),
+        });
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
         });
 
         postMock.mockImplementation(() => cold('--a', {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = registrationEpic(action$);
+        const output$ = registrationEpic(action$, state$);
         expectObservable(output$);
       });
 
       expect(postMock.mock.calls).toHaveLength(1);
-      expect(postMock.mock.calls[0][0]).toEqual(`${BASE_URI}/users/`);
-      expect(postMock.mock.calls[0][1]).toEqual({
-        format: 'json',
-        password: 'bar',
-        username: 'foo',
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: Register.loc?.source.body,
+        variables: {
+          password: 'bar',
+          username: 'foo',
+        } as RegisterMutationVariables,
       });
     });
 
@@ -160,12 +168,15 @@ describe('the authentication epics', () => {
           const action$ = hot('-a', {
             a: AuthenticationActions.register('foo', 'bar'),
           });
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
-            a: { response: { token: 'abc123' } } as AjaxResponse,
+            a: { response: { data: 'abc123' } } as AjaxResponse,
           }));
 
-          const output$ = registrationEpic(action$);
+          const output$ = registrationEpic(action$, state$);
 
           expectObservable(output$).toBe('---a', {
             a: AuthenticationActions.registrationSuccess(),
@@ -178,12 +189,17 @@ describe('the authentication epics', () => {
           const action$ = hot('-a', {
             a: AuthenticationActions.register('foo', 'bar'),
           });
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
-            a: { response: { token: 'abc123' } } as AjaxResponse,
+            a: {
+              response: { data: { CreateUser: { id: 1 } } as RegisterMutation },
+            } as AjaxResponse,
           }));
 
-          const output$ = registrationEpic(action$);
+          const output$ = registrationEpic(action$, state$);
 
           expectObservable(output$);
         });
@@ -199,10 +215,21 @@ describe('the authentication epics', () => {
           const action$ = hot('-a', {
             a: AuthenticationActions.register('foo', 'bar'),
           });
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold('--a', {
+            a: {
+              response: {
+                errors: [{
+                  message: 'failed!',
+                }],
+              },
+            },
+          }));
 
-          const output$ = registrationEpic(action$);
+          const output$ = registrationEpic(action$, state$);
 
           expectObservable(output$).toBe('---a', {
             a: AuthenticationActions.registrationFailed('failed!'),

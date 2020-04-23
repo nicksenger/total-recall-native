@@ -9,6 +9,7 @@ import {
   REVIEW_CARD,
   STUDY,
 } from 'actions';
+import { ScoreValue } from 'generated';
 import * as superMemo from './_utils/superMemo';
 import { Card } from './entities';
 import session, { initialState } from './session';
@@ -76,7 +77,7 @@ describe('the session reducer', () => {
 
   it('should set the loading state when a request to rate a card is sent', () => {
     const newState = session(initialState, {
-      payload: { cardId: 123, rating: 5 },
+      payload: { cardId: 123, rating: ScoreValue.Five },
       type: RATE_CARD,
     });
 
@@ -87,7 +88,7 @@ describe('the session reducer', () => {
     it('should reset the loading state', () => {
       const newState = session(
         { ...initialState, loading: true, rateStack: [cards[0], cards[1]] },
-        { payload: { cardId: 123, rating: 5 }, type: RATE_CARD_SUCCESS },
+        { payload: { cardId: 123, rating: ScoreValue.Five }, type: RATE_CARD_SUCCESS },
       );
 
       expect(newState.loading).toBeFalsy();
@@ -96,7 +97,7 @@ describe('the session reducer', () => {
     it('should pop the stack of cards to rate for this session', () => {
       const newState = session(
         { ...initialState, loading: true, rateStack: [cards[0], cards[1]] },
-        { payload: { cardId: 123, rating: 5 }, type: RATE_CARD_SUCCESS },
+        { payload: { cardId: 123, rating: ScoreValue.Five }, type: RATE_CARD_SUCCESS },
       );
 
       expect(newState.rateStack).toHaveLength(1);
@@ -106,7 +107,7 @@ describe('the session reducer', () => {
     it('should add the card to the review list if the rating is 3 or less', () => {
       const reviewState = session(
         { ...initialState, loading: true, rateStack: [cards[0], cards[1]] },
-        { payload: { cardId: 123, rating: 2 }, type: RATE_CARD_SUCCESS },
+        { payload: { cardId: 123, rating: ScoreValue.Three }, type: RATE_CARD_SUCCESS },
       );
 
       expect(reviewState.reviewList).toHaveLength(1);
@@ -114,7 +115,7 @@ describe('the session reducer', () => {
 
       const noReviewState = session(
         { ...initialState, loading: true, rateStack: [cards[0], cards[1]] },
-        { payload: { cardId: 123, rating: 5 }, type: RATE_CARD_SUCCESS },
+        { payload: { cardId: 123, rating: ScoreValue.Five }, type: RATE_CARD_SUCCESS },
       );
 
       expect(noReviewState.reviewList).toHaveLength(0);
@@ -124,7 +125,7 @@ describe('the session reducer', () => {
     it('should change the status to PROMPT', () => {
       const reviewState = session(
         { ...initialState, loading: true, rateStack: [cards[0], cards[1]], status: SCORE },
-        { payload: { cardId: 123, rating: 2 }, type: RATE_CARD_SUCCESS },
+        { payload: { cardId: 123, rating: ScoreValue.Two }, type: RATE_CARD_SUCCESS },
       );
 
       expect(reviewState.status).toEqual(PROMPT);
@@ -153,7 +154,7 @@ describe('the session reducer', () => {
     it('should remove the card from the review list if the rating is higher than 3', () => {
       const reviewState = session(
         { ...initialState, loading: true, reviewList: [cards[0], cards[1]], status: SCORE },
-        { payload: { rating: 4 }, type: REVIEW_CARD },
+        { payload: { rating: ScoreValue.Four }, type: REVIEW_CARD },
       );
 
       expect(_.find(reviewState.reviewList, cards[0])).toBeUndefined();
@@ -163,7 +164,7 @@ describe('the session reducer', () => {
     it('should move the card to back of review list if rating 3 or less', () => {
       const reviewState = session(
         { ...initialState, loading: true, reviewList: [cards[0], cards[1]], status: SCORE },
-        { payload: { rating: 3 }, type: REVIEW_CARD },
+        { payload: { rating: ScoreValue.Three }, type: REVIEW_CARD },
       );
 
       expect(_.find(reviewState.reviewList, cards[0])).toBeDefined();
@@ -173,7 +174,7 @@ describe('the session reducer', () => {
     it('should change the status to PROMPT', () => {
       const reviewState = session(
         { ...initialState, loading: true, reviewList: [cards[0], cards[1]], status: SCORE },
-        { payload: { rating: 3 }, type: REVIEW_CARD },
+        { payload: { rating: ScoreValue.Three }, type: REVIEW_CARD },
       );
 
       expect(reviewState.status).toEqual(PROMPT);

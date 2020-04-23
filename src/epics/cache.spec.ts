@@ -12,6 +12,7 @@ import {
 import { DECKS_SCREEN, REGISTER_SCREEN } from '_constants/screens';
 import * as mediaUtils from '_utils/media';
 import * as syncUtils from '_utils/sync';
+import { TRActions } from 'actions';
 import * as navigationService from 'navigation/service';
 import reducer, { TRState } from 'reducer';
 
@@ -54,7 +55,7 @@ describe('the cache epics', () => {
 
           const state$: Observable<TRState> = hot('-a', {
             a: {
-              ...reducer(undefined, { type: 'init' }),
+              ...reducer(undefined, { type: 'init' } as unknown as TRActions),
               cache: { cache: { foo: 'bar', waldo: 'fred' } },
             },
           });
@@ -78,7 +79,7 @@ describe('the cache epics', () => {
 
           const state$: Observable<TRState> = hot('-a', {
             a: {
-              ...reducer(undefined, { type: 'init' }),
+              ...reducer(undefined, { type: 'init' } as unknown as TRActions),
               cache: { cache: { foo: 'bar', waldo: 'fred' } },
             },
           });
@@ -174,7 +175,7 @@ describe('the cache epics', () => {
 
             const state$: Observable<TRState> = hot('-a', {
               a: {
-                ...reducer(undefined, { type: 'init' }),
+                ...reducer(undefined, { type: 'init' } as unknown as TRActions),
                 cache: { cache: { 'baz.mp3': 'foo.mp3' } },
               },
             });
@@ -198,7 +199,7 @@ describe('the cache epics', () => {
 
             const state$: Observable<TRState> = hot('-a', {
               a: {
-                ...reducer(undefined, { type: 'init' }),
+                ...reducer(undefined, { type: 'init' } as unknown as TRActions),
                 cache: { cache: { 'baz.mp3': 'foo.mp3' } },
               },
             });
@@ -224,7 +225,7 @@ describe('the cache epics', () => {
 
               const state$: Observable<TRState> = hot('-a', {
                 a: {
-                  ...reducer(undefined, { type: 'init' }),
+                  ...reducer(undefined, { type: 'init' } as unknown as TRActions),
                   cache: { cache: {} },
                 },
               });
@@ -249,7 +250,7 @@ describe('the cache epics', () => {
 
               const state$: Observable<TRState> = hot('-a', {
                 a: {
-                  ...reducer(undefined, { type: 'init' }),
+                  ...reducer(undefined, { type: 'init' } as unknown as TRActions),
                   cache: { cache: {} },
                 },
               });
@@ -274,7 +275,7 @@ describe('the cache epics', () => {
 
             const state$: Observable<TRState> = hot('-a', {
               a: {
-                ...reducer(undefined, { type: 'init' }),
+                ...reducer(undefined, { type: 'init' } as unknown as TRActions),
                 cache: { cache: {} },
               },
             });

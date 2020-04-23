@@ -81,6 +81,7 @@ export const apiGraphQL = <T>(
   body: {
     query: DocumentNode,
     operationName?: string,
+    // tslint:disable-next-line
     variables?: { [key: string]: any },
   },
 ) => apiPost(

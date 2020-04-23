@@ -7,6 +7,7 @@ import {
   GET_SETS_SUCCESS,
   RATE_CARD_SUCCESS,
 } from 'actions';
+import { ScoreValue } from 'generated';
 import entities, { initialState } from './entities';
 
 describe('the entities reducer', () => {
@@ -216,7 +217,7 @@ describe('the entities reducer', () => {
         },
       },
       {
-        payload: { cardId: 123, rating: 5 },
+        payload: { cardId: 123, rating: ScoreValue.Five },
         type: RATE_CARD_SUCCESS,
       },
     );

@@ -18,26 +18,26 @@ const DeckDetailsScreen = ({ deck, username }: DeckDetailsScreenProps) => {
   const content = deck ? (
     <Tabs style={{ backgroundColor: '#2a5687' }} scrollWithoutAnimation={false}>
       <Tab
-        heading={
+        heading={(
           <TabHeading>
             <Text>
               <MaterialCommunityIcons name="cards-outline" size={25} color="white" />
               {'  '}Cards
             </Text>
           </TabHeading>
-        }
+        )}
       >
         <Cards deck={deck} />
       </Tab>
       <Tab
-        heading={
+        heading={(
           <TabHeading>
             <Text>
               <FontAwesome name="clone" size={25} color="white" />
               {'  '}Sets
             </Text>
           </TabHeading>
-        }
+        )}
       >
         <Sets deck={deck} />
       </Tab>

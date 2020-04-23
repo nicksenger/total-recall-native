@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
-import { CardsActions } from 'actions';
+import { CardsActions, TRActions } from 'actions';
 import {
   addCardEpic,
   deleteCardEpic,
@@ -12,38 +12,62 @@ import {
 
 import { CARD_DETAILS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
+import {
+  CreateCard,
+  CreateCardMutation,
+  CreateCardMutationVariables,
+  DeckCards,
+  DeckCardsQuery,
+  DeckCardsQueryVariables,
+  DeleteCard,
+  DeleteCardMutationVariables,
+  ScoreValue,
+} from 'generated';
 import * as navigationService from 'navigation/service';
-import { TRState } from 'reducer';
+import reducer, { TRState } from 'reducer';
 
 describe('the cards epics', () => {
-  const cards = [
-    {
-      audio: 'foo.mp3',
-      back: 'foo',
-      created: 'somehow',
-      deck: 123,
+  const cardsResponse = {
+    Cards: [{
+      back: {
+        audio: 'foo.mp3',
+        image: 'foo.jpg',
+        text: 'foo',
+      },
+      created_at: 1587618082113,
       front: 'foo',
       id: 123,
-      image: 'foo.jpg',
-      last_seen: 'somewhere',
       link: 'http://some-link.com/',
-      owner: 'foobar',
-      score: '1,2,3',
-    },
-    {
-      audio: 'bar.mp3',
-      back: 'bar',
-      created: 'somehow',
-      deck: 123,
-      front: 'bar',
-      id: 456,
-      image: 'bar.jpg',
-      last_seen: 'somewhere',
-      link: 'http://some-link.com/',
-      owner: 'foobar',
-      score: '1,2,3',
-    },
-  ];
+      owner: {
+        username: 'foobar',
+      },
+      scores: [
+        {
+          created_at: 1587618082113,
+          value: ScoreValue.One,
+        },
+        {
+          created_at: 1587618082114,
+          value: ScoreValue.Two,
+        },
+        {
+          created_at: 1587618082115,
+          value: ScoreValue.Three,
+        },
+      ],
+    }],
+  } as DeckCardsQuery;
+  const card = {
+    audio: 'foo.mp3',
+    back: 'foo',
+    created: 'Thu, 23 Apr 2020 05:01:22 GMT',
+    front: 'foo',
+    id: 123,
+    image: 'foo.jpg',
+    last_seen: 'Thu, 23 Apr 2020 05:01:22 GMT',
+    link: 'http://some-link.com/',
+    score: '1,2,3',
+  };
 
   let scheduler: TestScheduler;
   let goBackMock: jest.SpyInstance;
@@ -65,14 +89,14 @@ describe('the cards epics', () => {
   });
 
   describe('the fetch cards epic', () => {
-    let getMock: jest.SpyInstance;
+    let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      getMock = jest.spyOn(apiUtils, 'apiGet');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
-      getMock.mockRestore();
+      postMock.mockRestore();
     });
 
     it('should make a request to the cards endpoint with deck id', () => {
@@ -80,18 +104,26 @@ describe('the cards epics', () => {
         const action$ = hot('-a', {
           a: CardsActions.getCards(123),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
-        getMock.mockImplementation(() => cold('--a', {
-          a: { response: cards } as AjaxResponse,
+        postMock.mockImplementation(() => cold('--a', {
+          a: { response: { data: cardsResponse } } as AjaxResponse,
         }));
 
-        const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = fetchCardsEpic(action$, state$);
         expectObservable(output$);
       });
 
-      expect(getMock.mock.calls).toHaveLength(1);
-      expect(getMock.mock.calls[0][1]).toEqual('/decks/123/cards/');
+      expect(postMock.mock.calls).toHaveLength(1);
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: DeckCards.loc?.source.body,
+        variables: {
+          deckId: 123,
+        } as DeckCardsQueryVariables,
+      });
     });
 
     describe('the request is successful', () => {
@@ -100,15 +132,17 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.getCards(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          getMock.mockImplementation(() => cold('--a', {
-            a: { response: cards } as AjaxResponse,
+          postMock.mockImplementation(() => cold('--a', {
+            a: { response: { data: cardsResponse } } as AjaxResponse,
           }));
 
-          const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = fetchCardsEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
-            a: CardsActions.getCardsSuccess(cards, 123),
+            a: CardsActions.getCardsSuccess([card], 123),
           });
         });
       });
@@ -120,11 +154,15 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.getCards(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          getMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold('--a', {
+            a: { response: { errors: [{ message: 'failed!' }] } },
+          }));
 
-          const output$ = fetchCardsEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = fetchCardsEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.getCardsFailed('failed!'),
           });
@@ -149,19 +187,30 @@ describe('the cards epics', () => {
         const action$ = hot('-a', {
           a: CardsActions.addCard(123, 'foo', 'bar'),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
         postMock.mockImplementation(() => cold('--a', {
-          a: { response: cards[0] } as AjaxResponse,
+          a: {
+            response: { data: { CreateCard: { id: 123 } } as CreateCardMutation },
+          } as AjaxResponse,
         }));
 
-        const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = addCardEpic(action$, state$);
         expectObservable(output$);
       });
 
       expect(postMock.mock.calls).toHaveLength(1);
-      expect(postMock.mock.calls[0][1]).toEqual('/decks/123/cards/');
-      expect(postMock.mock.calls[0][2]).toEqual({ front: 'foo', back: 'bar' });
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: CreateCard.loc?.source.body,
+        variables: {
+          back: 'bar',
+          deckId: 123,
+          front: 'foo',
+        } as CreateCardMutationVariables,
+      });
     });
 
     describe('the request is successful', () => {
@@ -173,13 +222,17 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.addCard(123, 'foo', 'bar'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
-            a: { response: cards[0] } as AjaxResponse,
+            a: {
+              response: { data: { CreateCard: { id: 123 } } as CreateCardMutation },
+            } as AjaxResponse,
           }));
 
-          const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addCardEpic(action$, state$);
           expectObservable(output$);
         });
 
@@ -191,13 +244,17 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.addCard(123, 'foo', 'bar'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
-            a: { response: cards[0] } as AjaxResponse,
+            a: {
+              response: { data: { CreateCard: { id: 123 } } as CreateCardMutation },
+            } as AjaxResponse,
           }));
 
-          const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addCardEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.addCardSuccess(123),
           });
@@ -211,11 +268,13 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.addCard(123, 'foo', 'bar'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
-          const output$ = addCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addCardEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.addCardFailed('failed!'),
           });
@@ -225,33 +284,41 @@ describe('the cards epics', () => {
   });
 
   describe('the delete card epic', () => {
-    let deleteMock: jest.SpyInstance;
+    let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      deleteMock = jest.spyOn(apiUtils, 'apiDelete');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
-      deleteMock.mockRestore();
+      postMock.mockRestore();
     });
 
-    it('should make a delete request to the card endpoint', () => {
+    it('should make a DeleteCard mutation', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
           a: CardsActions.deleteCard(123),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
-        deleteMock.mockImplementation(() => cold('--a', {
+        postMock.mockImplementation(() => cold('--a', {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = deleteCardEpic(action$, state$);
         expectObservable(output$);
       });
 
-      expect(deleteMock.mock.calls).toHaveLength(1);
-      expect(deleteMock.mock.calls[0][1]).toEqual('/cards/123/');
+      expect(postMock.mock.calls).toHaveLength(1);
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: DeleteCard.loc?.source.body,
+        variables: {
+          cardId: 123,
+        } as DeleteCardMutationVariables,
+      });
     });
 
     describe('the request is successful', () => {
@@ -260,13 +327,15 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.deleteCard(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--a', {
+          postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteCardEpic(action$, state$);
           expectObservable(output$);
         });
 
@@ -278,13 +347,15 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.deleteCard(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--a', {
+          postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteCardEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.deleteCardSuccess(123),
           });
@@ -298,11 +369,19 @@ describe('the cards epics', () => {
           const action$ = hot('-a', {
             a: CardsActions.deleteCard(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold('--a', {
+            a: {
+              response: {
+                errors: [{ message: 'failed!' }],
+              },
+            },
+          }));
 
-          const output$ = deleteCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteCardEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: CardsActions.deleteCardFailed('failed!'),
           });
@@ -315,7 +394,7 @@ describe('the cards epics', () => {
     it('should navigate to the card details screen', () => {
       scheduler.run(({ hot, expectObservable }) => {
         const action$ = hot('-a', {
-          a: CardsActions.viewCardDetails(cards[0]),
+          a: CardsActions.viewCardDetails(card),
         });
 
         const output$ = viewCardDetailsEpic(action$);

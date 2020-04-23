@@ -47,7 +47,7 @@ export const fetchSetsEpic = (
         map(
           ({ Sets }) => SetsActions.getSetsSuccess(
             Sets.map(s => ({
-              card_ids: s.cards.map(c => c.id).join(''),
+              card_ids: s.cards.map(c => c.id).join(','),
               deck: deckId,
               id: s.id,
               name: s.name,

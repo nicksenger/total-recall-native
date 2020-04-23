@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import { SCORE_TO_NUMBER } from '_constants/session';
 import {
   DELETE_CARD_SUCCESS,
   DELETE_DECK_SUCCESS,
@@ -195,7 +196,9 @@ export default (state: EntitiesState = initialState, action: TRActions) => {
           ...state.cards,
           [cardId]: state.cards[cardId] ? {
             ...state.cards[cardId],
-            score: state.cards[cardId].score.split(',').concat([`${rating}`]).join(','),
+            score: state.cards[cardId].score.split(',').concat(
+              [`${SCORE_TO_NUMBER[rating]}`],
+            ).join(','),
           } : undefined,
         },
       };

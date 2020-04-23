@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
-import { DecksActions } from 'actions';
+import { DecksActions, TRActions } from 'actions';
 import {
   addDeckEpic,
   deleteDeckEpic,
@@ -13,26 +13,36 @@ import {
 
 import { DECK_DETAILS_SCREEN, DECK_ITEMS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
+import {
+  CreateDeck,
+  CreateDeckMutation,
+  CreateDeckMutationVariables,
+  DeleteDeck,
+  DeleteDeckMutationVariables,
+  UserDecks,
+  UserDecksQuery,
+  UserDecksQueryVariables,
+} from 'generated';
 import * as navigationService from 'navigation/service';
-import { TRState } from 'reducer';
+import reducer, { TRState } from 'reducer';
 
 describe('the decks epics', () => {
-  const decks = [
-    {
-      created: 'sometime',
+  const decksResponse = {
+    Decks: [{
       id: 123,
-      language: 'vi',
+      language: {
+        name: 'Vietnamese',
+      },
       name: 'foo',
-      owner: 'waldo',
-    },
-    {
-      created: 'sometime',
-      id: 456,
-      language: 'es',
-      name: 'bar',
-      owner: 'waldo',
-    },
-  ];
+    }],
+  } as UserDecksQuery;
+  const deck = {
+    created: '',
+    id: 123,
+    language: 'Vietnamese',
+    name: 'foo',
+    owner: 'waldo',
+  };
 
   let scheduler: TestScheduler;
   let goBackMock: jest.SpyInstance;
@@ -54,14 +64,14 @@ describe('the decks epics', () => {
   });
 
   describe('the fetch decks epic', () => {
-    let getMock: jest.SpyInstance;
+    let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      getMock = jest.spyOn(apiUtils, 'apiGet');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
-      getMock.mockRestore();
+      postMock.mockRestore();
     });
 
     it('should make a request to the decks endpoint with username', () => {
@@ -69,18 +79,26 @@ describe('the decks epics', () => {
         const action$ = hot('-a', {
           a: DecksActions.getDecks('waldo'),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
-        getMock.mockImplementation(() => cold('--a', {
-          a: { response: decks } as AjaxResponse,
+        postMock.mockImplementation(() => cold('--a', {
+          a: { response: { data: decksResponse } } as AjaxResponse,
         }));
 
-        const output$ = fetchDecksEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = fetchDecksEpic(action$, state$);
         expectObservable(output$);
       });
 
-      expect(getMock.mock.calls).toHaveLength(1);
-      expect(getMock.mock.calls[0][1]).toEqual('/user/waldo/decks/');
+      expect(postMock.mock.calls).toHaveLength(1);
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: UserDecks.loc?.source.body,
+        variables: {
+          username: 'waldo',
+        } as UserDecksQueryVariables,
+      });
     });
 
     describe('the request is successful', () => {
@@ -89,15 +107,17 @@ describe('the decks epics', () => {
           const action$ = hot('-a', {
             a: DecksActions.getDecks('waldo'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          getMock.mockImplementation(() => cold('--a', {
-            a: { response: decks } as AjaxResponse,
+          postMock.mockImplementation(() => cold('--a', {
+            a: { response: { data: decksResponse } } as AjaxResponse,
           }));
 
-          const output$ = fetchDecksEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = fetchDecksEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
-            a: DecksActions.getDecksSuccess(decks),
+            a: DecksActions.getDecksSuccess([deck]),
           });
         });
       });
@@ -109,11 +129,13 @@ describe('the decks epics', () => {
           const action$ = hot('-a', {
             a: DecksActions.getDecks('waldo'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          getMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
-          const output$ = fetchDecksEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = fetchDecksEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: DecksActions.getDecksFailed('failed!'),
           });
@@ -136,36 +158,54 @@ describe('the decks epics', () => {
     it('should make a request to the decks endpoint with deck info', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
-          a: DecksActions.addDeck('foo', 'vi', 'waldo'),
+          a: DecksActions.addDeck('foo', 1, 'waldo'),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
         postMock.mockImplementation(() => cold('--a', {
-          a: { response: decks[0] } as AjaxResponse,
+          a: {
+            response: {
+              data: { CreateDeck: { id: 123, language: { name: 'Viet' } } } as CreateDeckMutation,
+            },
+          } as AjaxResponse,
         }));
 
-        const output$ = addDeckEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = addDeckEpic(action$, state$);
         expectObservable(output$);
       });
 
       expect(postMock.mock.calls).toHaveLength(1);
-      expect(postMock.mock.calls[0][1]).toEqual('/user/waldo/decks/');
-      expect(postMock.mock.calls[0][2]).toEqual({ name: 'foo', language: 'vi' });
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: CreateDeck.loc?.source.body,
+        variables: {
+          language: 1,
+          name: 'foo',
+        } as CreateDeckMutationVariables,
+      });
     });
 
     describe('the request is successful', () => {
       it('should go back', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: DecksActions.addDeck('foo', 'vi', 'waldo'),
+            a: DecksActions.addDeck('foo', 1, 'waldo'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
-            a: { response: decks[0] } as AjaxResponse,
+            a: {
+              response: {
+                data: { CreateDeck: { id: 123, language: { name: 'Viet' } } } as CreateDeckMutation,
+              },
+            } as AjaxResponse,
           }));
 
-          const output$ = addDeckEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addDeckEpic(action$, state$);
           expectObservable(output$);
         });
 
@@ -175,17 +215,34 @@ describe('the decks epics', () => {
       it('should emit the success action', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: DecksActions.addDeck('foo', 'vi', 'waldo'),
+            a: DecksActions.addDeck('foo', 1, 'waldo'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
-            a: { response: decks[0] } as AjaxResponse,
+            a: {
+              response: {
+                data: {
+                  CreateDeck: { id: 123, language: { name: 'Vietnamese' }, name: 'test' },
+                } as CreateDeckMutation,
+              },
+            } as AjaxResponse,
           }));
 
-          const output$ = addDeckEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addDeckEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
-            a: DecksActions.addDeckSuccess(decks[0], 'waldo'),
+            a: DecksActions.addDeckSuccess(
+              {
+                created: '',
+                id: 123,
+                language: 'Vietnamese',
+                name: 'test',
+                owner: 'waldo',
+              },
+              'waldo',
+            ),
           });
         });
       });
@@ -195,13 +252,15 @@ describe('the decks epics', () => {
       it('should emit the failed action', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: DecksActions.addDeck('foo', 'vi', 'waldo'),
+            a: DecksActions.addDeck('foo', 1, 'waldo'),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
-          const output$ = addDeckEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addDeckEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: DecksActions.addDeckFailed('failed!'),
           });
@@ -211,14 +270,14 @@ describe('the decks epics', () => {
   });
 
   describe('the delete deck epic', () => {
-    let deleteMock: jest.SpyInstance;
+    let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      deleteMock = jest.spyOn(apiUtils, 'apiDelete');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
-      deleteMock.mockRestore();
+      postMock.mockRestore();
     });
 
     it('should make a delete request to the deck endpoint', () => {
@@ -226,18 +285,26 @@ describe('the decks epics', () => {
         const action$ = hot('-a', {
           a: DecksActions.deleteDeck(123),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
-        deleteMock.mockImplementation(() => cold('--a', {
+        postMock.mockImplementation(() => cold('--a', {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = deleteDeckEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = deleteDeckEpic(action$, state$);
         expectObservable(output$);
       });
 
-      expect(deleteMock.mock.calls).toHaveLength(1);
-      expect(deleteMock.mock.calls[0][1]).toEqual('/decks/123/');
+      expect(postMock.mock.calls).toHaveLength(1);
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: DeleteDeck.loc?.source.body,
+        variables: {
+          id: 123,
+        } as DeleteDeckMutationVariables,
+      });
     });
 
     describe('the request is successful', () => {
@@ -246,13 +313,15 @@ describe('the decks epics', () => {
           const action$ = hot('-a', {
             a: DecksActions.deleteDeck(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--a', {
+          postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteDeckEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteDeckEpic(action$, state$);
           expectObservable(output$);
         });
 
@@ -264,13 +333,15 @@ describe('the decks epics', () => {
           const action$ = hot('-a', {
             a: DecksActions.deleteDeck(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--a', {
+          postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = deleteDeckEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteDeckEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: DecksActions.deleteDeckSuccess(123),
           });
@@ -284,11 +355,21 @@ describe('the decks epics', () => {
           const action$ = hot('-a', {
             a: DecksActions.deleteDeck(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold('--a', {
+            a: {
+              response: {
+                errors: [{
+                  message: 'failed!',
+                }],
+              },
+            },
+          }));
 
-          const output$ = deleteDeckEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteDeckEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: DecksActions.deleteDeckFailed('failed!'),
           });
@@ -301,7 +382,7 @@ describe('the decks epics', () => {
     it('should navigate to the deck details screen', () => {
       scheduler.run(({ hot, expectObservable }) => {
         const action$ = hot('-a', {
-          a: DecksActions.viewDeckDetails(decks[0]),
+          a: DecksActions.viewDeckDetails(deck),
         });
 
         const output$ = viewDeckDetailsEpic(action$);
@@ -317,7 +398,7 @@ describe('the decks epics', () => {
     it('should navigate to the deck details screen', () => {
       scheduler.run(({ hot, expectObservable }) => {
         const action$ = hot('-a', {
-          a: DecksActions.viewDeckItems(decks[0]),
+          a: DecksActions.viewDeckItems(deck),
         });
 
         const output$ = viewDeckItemsEpic(action$);

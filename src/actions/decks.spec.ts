@@ -32,8 +32,8 @@ describe('the decks actions', () => {
   ];
 
   it('should create the ADD_DECK action', () => {
-    const action = DecksActions.addDeck('foo', 'vi', 'waldo');
-    expect(action.payload).toEqual({ name: 'foo', language: 'vi', username: 'waldo' });
+    const action = DecksActions.addDeck('foo', 1, 'waldo');
+    expect(action.payload).toEqual({ name: 'foo', language: 1, username: 'waldo' });
     expect(action.type).toEqual(ADD_DECK);
   });
 

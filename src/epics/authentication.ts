@@ -26,10 +26,11 @@ export const attemptLoginEpic = (action$: Observable<TRActions>) =>
     ofType<TRActions, ReturnType<typeof AuthenticationActions['attemptLogin']>>(ATTEMPT_LOGIN),
     mergeMap(({ payload: { username, password } }) =>
       ajax
-        .post(`${BASE_URI}/login`, {
-          password,
-          username,
-        }, { 'Content-Type': 'application/json' })
+        .post(
+          `${BASE_URI}/login`,
+          { password, username },
+          { 'Content-Type': 'application/json' },
+        )
         .pipe(
           map(({ response }) =>
             AuthenticationActions.loginSuccess(username, response.token),

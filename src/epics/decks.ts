@@ -126,7 +126,7 @@ export const deleteDeckEpic = (
     mergeMap(({ payload: { deckId } }) =>
       apiGraphQL<DeleteDeckMutation>(
         state$,
-        { query: DeleteDeck, variables: {} as DeleteDeckMutationVariables },
+        { query: DeleteDeck, variables: { id: deckId } as DeleteDeckMutationVariables },
       ).pipe(
         tap(() => goBack()),
         map(() => DecksActions.deleteDeckSuccess(deckId)),
