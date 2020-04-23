@@ -98,7 +98,7 @@ export const deleteSetEpic = (
         state$,
         {
           query: DeleteSet,
-          variables: {} as DeleteSetMutationVariables,
+          variables: { setId } as DeleteSetMutationVariables,
         },
       ).pipe(
         tap(() => goBack()),

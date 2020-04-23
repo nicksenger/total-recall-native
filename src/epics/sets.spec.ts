@@ -13,7 +13,13 @@ import {
 
 import { ADD_SET_SCREEN, SET_DETAILS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
-import { CreateSet, CreateSetMutationVariables, UserSetsQuery } from 'generated';
+import {
+  CreateSet,
+  CreateSetMutationVariables,
+  DeleteSet,
+  DeleteSetMutationVariables,
+  UserSetsQuery,
+} from 'generated';
 import * as navigationService from 'navigation/service';
 import reducer, { TRState } from 'reducer';
 
@@ -262,7 +268,7 @@ describe('the sets epics', () => {
       postMock.mockRestore();
     });
 
-    it('should make a graphql request', () => {
+    it('should make a graphql request with the set ID', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
           a: SetsActions.deleteSet(123),
@@ -281,6 +287,12 @@ describe('the sets epics', () => {
 
       expect(postMock.mock.calls).toHaveLength(1);
       expect(postMock.mock.calls[0][1]).toEqual('/graphql');
+      expect(postMock.mock.calls[0][2]).toEqual({
+        query: DeleteSet.loc?.source.body,
+        variables: {
+          setId: 123,
+        } as DeleteSetMutationVariables,
+      });
     });
 
     describe('the request is successful', () => {

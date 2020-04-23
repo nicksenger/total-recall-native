@@ -197,22 +197,26 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
             position="bottomRight"
           >
             {numSelected ? <Text>{numSelected}</Text> : <Ionicons name="md-add" size={25} />}
-            {Boolean(numSelected) && this.state.fabActive && (
-              <React.Fragment>
+            {Boolean(numSelected) && this.state.fabActive && [
+              (
                 <Button
                   key={1}
                   onPress={this.handleStudy}
                   style={{ backgroundColor: '#34A34F' }}
                 >
                   <Ionicons name="md-pulse" size={25} color="white" />
-                </Button>,
+                </Button>
+              ),
+              (
                 <Button
                   key={3}
                   onPress={this.handleCreateSet}
                   style={{ backgroundColor: '#EFA128' }}
                 >
                   <FontAwesome name="clone" size={25} color="white" />
-                </Button>,
+                </Button>
+              ),
+              (
                 <Button
                   key={2}
                   onPress={this.handleAddCard}
@@ -220,8 +224,8 @@ export class CardsScreen extends React.PureComponent<CardsScreenProps, CardsScre
                 >
                   <Ionicons name="md-add" size={25} color="white" />
                 </Button>
-              </React.Fragment>
-            )}
+              ),
+            ]}
           </Fab>
         )}
       </React.Fragment>
