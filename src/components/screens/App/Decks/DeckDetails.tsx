@@ -2,7 +2,6 @@ import { Container, Form, Text } from 'native-base';
 import * as React from 'react';
 import { Alert } from 'react-native';
 
-import { Languages } from '_constants/languages';
 import { DecksActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
@@ -27,7 +26,7 @@ export const DeckDetailsScreen = (props: DeckDetailsScreenProps) => {
       <PaddedContent>
         <Form>
           <Text>Name: {deck.name}</Text>
-          <Text>Language: {Languages[deck.language]}</Text>
+          <Text>Language: {deck.language}</Text>
           <SubmitButton block={true} onPress={() => handleDelete(props)}>
             <Text>Delete Deck</Text>
           </SubmitButton>

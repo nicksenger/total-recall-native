@@ -33,7 +33,7 @@ describe('the sets actions', () => {
 
   it('should create the ADD_SET action', () => {
     const action = SetsActions.addSet(123, 'foo', [123, 456]);
-    expect(action.payload).toEqual({ deckId: 123, name: 'foo', card_ids: '123,456' });
+    expect(action.payload).toEqual({ deckId: 123, name: 'foo', card_ids: [123, 456] });
     expect(action.type).toEqual(ADD_SET);
   });
 

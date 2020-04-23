@@ -2,17 +2,19 @@ import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
-import { CacheActions, SessionActions } from 'actions';
+import { CacheActions, SessionActions, TRActions } from 'actions';
 import {
   rateCardEpic,
   revealCardEpic,
   studyEpic,
 } from './session';
 
+import { BASE_URI } from '_constants/api';
 import { STUDY_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
+import { ScoreValue } from 'generated';
 import * as navigationService from 'navigation/service';
-import { TRState } from 'reducer';
+import reducer, { TRState } from 'reducer';
 
 describe('the session epics', () => {
   const cards = [
@@ -68,40 +70,44 @@ describe('the session epics', () => {
   });
 
   describe('the rate card epic', () => {
-    it('should make a request with card id & score to the card score endpoint', () => {
+    it('should perform a mutation with card id and score', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
-          a: SessionActions.rateCard(123, 5),
+          a: SessionActions.rateCard(123, ScoreValue.Five),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
         postMock.mockImplementation(() => cold('--a', {
           a: { response: {} } as AjaxResponse,
         }));
 
-        const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = rateCardEpic(action$, state$);
         expectObservable(output$);
       });
 
       expect(postMock.mock.calls).toHaveLength(1);
-      expect(postMock.mock.calls[0][1]).toEqual('/cards/123/score/');
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
     });
 
     describe('the request is successful', () => {
       it('should emit the success action', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: SessionActions.rateCard(123, 5),
+            a: SessionActions.rateCard(123, ScoreValue.Five),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = rateCardEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
-            a: SessionActions.rateCardSuccess(123, 5),
+            a: SessionActions.rateCardSuccess(123, ScoreValue.Five),
           });
         });
       });
@@ -111,13 +117,15 @@ describe('the session epics', () => {
       it('should emit the failed action', () => {
         scheduler.run(({ hot, cold, expectObservable }) => {
           const action$ = hot('-a', {
-            a: SessionActions.rateCard(123, 5),
+            a: SessionActions.rateCard(123, ScoreValue.Five),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
-          const output$ = rateCardEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = rateCardEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: SessionActions.rateCardFailed('failed!'),
           });
@@ -151,7 +159,7 @@ describe('the session epics', () => {
 
         const output$ = revealCardEpic(action$);
         expectObservable(output$).toBe('-a', {
-          a: CacheActions.playAudio(cards[0].audio),
+          a: CacheActions.playAudio(`${BASE_URI}/${cards[0].audio}`),
         });
       });
     });

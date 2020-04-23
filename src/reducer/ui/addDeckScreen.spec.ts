@@ -4,7 +4,7 @@ import addDeckScreen, { initialState } from './addDeckScreen';
 describe('the addDeckScreen reducer', () => {
   it('should set the loading state when a request to add deck is sent', () => {
     const newState = addDeckScreen(initialState, {
-      payload: { name: 'foo', language: 'vi', username: 'waldo' },
+      payload: { name: 'foo', language: 1, username: 'waldo' },
       type: ADD_DECK,
     });
 

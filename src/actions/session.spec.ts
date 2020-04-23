@@ -1,3 +1,4 @@
+import { ScoreValue } from 'generated';
 import {
   RATE_CARD,
   RATE_CARD_FAILED,
@@ -39,8 +40,8 @@ describe('the session actions', () => {
   ];
 
   it('should create the RATE_CARD action', () => {
-    const action = SessionActions.rateCard(123, 5);
-    expect(action.payload).toEqual({ cardId: 123, rating: 5 });
+    const action = SessionActions.rateCard(123, ScoreValue.Five);
+    expect(action.payload).toEqual({ cardId: 123, rating: ScoreValue.Five });
     expect(action.type).toEqual(RATE_CARD);
   });
 
@@ -51,8 +52,8 @@ describe('the session actions', () => {
   });
 
   it('should create the RATE_CARD_SUCCESS action', () => {
-    const action = SessionActions.rateCardSuccess(123, 5);
-    expect(action.payload).toEqual({ cardId: 123, rating: 5 });
+    const action = SessionActions.rateCardSuccess(123, ScoreValue.Five);
+    expect(action.payload).toEqual({ cardId: 123, rating: ScoreValue.Five });
     expect(action.type).toEqual(RATE_CARD_SUCCESS);
   });
 
@@ -63,8 +64,8 @@ describe('the session actions', () => {
   });
 
   it('should create the REVIEW_CARD action', () => {
-    const action = SessionActions.reviewCard(5);
-    expect(action.payload).toEqual({ rating: 5 });
+    const action = SessionActions.reviewCard(ScoreValue.Five);
+    expect(action.payload).toEqual({ rating: ScoreValue.Five });
     expect(action.type).toEqual(REVIEW_CARD);
   });
 

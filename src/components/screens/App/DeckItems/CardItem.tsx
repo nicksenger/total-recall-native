@@ -16,7 +16,6 @@ export interface CardItemProps {
 
 const CardItem = (props: CardItemProps) => {
   const { card } = props;
-
   const lastScore = card.score.split(',').pop();
 
   return (

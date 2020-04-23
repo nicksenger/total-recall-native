@@ -1,9 +1,10 @@
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 import { BASE_URI } from '_constants/api';
+import { DocumentNode } from 'graphql';
 import { TRState } from 'reducer';
 import { Observable, of } from 'rxjs';
-import { mergeMap, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, withLatestFrom } from 'rxjs/operators';
 
 const apiRequest = (
   method: 'GET' | 'PATCH' | 'POST' | 'DELETE',
@@ -18,9 +19,7 @@ const apiRequest = (
       const fullPath = `${BASE_URI}${path}`;
       const modHeaders = {
         ...headers,
-        Authorization: authentication.token
-          ? `Token ${authentication.token}`
-          : undefined,
+        Authorization: authentication.token,
       };
 
       switch (method) {
@@ -73,3 +72,30 @@ export const apiDelete = (
   path: string,
   headers?: object,
 ) => apiRequest('DELETE', state$, path, undefined, headers);
+
+/**
+ * GRAPHQL request with the current credentials using the configured BASE_URI
+ */
+export const apiGraphQL = <T>(
+  state$: Observable<TRState>,
+  body: {
+    query: DocumentNode,
+    operationName?: string,
+    // tslint:disable-next-line
+    variables?: { [key: string]: any },
+  },
+) => apiPost(
+  state$,
+  '/graphql',
+  { ...body, query: body.query.loc?.source.body },
+  { 'Content-Type': 'application/json' },
+).pipe(
+  map<AjaxResponse, T>(({ response }) => {
+    if (response.errors && response.errors.length) {
+      throw new Error(
+        response.errors.map(({ message }: { message: string }) => message).join(', '),
+      );
+    }
+    return response.data;
+  }),
+);

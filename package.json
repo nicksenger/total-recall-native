@@ -1,6 +1,7 @@
 {
   "main": "src/index",
   "scripts": {
+    "codegen": "graphql-codegen",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -8,7 +9,7 @@
     "build:ios": "expo build:ios",
     "publish": "expo publish",
     "test": "npm run tslint && npm run tsc-test && npm run jest",
-    "tslint": "tslint --project .",
+    "tslint": "tslint --exclude ./src/generated.ts --project .",
     "tsc-test": "tsc --project .",
     "jest": "jest"
   },
@@ -18,6 +19,7 @@
     "expo-file-system": "~8.1.0",
     "expo-font": "~8.1.0",
     "expo-keep-awake": "~8.1.0",
+    "graphql": "^15.0.0",
     "lodash": "^4.17.15",
     "memoize-one": "^5.0.5",
     "native-base": "^2.13.4",
@@ -32,9 +34,15 @@
     "redux": "^4.0.4",
     "redux-observable": "^1.1.0",
     "rxjs": "^6.5.2",
-    "styled-components": "^4.3.2"
+    "styled-components": "^4.3.2",
+    "react-native-webview": "8.1.1"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.13.3",
+    "@graphql-codegen/typescript": "^1.13.3",
+    "@graphql-codegen/typescript-document-nodes": "^1.13.3",
+    "@graphql-codegen/typescript-graphql-files-modules": "^1.13.3",
+    "@graphql-codegen/typescript-operations": "^1.13.3",
     "@types/enzyme": "^3.10.3",
     "@types/jest": "^24.0.17",
     "@types/lodash": "^4.14.136",

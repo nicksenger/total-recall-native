@@ -11,6 +11,7 @@ import { PaddedContent } from 'components/styled';
 import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Card as CardType } from 'reducer/entities';
+import { ScoreValue } from '../../../../generated';
 import ScoreButton from './ScoreButton';
 
 export interface StudyScreenProps {
@@ -88,9 +89,9 @@ const StudyScreen = ({
           position="bottomRight"
         >
           <Ionicons name="md-arrow-up" size={25} />
-          {fabActive && [0, 1, 2, 3, 4, 5].map((rating: number) => (
-            <Button key={rating} style={{ backgroundColor: RATING_COLORS[rating] }}>
-              <ScoreButton cardId={card.id} rating={rating} />
+          {fabActive && Object.values(ScoreValue).map((rating: string, i) => (
+            <Button key={rating} style={{ backgroundColor: RATING_COLORS[i] }}>
+              <ScoreButton cardId={card.id} index={i} rating={rating as ScoreValue} />
             </Button>
           ))}
         </Fab>

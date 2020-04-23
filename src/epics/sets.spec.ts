@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 import { TestScheduler } from 'rxjs/testing';
 
-import { SetsActions } from 'actions';
+import { SetsActions, TRActions } from 'actions';
 import {
   addSetEpic,
   deleteSetEpic,
@@ -13,26 +13,40 @@ import {
 
 import { ADD_SET_SCREEN, SET_DETAILS_SCREEN } from '_constants/screens';
 import * as apiUtils from '_utils/api';
+import { CreateSet, CreateSetMutationVariables, UserSetsQuery } from 'generated';
 import * as navigationService from 'navigation/service';
-import { TRState } from 'reducer';
+import reducer, { TRState } from 'reducer';
 
 describe('the sets epics', () => {
-  const sets = [
-    {
-      card_ids: '1,2,3',
-      deck: 123,
-      id: 123,
-      name: 'foo',
-      owner: 'waldo',
-    },
-    {
-      card_ids: '4,5,6',
-      deck: 123,
-      id: 456,
-      name: 'bar',
-      owner: 'waldo',
-    },
-  ];
+  const setsResponse = {
+    Sets: [
+      {
+        cards: [
+          {
+            id: 1,
+          },
+          {
+            id: 2,
+          },
+          {
+            id: 3,
+          },
+        ],
+        id: 123,
+        name: 'a set',
+        owner: {
+          username: 'foo',
+        },
+      },
+    ],
+  } as UserSetsQuery;
+  const set = {
+    card_ids: '1,2,3',
+    deck: 123,
+    id: 123,
+    name: 'a set',
+    owner: 'foo',
+  };
 
   let scheduler: TestScheduler;
   let goBackMock: jest.SpyInstance;
@@ -54,33 +68,35 @@ describe('the sets epics', () => {
   });
 
   describe('the fetch sets epic', () => {
-    let getMock: jest.SpyInstance;
+    let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      getMock = jest.spyOn(apiUtils, 'apiGet');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
-      getMock.mockRestore();
+      postMock.mockRestore();
     });
 
-    it('should make a request to the sets endpoint with set id', () => {
+    it('should make a request for sets with the specified id', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
           a: SetsActions.getSets(123),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
-        getMock.mockImplementation(() => cold('--a', {
-          a: { response: sets } as AjaxResponse,
+        postMock.mockImplementation(() => cold('--a', {
+          a: { response: { data: {} } } as AjaxResponse,
         }));
 
-        const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = fetchSetsEpic(action$, state$);
         expectObservable(output$);
       });
 
-      expect(getMock.mock.calls).toHaveLength(1);
-      expect(getMock.mock.calls[0][1]).toEqual('/decks/123/sets/');
+      expect(postMock.mock.calls).toHaveLength(1);
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
     });
 
     describe('the request is successful', () => {
@@ -89,15 +105,20 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.getSets(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          getMock.mockImplementation(() => cold('--a', {
-            a: { response: sets } as AjaxResponse,
+          postMock.mockImplementation(() => cold('--a', {
+            a: { response: { data: setsResponse as UserSetsQuery } } as AjaxResponse,
           }));
 
-          const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = fetchSetsEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
-            a: SetsActions.getSetsSuccess(sets, 123),
+            a: SetsActions.getSetsSuccess(
+              [set],
+              123,
+            ),
           });
         });
       });
@@ -109,11 +130,13 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.getSets(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          getMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
 
-          const output$ = fetchSetsEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = fetchSetsEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.getSetsFailed('failed!'),
           });
@@ -138,21 +161,27 @@ describe('the sets epics', () => {
         const action$ = hot('-a', {
           a: SetsActions.addSet(123, 'foo', [1, 2, 3]),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
         postMock.mockImplementation(() => cold('--a', {
-          a: { response: {} } as AjaxResponse,
+          a: { response: { data: {} } } as AjaxResponse,
         }));
 
-        const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = addSetEpic(action$, state$);
         expectObservable(output$);
       });
 
       expect(postMock.mock.calls).toHaveLength(1);
-      expect(postMock.mock.calls[0][1]).toEqual('/decks/123/sets/');
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
       expect(postMock.mock.calls[0][2]).toEqual({
-        card_ids: '1,2,3',
-        name: 'foo',
+        query: CreateSet.loc?.source.body,
+        variables: {
+          card_ids: [1, 2, 3],
+          deckId: 123,
+          name: 'foo',
+        } as CreateSetMutationVariables,
       });
     });
 
@@ -162,13 +191,15 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.addSet(123, 'foo', [1, 2, 3]),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addSetEpic(action$, state$);
           expectObservable(output$);
         });
 
@@ -180,13 +211,15 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.addSet(123, 'foo', [1, 2, 3]),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
           postMock.mockImplementation(() => cold('--a', {
             a: { response: {} } as AjaxResponse,
           }));
 
-          const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addSetEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.addSetSuccess(123),
           });
@@ -200,11 +233,16 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.addSet(123, 'foo', [1, 2, 3]),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          postMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold(
+            '--a',
+            { a: { response: { data: {}, errors: [{ message: 'failed!' }] } } }),
+          );
 
-          const output$ = addSetEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = addSetEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.addSetFailed('failed!'),
           });
@@ -214,33 +252,35 @@ describe('the sets epics', () => {
   });
 
   describe('the delete set epic', () => {
-    let deleteMock: jest.SpyInstance;
+    let postMock: jest.SpyInstance;
 
     beforeEach(() => {
-      deleteMock = jest.spyOn(apiUtils, 'apiDelete');
+      postMock = jest.spyOn(apiUtils, 'apiPost');
     });
 
     afterEach(() => {
-      deleteMock.mockRestore();
+      postMock.mockRestore();
     });
 
-    it('should make a delete request to the deck endpoint', () => {
+    it('should make a graphql request', () => {
       scheduler.run(({ hot, cold, expectObservable }) => {
         const action$ = hot('-a', {
           a: SetsActions.deleteSet(123),
         });
-        const state$ = null;
+        const state$: Observable<TRState> = hot('-a', {
+          a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+        });
 
-        deleteMock.mockImplementation(() => cold('--a', {
-          a: { response: {} } as AjaxResponse,
+        postMock.mockImplementation(() => cold('--a', {
+          a: { response: { data: {} } } as AjaxResponse,
         }));
 
-        const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
+        const output$ = deleteSetEpic(action$, state$);
         expectObservable(output$);
       });
 
-      expect(deleteMock.mock.calls).toHaveLength(1);
-      expect(deleteMock.mock.calls[0][1]).toEqual('/sets/123/');
+      expect(postMock.mock.calls).toHaveLength(1);
+      expect(postMock.mock.calls[0][1]).toEqual('/graphql');
     });
 
     describe('the request is successful', () => {
@@ -249,13 +289,15 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.deleteSet(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--a', {
-            a: { response: {} } as AjaxResponse,
+          postMock.mockImplementation(() => cold('--a', {
+            a: { response: { data: {} } } as AjaxResponse,
           }));
 
-          const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteSetEpic(action$, state$);
           expectObservable(output$);
         });
 
@@ -267,13 +309,15 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.deleteSet(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--a', {
-            a: { response: {} } as AjaxResponse,
+          postMock.mockImplementation(() => cold('--a', {
+            a: { response: { data: {} } } as AjaxResponse,
           }));
 
-          const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteSetEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.deleteSetSuccess(123),
           });
@@ -287,11 +331,16 @@ describe('the sets epics', () => {
           const action$ = hot('-a', {
             a: SetsActions.deleteSet(123),
           });
-          const state$ = null;
+          const state$: Observable<TRState> = hot('-a', {
+            a: reducer(undefined, { type: 'init' } as unknown as TRActions),
+          });
 
-          deleteMock.mockImplementation(() => cold('--#', {}, { message: 'failed!' }));
+          postMock.mockImplementation(() => cold(
+            '--a',
+            { a: { response: { errors: [{ message: 'failed!' }] } } }),
+          );
 
-          const output$ = deleteSetEpic(action$, state$ as unknown as Observable<TRState>);
+          const output$ = deleteSetEpic(action$, state$);
           expectObservable(output$).toBe('---a', {
             a: SetsActions.deleteSetFailed('failed!'),
           });
@@ -320,7 +369,7 @@ describe('the sets epics', () => {
     it('should navigate to the set details screen', () => {
       scheduler.run(({ hot, expectObservable }) => {
         const action$ = hot('-a', {
-          a: SetsActions.viewSetDetails(sets[0]),
+          a: SetsActions.viewSetDetails(set),
         });
 
         const output$ = viewSetDetailsEpic(action$);

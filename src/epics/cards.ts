@@ -1,4 +1,3 @@
-import { identity, pickBy } from 'lodash';
 import {
   combineEpics,
   ofType,
@@ -11,7 +10,8 @@ import {
   CARD_LINK_SCREEN,
   EDIT_CARD_LINK_SCREEN,
 } from '_constants/screens';
-import { apiDelete, apiGet, apiPatch, apiPost } from '_utils/api';
+import { SCORE_TO_NUMBER } from '_constants/session';
+import { apiGraphQL } from '_utils/api';
 import {
   ADD_CARD,
   ADD_CARD_SUCCESS,
@@ -26,6 +26,20 @@ import {
 } from 'actions';
 import { goBack, navigate } from 'navigation/service';
 import { TRState } from 'reducer';
+import {
+  CreateCard,
+  CreateCardMutation,
+  CreateCardMutationVariables,
+  DeckCards,
+  DeckCardsQuery,
+  DeckCardsQueryVariables,
+  DeleteCard,
+  DeleteCardMutation,
+  DeleteCardMutationVariables,
+  EditCardLink,
+  EditCardLinkMutation,
+  EditCardLinkMutationVariables,
+} from '../generated';
 
 export const fetchCardsEpic = (
   action$: Observable<TRActions>,
@@ -36,8 +50,26 @@ export const fetchCardsEpic = (
       ReturnType<typeof CardsActions['getCards']> |
       ReturnType<typeof CardsActions['addCardSuccess']>>(GET_CARDS, ADD_CARD_SUCCESS),
     mergeMap(({ payload: { deckId } }) =>
-      apiGet(state$, `/decks/${deckId}/cards/`).pipe(
-        map(({ response }) => CardsActions.getCardsSuccess(response, deckId)),
+      apiGraphQL<DeckCardsQuery>(
+        state$,
+        { query: DeckCards, variables: { deckId } as DeckCardsQueryVariables },
+      ).pipe(
+        map(({ Cards }: DeckCardsQuery) => CardsActions.getCardsSuccess(
+          Cards.map(c => ({
+            audio: c.back.audio ? c.back.audio : '',
+            back: c.back.text,
+            created: (new Date(c.created_at)).toUTCString(),
+            front: c.front,
+            id: c.id,
+            image: c.back.image ? c.back.image : '',
+            last_seen: c.scores.length ?
+              new Date(c.scores[c.scores.length - 1].created_at).toUTCString() :
+              new Date(0).toUTCString(),
+            link: c.link ? c.link : '',
+            score: `${c.scores.map(s => SCORE_TO_NUMBER[s.value]).join(',')}`,
+          })),
+          deckId,
+        )),
         catchError((e: Error) => of(CardsActions.getCardsFailed(e.message))),
       ),
     ),
@@ -50,7 +82,13 @@ export const addCardEpic = (
   action$.pipe(
     ofType<TRActions, ReturnType<typeof CardsActions['addCard']>>(ADD_CARD),
     mergeMap(({ payload: { deckId, front, back, link } }) =>
-      apiPost(state$, `/decks/${deckId}/cards/`, pickBy({ front, back, link }), identity).pipe(
+      apiGraphQL<CreateCardMutation>(
+        state$,
+        {
+          query: CreateCard,
+          variables: { deckId, front, back, link } as CreateCardMutationVariables,
+        },
+      ).pipe(
         tap(() => goBack()),
         map(() => CardsActions.addCardSuccess(deckId)),
         catchError((e: Error) => of(CardsActions.addCardFailed(e.message))),
@@ -67,7 +105,10 @@ export const deleteCardEpic = (
       DELETE_CARD,
     ),
     mergeMap(({ payload: { cardId } }) =>
-      apiDelete(state$, `/cards/${cardId}/`).pipe(
+      apiGraphQL<DeleteCardMutation>(
+        state$,
+        { query: DeleteCard, variables: { cardId } as DeleteCardMutationVariables },
+      ).pipe(
         tap(() => goBack()),
         map(() => CardsActions.deleteCardSuccess(cardId)),
         catchError((e: Error) => of(CardsActions.deleteCardFailed(e.message))),
@@ -99,7 +140,13 @@ export const editCardLinkEpic = (
     EDIT_CARD_LINK,
   ),
   mergeMap(({ payload: { cardId, link } }) =>
-    apiPatch(state$, `/cards/${cardId}/`, { link }).pipe(
+    apiGraphQL<EditCardLinkMutation>(
+      state$,
+      {
+        query: EditCardLink,
+        variables: { cardId, link } as EditCardLinkMutationVariables,
+      },
+    ).pipe(
       tap(() => goBack()),
       map(() => CardsActions.editCardLinkSuccess(cardId, link)),
       catchError((e: Error) => of(CardsActions.editCardLinkFailed(e.message))),
