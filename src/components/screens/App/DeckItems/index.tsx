@@ -1,7 +1,7 @@
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Container, Tab, TabHeading, Tabs, Text } from 'native-base';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Deck } from 'reducer/entities';
 
 import Burger from 'components/Burger';
@@ -9,12 +9,14 @@ import { TRState } from 'reducer';
 import Cards from './Cards';
 import Sets from './Sets';
 
-export interface DeckDetailsScreenProps {
-  deck?: Deck;
-  username?: string;
-}
+const DeckDetailsScreen = React.memo(() => {
+  const deck = useSelector<TRState, Deck | undefined>(
+    ({ ui }) => ui.deckDetailsScreen.selectedDeck,
+  );
+  const username = useSelector<TRState, string | undefined>(
+    ({ authentication }) => authentication.username,
+  );
 
-const DeckDetailsScreen = ({ deck, username }: DeckDetailsScreenProps) => {
   const content = deck ? (
     <Tabs style={{ backgroundColor: '#2a5687' }} scrollWithoutAnimation={false}>
       <Tab
@@ -53,17 +55,10 @@ const DeckDetailsScreen = ({ deck, username }: DeckDetailsScreenProps) => {
       {content}
     </Container>
   );
-};
-
-const connected = connect(
-  ({ authentication, ui }: TRState) => ({
-    deck: ui.deckDetailsScreen.selectedDeck,
-    username: authentication.username,
-  }),
-)(React.memo(DeckDetailsScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+DeckDetailsScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -76,4 +71,4 @@ connected.navigationOptions = {
   title: 'Deck Items',
 };
 
-export default connected;
+export default DeckDetailsScreen;

@@ -1,22 +1,20 @@
 import { Container, Form, Input, Item, Spinner, Text  } from 'native-base';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { AuthenticationActions } from 'actions';
+import { AuthenticationActions, TRActions } from 'actions';
 import { PaddedContent, SubmitButton } from 'components/styled';
 import { TRState } from 'reducer';
-
-export interface SignInProps {
-  attemptLogin: typeof AuthenticationActions['attemptLogin'];
-  loading: boolean;
-}
+import { Dispatch } from 'redux';
 
 export interface SignInState {
   password: string;
   username: string;
 }
 
-const SignInScreen = ({ attemptLogin, loading }: SignInProps) => {
+const SignInScreen = React.memo(() => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const loading = useSelector<TRState, boolean>(({ authentication }) => authentication.loading);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -37,7 +35,10 @@ const SignInScreen = ({ attemptLogin, loading }: SignInProps) => {
           value={password}
         />
       </Item>
-      <SubmitButton block={true} onPress={() => attemptLogin(username, password)}>
+      <SubmitButton
+        block={true}
+        onPress={() => dispatch(AuthenticationActions.attemptLogin(username, password))}
+      >
         <Text>Sign In</Text>
       </SubmitButton>
     </Form>
@@ -50,15 +51,10 @@ const SignInScreen = ({ attemptLogin, loading }: SignInProps) => {
       </PaddedContent>
     </Container>
   );
-};
-
-const connected = connect(
-  ({ authentication }: TRState) => ({ loading: authentication.loading }),
-  { attemptLogin: AuthenticationActions.attemptLogin },
-)(React.memo(SignInScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+SignInScreen.navigationOptions = {
   headerStyle: {
     backgroundColor: '#1f6899',
   },
@@ -69,4 +65,4 @@ connected.navigationOptions = {
   title: 'Existing User',
 };
 
-export default connected;
+export default SignInScreen;

@@ -1,15 +1,11 @@
 import { Container, Form, Input, Item, Spinner, Text  } from 'native-base';
 import * as React from 'react';
 
-import { AuthenticationActions } from 'actions';
+import { AuthenticationActions, TRActions } from 'actions';
 import { PaddedContent, SubmitButton } from 'components/styled';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { TRState } from 'reducer';
-
-export interface RegisterScreenProps {
-  loading: boolean;
-  register: typeof AuthenticationActions.register;
-}
+import { Dispatch } from 'redux';
 
 export interface RegisterScreenState {
   username: string;
@@ -17,7 +13,9 @@ export interface RegisterScreenState {
   passwordConfirm: string;
 }
 
-const RegisterScreen = ({ loading, register }: RegisterScreenProps) => {
+const RegisterScreen = React.memo(() => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const loading = useSelector<TRState, boolean>(({ ui }) => ui.registerScreen.loading);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
@@ -50,7 +48,7 @@ const RegisterScreen = ({ loading, register }: RegisterScreenProps) => {
       <SubmitButton
         block={true}
         disabled={!isValidInput({ username, password, passwordConfirm })}
-        onPress={() => register(username, password)}
+        onPress={() => dispatch(AuthenticationActions.register(username, password))}
       >
         <Text>Create Account</Text>
       </SubmitButton>
@@ -64,15 +62,10 @@ const RegisterScreen = ({ loading, register }: RegisterScreenProps) => {
       </PaddedContent>
     </Container>
   );
-};
-
-const connected = connect(
-  ({ ui }: TRState) => ({ loading: ui.registerScreen.loading }),
-  { register: AuthenticationActions.register },
-)(React.memo(RegisterScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+RegisterScreen.navigationOptions = {
   headerStyle: {
     backgroundColor: '#1f6899',
   },
@@ -83,7 +76,7 @@ connected.navigationOptions = {
   title: 'New User',
 };
 
-export default connected;
+export default RegisterScreen;
 
 function isValidInput(state: RegisterScreenState) {
   return state.username.length > 0 && state.password.length > 0 &&

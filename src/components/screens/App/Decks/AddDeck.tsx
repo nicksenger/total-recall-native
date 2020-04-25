@@ -1,6 +1,6 @@
 import { Container, Form, Input, Item, Picker, Spinner, Text } from 'native-base';
 import * as React from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { DecksActions } from 'actions';
 import Burger from 'components/Burger';
@@ -8,18 +8,14 @@ import { PaddedContent, SubmitButton } from 'components/styled';
 import { TRState } from 'reducer';
 import { Language } from 'reducer/entities';
 
-export interface AddDeckScreenProps {
-  addDeck: typeof DecksActions['addDeck'];
-  loading: boolean;
-  username?: string;
-}
-
-const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
+const AddDeckScreen = React.memo(() => {
   const [language, setLanguage] = React.useState<number>(0);
   const [name, setName] = React.useState('');
   const languages = useSelector<TRState, Language[]>(
     state => Object.values(state.entities.languages),
   );
+  const loading = useSelector<TRState, boolean>(({ ui }) => ui.addDeckScreen.loading);
+  const username = useSelector<TRState, string | undefined>(state => state.authentication.username);
   const dispatch = useDispatch();
 
   React.useEffect(
@@ -57,7 +53,10 @@ const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
           ))}
         </Picker>
       </Item>
-      <SubmitButton block={true} onPress={() => addDeck(name, language, username)}>
+      <SubmitButton
+        block={true}
+        onPress={() => dispatch(DecksActions.addDeck(name, language, username))}
+      >
         <Text>Add Deck</Text>
       </SubmitButton>
     </Form>
@@ -70,18 +69,10 @@ const AddDeckScreen = ({ addDeck, loading, username }: AddDeckScreenProps) => {
       </PaddedContent>
     </Container>
   );
-};
-
-const connected = connect(
-  ({ authentication, ui }: TRState) => ({
-    loading: ui.addDeckScreen.loading,
-    username: authentication.username,
-  }),
-  { addDeck: DecksActions.addDeck },
-)(React.memo(AddDeckScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+AddDeckScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -94,4 +85,4 @@ connected.navigationOptions = {
   title: 'Add Deck',
 };
 
-export default connected;
+export default AddDeckScreen;

@@ -1,11 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
-import { MAIN_APP, USER_MANUAL } from '_constants/screens';
-import { AuthenticationActions } from 'actions';
 import { Left, List, ListItem, Right, Text } from 'native-base';
-import { navigate } from 'navigation/service';
 import * as React from 'react';
 import { Image, View } from 'react-native';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
+
+import { MAIN_APP, USER_MANUAL } from '_constants/screens';
+import { AuthenticationActions, TRActions } from 'actions';
+import { navigate } from 'navigation/service';
 import { TRState } from 'reducer';
 
 export interface DrawerContentProps {
@@ -16,81 +18,73 @@ export interface DrawerContentProps {
   username?: string;
 }
 
-export const DrawerContent = ({
+export default React.memo(({
   activeItemKey,
-  gotoApp,
-  gotoManual,
-  logout,
-  username,
-}: DrawerContentProps) => (
-  <View style={{ flexDirection: 'column', justifyContent: 'flex-start' }} >
-    <Image
-      resizeMode={'cover'}
-      source={require('assets/drawer.png')}
-      style={{ height: 200, width: '100%' }}
-    />
-    <List>
-      <ListItem onPress={gotoApp}>
-        <Left>
-          <Text
-            style={{
-              color: activeItemKey === MAIN_APP ?
-                '#1f6899' : 'black',
-            }}
-          >
-            Total Recall
-          </Text>
-        </Left>
-        <Right>
-          <Ionicons
-            name="md-browsers"
-            size={25}
-            style={{
-              color: activeItemKey === MAIN_APP ?
-                '#1f6899' : 'black',
-            }}
-          />
-        </Right>
-      </ListItem>
-      <ListItem onPress={gotoManual}>
-        <Left>
-          <Text
-            style={{
-              color: activeItemKey === USER_MANUAL ?
-                '#1f6899' : 'black',
-            }}
-          >
-            User Manual
-          </Text>
-        </Left>
-        <Right>
-          <Ionicons
-            name="md-clipboard"
-            size={25}
-            style={{
-              color: activeItemKey === USER_MANUAL ?
-                '#1f6899' : 'black',
-            }}
-          />
-        </Right>
-      </ListItem>
-      <ListItem onPress={logout}>
-        <Left>
-          <Text>Sign Out ({username})</Text>
-        </Left>
-        <Right>
-          <Ionicons name="md-person" size={25} />
-        </Right>
-      </ListItem>
-    </List>
-  </View>
-);
+}: DrawerContentProps) => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const username = useSelector<TRState, string | undefined>(state => state.authentication.username);
 
-export default connect(
-  ({ authentication }: TRState) => ({
-    gotoApp: () => { navigate(MAIN_APP); },
-    gotoManual: () => { navigate(USER_MANUAL); },
-    username: authentication.username,
-  }),
-  { logout: AuthenticationActions.logout },
-)(React.memo(DrawerContent));
+  return (
+    <View style={{ flexDirection: 'column', justifyContent: 'flex-start' }} >
+      <Image
+        resizeMode={'cover'}
+        source={require('assets/drawer.png')}
+        style={{ height: 200, width: '100%' }}
+      />
+      <List>
+        <ListItem onPress={() => navigate(MAIN_APP)}>
+          <Left>
+            <Text
+              style={{
+                color: activeItemKey === MAIN_APP ?
+                  '#1f6899' : 'black',
+              }}
+            >
+              Total Recall
+            </Text>
+          </Left>
+          <Right>
+            <Ionicons
+              name="md-browsers"
+              size={25}
+              style={{
+                color: activeItemKey === MAIN_APP ?
+                  '#1f6899' : 'black',
+              }}
+            />
+          </Right>
+        </ListItem>
+        <ListItem onPress={() => navigate(USER_MANUAL)}>
+          <Left>
+            <Text
+              style={{
+                color: activeItemKey === USER_MANUAL ?
+                  '#1f6899' : 'black',
+              }}
+            >
+              User Manual
+            </Text>
+          </Left>
+          <Right>
+            <Ionicons
+              name="md-clipboard"
+              size={25}
+              style={{
+                color: activeItemKey === USER_MANUAL ?
+                  '#1f6899' : 'black',
+              }}
+            />
+          </Right>
+        </ListItem>
+        <ListItem onPress={() => dispatch(AuthenticationActions.logout())}>
+          <Left>
+            <Text>Sign Out ({username})</Text>
+          </Left>
+          <Right>
+            <Ionicons name="md-person" size={25} />
+          </Right>
+        </ListItem>
+      </List>
+    </View>
+  );
+});

@@ -1,21 +1,20 @@
 import { Container, Form, Text } from 'native-base';
 import * as React from 'react';
 import { Alert } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
-import { DecksActions } from 'actions';
+import { DecksActions, TRActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
-import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Deck } from 'reducer/entities';
 
-export interface DeckDetailsScreenProps {
-  deleteDeck: typeof DecksActions.deleteDeck;
-  deck?: Deck;
-}
-
-export const DeckDetailsScreen = (props: DeckDetailsScreenProps) => {
-  const { deck } = props;
+export const DeckDetailsScreen = React.memo(() => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const deck = useSelector<TRState, Deck | undefined>(
+    ({ ui }) => ui.deckDetailsScreen.selectedDeck,
+  );
 
   if (!deck) {
     return <Text>No deck! Must be a bug.</Text>;
@@ -27,39 +26,31 @@ export const DeckDetailsScreen = (props: DeckDetailsScreenProps) => {
         <Form>
           <Text>Name: {deck.name}</Text>
           <Text>Language: {deck.language}</Text>
-          <SubmitButton block={true} onPress={() => handleDelete(props)}>
+          <SubmitButton block={true} onPress={() => handleDelete()}>
             <Text>Delete Deck</Text>
           </SubmitButton>
         </Form>
       </PaddedContent>
     </Container>
   );
-};
 
-const handleDelete = (props: DeckDetailsScreenProps) => {
-  const { deck, deleteDeck } = props;
-  if (deck) {
-    Alert.alert(
-      'Delete Deck',
-      `Are you sure you want to delete deck: "${deck.name}"?` +
-      ' All of its cards and sets will also be deleted.',
-      [
-        { text: 'No' },
-        {
-          onPress: () => { deleteDeck(deck.id); },
-          text: 'Yes',
-        },
-      ],
-    );
+  function handleDelete() {
+    if (deck) {
+      Alert.alert(
+        'Delete Deck',
+        `Are you sure you want to delete deck: "${deck.name}"?` +
+        ' All of its cards and sets will also be deleted.',
+        [
+          { text: 'No' },
+          {
+            onPress: () => dispatch(DecksActions.deleteDeck(deck.id)),
+            text: 'Yes',
+          },
+        ],
+      );
+    }
   }
-};
-
-const connected = connect(
-  ({ ui }: TRState) => ({
-    deck: ui.deckDetailsScreen.selectedDeck,
-  }),
-  { deleteDeck: DecksActions.deleteDeck },
-)(React.memo(DeckDetailsScreen));
+});
 
 // @ts-ignore
 connected.navigationOptions = {

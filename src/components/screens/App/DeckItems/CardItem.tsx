@@ -1,8 +1,9 @@
 import { Body, CheckBox, Left, ListItem, Right, Text } from 'native-base';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
 
-import { CardsActions } from 'actions';
+import { CardsActions, TRActions } from 'actions';
 import RatingIcon from 'components/RatingIcon';
 import { needsReview } from 'reducer/_utils/superMemo';
 import { Card } from 'reducer/entities';
@@ -11,12 +12,12 @@ export interface CardItemProps {
   card: Card;
   onSelect: (card: Card) => void;
   selected: boolean;
-  viewCardDetails: typeof CardsActions.viewCardDetails;
 }
 
-const CardItem = (props: CardItemProps) => {
+export default React.memo((props: CardItemProps) => {
   const { card } = props;
   const lastScore = card.score.split(',').pop();
+  const dispatch = useDispatch<Dispatch<TRActions>>();
 
   return (
     <ListItem key={card.id} icon={true}>
@@ -24,7 +25,9 @@ const CardItem = (props: CardItemProps) => {
         <RatingIcon rating={lastScore} />
       </Left>
       <Body>
-        <Text onPress={() => props.viewCardDetails(card)}>{card.front}</Text>
+        <Text onPress={() => dispatch(CardsActions.viewCardDetails(card))}>
+          {card.front}
+        </Text>
       </Body>
       <Right>
         <CheckBox
@@ -35,9 +38,4 @@ const CardItem = (props: CardItemProps) => {
       </Right>
     </ListItem>
   );
-};
-
-export default connect(
-  () => ({}),
-  { viewCardDetails: CardsActions.viewCardDetails },
-)(React.memo(CardItem));
+});

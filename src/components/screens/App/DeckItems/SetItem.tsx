@@ -2,23 +2,24 @@ import { Ionicons } from '@expo/vector-icons';
 import memoizeOne from 'memoize-one';
 import { Body, Left, ListItem, Right, Text } from 'native-base';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { SessionActions, SetsActions } from 'actions';
+import { SessionActions, SetsActions, TRActions } from 'actions';
 import RatingIcon from 'components/RatingIcon';
 import { TRState } from 'reducer';
 import { Card, Set } from 'reducer/entities';
+import { Dispatch } from 'redux';
 
 export interface SetItemProps {
-  allCards: { [id: number]: Card };
   set: Set;
-  setCards: number[];
-  study: typeof SessionActions['study'];
-  viewSetDetails: typeof SetsActions['viewSetDetails'];
 }
 
-const SetItem = (props: SetItemProps) => {
-  const { allCards, setCards, set, viewSetDetails } = props;
+export default React.memo(({ set }: SetItemProps) => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const allCards = useSelector<TRState, { [key: string]: Card }>(
+    ({ entities }) => entities.cards,
+  );
+  const setCards = useSelector<TRState, number[]>(({ entities }) => entities.setCards[set.id]);
 
   return (
     <ListItem key={set.id} icon={true}>
@@ -26,19 +27,19 @@ const SetItem = (props: SetItemProps) => {
         {renderStatus(getCards(allCards, setCards))}
       </Left>
       <Body>
-        <Text onPress={() => viewSetDetails(set)}>{set.name}</Text>
+        <Text onPress={() => dispatch(SetsActions.viewSetDetails(set))}>{set.name}</Text>
       </Body>
       <Right>
         <Ionicons
           color="#1f6899"
           name="md-pulse"
-          onPress={() => props.study(getCards(allCards, setCards))}
+          onPress={() => dispatch(SessionActions.study(getCards(allCards, setCards)))}
           size={25}
         />
       </Right>
     </ListItem>
   );
-};
+});
 
 const getCards = memoizeOne(
   (allCards: { [id: number]: Card }, setCards: number[]) =>
@@ -55,11 +56,3 @@ const renderStatus = memoizeOne(
     return <RatingIcon rating={`${avgRating}`} />;
   },
 );
-
-export default connect(
-  ({ entities }: TRState, { set }: { set: Set }) => ({
-    allCards: entities.cards,
-    setCards: entities.setCards[set.id],
-  }),
-  { study: SessionActions.study, viewSetDetails: SetsActions.viewSetDetails },
-)(React.memo(SetItem));
