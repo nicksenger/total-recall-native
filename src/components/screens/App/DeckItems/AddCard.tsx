@@ -82,4 +82,4 @@ AddCardScreen.navigationOptions = {
   title: 'Add Card',
 };
 
-export default connected;
+export default AddCardScreen;

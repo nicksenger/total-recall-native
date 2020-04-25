@@ -44,4 +44,4 @@ InitialScreen.navigationOptions = {
   title: 'Initializing',
 };
 
-export default connected;
+export default InitialScreen;

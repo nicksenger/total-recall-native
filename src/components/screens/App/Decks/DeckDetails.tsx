@@ -53,7 +53,7 @@ export const DeckDetailsScreen = React.memo(() => {
 });
 
 // @ts-ignore
-connected.navigationOptions = {
+DeckDetailsScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -66,4 +66,4 @@ connected.navigationOptions = {
   title: 'Deck Details',
 };
 
-export default connected;
+export default DeckDetailsScreen;
