@@ -1,24 +1,23 @@
 import { Container, Form, Text } from 'native-base';
 import * as React from 'react';
 import { Alert } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
-import { SetsActions } from 'actions';
+import { SetsActions, TRActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
-import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { needsReview } from 'reducer/_utils/superMemo';
 import { Card, Set } from 'reducer/entities';
 
-export interface SetDetailsScreenProps {
-  allCards: { [id: number]: Card };
-  deleteSet: typeof SetsActions.deleteSet;
-  setCards: number[];
-  set?: Set;
-}
-
-const SetDetailsScreen = (props: SetDetailsScreenProps) => {
-  const { allCards, set, setCards } = props;
+const SetDetailsScreen = React.memo(() => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const allCards = useSelector<TRState, { [key: string]: Card }>(({ entities }) => entities.cards);
+  const set = useSelector<TRState, Set | undefined>(({ ui }) => ui.setDetailsScreen.selectedSet);
+  const setCards = useSelector<TRState, number[]>(
+    ({ entities }) => set ? entities.setCards[set.id] : [],
+  );
 
   if (!set) {
     return <Text>No set! Must be a bug.</Text>;
@@ -29,53 +28,39 @@ const SetDetailsScreen = (props: SetDetailsScreenProps) => {
       <PaddedContent>
         <Form>
           <Text>Name: {set.name}</Text>
-          <Text>Number of cards: {props.setCards.length}</Text>
+          <Text>Number of cards: {setCards.length}</Text>
           <Text>Cards due for review: {getReviewCount(allCards, setCards)}</Text>
-          <SubmitButton block={true} onPress={handleDelete(props)}>
+          <SubmitButton block={true} onPress={() => handleDelete()}>
             <Text>Delete Set</Text>
           </SubmitButton>
         </Form>
       </PaddedContent>
     </Container>
   );
-};
+
+  function handleDelete() {
+    if (set) {
+      Alert.alert(
+        'Delete Set',
+        'Are you sure you want to delete this set?',
+        [
+          { text: 'No' },
+          {
+            onPress: () => dispatch(SetsActions.deleteSet(set.id)),
+            text: 'Yes',
+          },
+        ],
+      );
+    }
+  }
+});
 
 const getReviewCount = (allCards: { [id: number]: Card }, setCards: number[]): number => (
   setCards.map(id => allCards[id]).filter(card => needsReview(card)).length
 );
 
-const handleDelete = (props: SetDetailsScreenProps) => () => {
-  const { deleteSet, set } = props;
-  if (set) {
-    Alert.alert(
-      'Delete Set',
-      'Are you sure you want to delete this set?',
-      [
-        { text: 'No' },
-        {
-          onPress: () => { deleteSet(set.id); },
-          text: 'Yes',
-        },
-      ],
-    );
-  }
-};
-
-const connected = connect(
-  ({ entities, ui }: TRState) => {
-    const set = ui.setDetailsScreen.selectedSet;
-
-    return {
-      allCards: entities.cards,
-      set,
-      setCards: set ? entities.setCards[set.id] : [],
-    };
-  },
-  { deleteSet: SetsActions.deleteSet },
-)(React.memo(SetDetailsScreen));
-
 // @ts-ignore
-connected.navigationOptions = {
+SetDetailsScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -88,4 +73,4 @@ connected.navigationOptions = {
   title: 'Set Details',
 };
 
-export default connected;
+export default SetDetailsScreen;

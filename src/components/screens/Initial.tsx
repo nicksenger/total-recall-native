@@ -2,19 +2,17 @@ import * as Font from 'expo-font';
 import { Container, Content, Header, Spinner } from 'native-base';
 import * as React from 'react';
 
-import { AuthenticationActions } from 'actions';
-import { connect } from 'react-redux';
-
-export interface InitialScreenProps {
-  retrieveAuthInfo: typeof AuthenticationActions.retrieveAuthInfo;
-}
+import { AuthenticationActions, TRActions } from 'actions';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
 
 export interface InitialScreenState {
   loaded: boolean;
 }
 
-const InitialScreen = ({ retrieveAuthInfo }: InitialScreenProps) => {
+const InitialScreen = React.memo(() => {
   const [loaded, setLoaded] = React.useState(false);
+  const dispatch = useDispatch<Dispatch<TRActions>>();
   React.useEffect(
     () => {
       Font.loadAsync({
@@ -23,7 +21,7 @@ const InitialScreen = ({ retrieveAuthInfo }: InitialScreenProps) => {
         Roboto_medium: require('../../../node_modules/native-base/Fonts/Roboto_medium.ttf'),
       }).then(() => {
         setLoaded(true);
-        retrieveAuthInfo();
+        dispatch(AuthenticationActions.retrieveAuthInfo());
       });
     },
   );
@@ -39,16 +37,11 @@ const InitialScreen = ({ retrieveAuthInfo }: InitialScreenProps) => {
     );
   }
   return null;
-};
-
-const connected = connect(
-  () => ({}),
-  { retrieveAuthInfo: AuthenticationActions.retrieveAuthInfo },
-)(React.memo(InitialScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+InitialScreen.navigationOptions = {
   title: 'Initializing',
 };
 
-export default connected;
+export default InitialScreen;

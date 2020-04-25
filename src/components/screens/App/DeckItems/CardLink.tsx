@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Burger from 'components/Burger';
 import { TRState } from 'reducer';
@@ -9,18 +9,15 @@ export interface CardLinkProps {
   link: string;
 }
 
-const CardLinkScreen = ({ link }: CardLinkProps) => (
-  <WebView source={{ uri: link }} />
-);
-
-const connected = connect(
-  ({ ui: { cardLinkScreen } }: TRState) => ({
-    link: cardLinkScreen.link,
-  }),
-)(React.memo(CardLinkScreen));
+const CardLinkScreen = React.memo(() => {
+  const link = useSelector<TRState, string>(state => state.ui.cardLinkScreen.link);
+  return (
+    <WebView source={{ uri: link }} />
+  );
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+CardLinkScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -33,4 +30,4 @@ connected.navigationOptions = {
   title: 'Card Link',
 };
 
-export default connected;
+export default CardLinkScreen;

@@ -1,23 +1,24 @@
+import { Spinner, View } from 'native-base';
 import React from 'react';
 import { Image, ImageProps } from 'react-native';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
-import { CacheActions } from 'actions';
-import { Spinner, View } from 'native-base';
+import { CacheActions, TRActions } from 'actions';
 import { TRState } from 'reducer';
 
 export interface SmartImageProps extends ImageProps {
-  fetchImage: typeof CacheActions['fetchImage'];
   source: { uri: string };
-  path?: string;
 }
 
-const SmartImage = (props: SmartImageProps) => {
-  const { fetchImage, path, source } = props;
+export default React.memo((props: SmartImageProps) => {
+  const { source } = props;
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const path = useSelector<TRState, string | undefined>(state => state.cache.cache[source.uri]);
 
   React.useEffect(
     () => {
-      fetchImage(source.uri);
+      dispatch(CacheActions.fetchImage(source.uri));
     },
     [source],
   );
@@ -48,13 +49,4 @@ const SmartImage = (props: SmartImageProps) => {
       <Spinner />
     </View>
   );
-};
-
-interface OwnProps extends ImageProps {
-  source: { uri: string };
-}
-
-export default connect(
-  ({ cache }: TRState, { source: { uri } }: OwnProps) => ({ path: cache.cache[uri] }),
-  { fetchImage: CacheActions.fetchImage },
-)(React.memo(SmartImage));
+});

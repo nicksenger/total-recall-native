@@ -1,43 +1,34 @@
-import { SessionActions } from 'actions';
+import { SessionActions, TRActions } from 'actions';
 import { ScoreValue } from 'generated';
 import { Text } from 'native-base';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { TRState } from 'reducer';
+import { Dispatch } from 'redux';
 
 export interface ScoreButtonProps {
   cardId: number;
   index: number;
   rating: ScoreValue;
-  rateCard: typeof SessionActions.rateCard;
-  reviewCard: typeof SessionActions.reviewCard;
-  reviewing: boolean;
 }
 
-export const ScoreButton = (props: ScoreButtonProps) => (
-  <TouchableOpacity
-    onPress={() => handleScore(props)}
-  >
-    <Text>{props.index}</Text>
-  </TouchableOpacity>
-);
+export default React.memo(({ cardId, index, rating }: ScoreButtonProps) => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const reviewing = useSelector<TRState, boolean>(({ session }) => session.rateStack.length === 0);
+  return (
+    <TouchableOpacity
+      onPress={() => handleScore()}
+    >
+      <Text>{index}</Text>
+    </TouchableOpacity>
+  );
 
-const handleScore = (props: ScoreButtonProps) => {
-  const { cardId, rating } = props;
-  if (props.reviewing) {
-    props.reviewCard(rating);
-  } else {
-    props.rateCard(cardId, rating);
+  function handleScore() {
+    if (reviewing) {
+      dispatch(SessionActions.reviewCard(rating));
+    } else {
+      dispatch(SessionActions.rateCard(cardId, rating));
+    }
   }
-};
-
-export default connect(
-  ({ session }: TRState) => ({
-    reviewing: session.rateStack.length === 0,
-  }),
-  {
-    rateCard: SessionActions.rateCard,
-    reviewCard: SessionActions.reviewCard,
-  },
-)(React.memo(ScoreButton));
+});

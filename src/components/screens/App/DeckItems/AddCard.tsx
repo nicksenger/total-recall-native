@@ -1,23 +1,25 @@
 import { Container, Form, Input, Item, Spinner, Text } from 'native-base';
 import * as React from 'react';
 
-import { CardsActions } from 'actions';
+import { CardsActions, TRActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { TRState } from 'reducer';
 import { Deck } from 'reducer/entities';
+import { Dispatch } from 'redux';
 
-export interface AddCardScreenProps {
-  addCard: typeof CardsActions['addCard'];
-  loading: boolean;
-  deck?: Deck;
-}
-
-const AddCardScreen = ({ addCard, loading, deck }: AddCardScreenProps) => {
+const AddCardScreen = React.memo(() => {
   const [front, setFront] = React.useState('');
   const [back, setBack] = React.useState('');
   const [link, setLink] = React.useState('');
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const deck = useSelector<TRState, Deck | undefined>(
+    state => state.ui.deckDetailsScreen.selectedDeck,
+  );
+  const loading = useSelector<TRState, boolean>(
+    state => state.ui.addCardScreen.loading,
+  );
 
   if (!deck) {
     return <Text>No deck! Must be a bug.</Text>;
@@ -48,7 +50,9 @@ const AddCardScreen = ({ addCard, loading, deck }: AddCardScreenProps) => {
       </Item>
       <SubmitButton
         block={true}
-        onPress={() => addCard(deck.id, front, back, link ? link : undefined)}
+        onPress={() => dispatch(
+          CardsActions.addCard(deck.id, front, back, link ? link : undefined),
+        )}
       >
         <Text>Add Card</Text>
       </SubmitButton>
@@ -62,18 +66,10 @@ const AddCardScreen = ({ addCard, loading, deck }: AddCardScreenProps) => {
       </PaddedContent>
     </Container>
   );
-};
-
-const connected = connect(
-  ({ ui }: TRState) => ({
-    deck: ui.deckDetailsScreen.selectedDeck,
-    loading: ui.addCardScreen.loading,
-  }),
-  { addCard: CardsActions.addCard },
-)(React.memo(AddCardScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+AddCardScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -86,4 +82,4 @@ connected.navigationOptions = {
   title: 'Add Card',
 };
 
-export default connected;
+export default AddCardScreen;

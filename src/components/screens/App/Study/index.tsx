@@ -1,37 +1,28 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Body, Button, Card, CardItem, Container, Fab, Spinner, Text  } from 'native-base';
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import { PROMPT, SCORE } from '_constants/session';
 import { RATING_COLORS } from '_constants/styles';
-import { CacheActions, CardsActions, SessionActions } from 'actions';
+import { CacheActions, CardsActions, SessionActions, TRActions } from 'actions';
 import Burger from 'components/Burger';
 import CardBody from 'components/CardBody';
 import { PaddedContent } from 'components/styled';
-import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Card as CardType } from 'reducer/entities';
 import { ScoreValue } from '../../../../generated';
 import ScoreButton from './ScoreButton';
 
-export interface StudyScreenProps {
-  card: CardType;
-  loading: boolean;
-  playAudio: typeof CacheActions.playAudio;
-  revealCard: typeof SessionActions.revealCard;
-  status: TRState['session']['status'];
-  viewCardLink: typeof CardsActions.viewCardLink;
-}
-
-const StudyScreen = ({
-  card,
-  loading,
-  playAudio,
-  revealCard,
-  status,
-  viewCardLink,
-}: StudyScreenProps) => {
+const StudyScreen = React.memo(() => {
   const [fabActive, setFab] = React.useState(false);
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const card = useSelector<TRState, CardType | undefined>(
+    ({ session }) => session.rateStack[0] || session.reviewList[0],
+  );
+  const loading = useSelector<TRState, boolean>(({ session }) => session.loading);
+  const status = useSelector<TRState, 'PROMPT' | 'SCORE'>(({ session }) => session.status);
 
   let fab;
 
@@ -65,7 +56,7 @@ const StudyScreen = ({
       fab = (
         <Fab
           containerStyle={{ }}
-          onPress={() => revealCard(card)}
+          onPress={() => dispatch(SessionActions.revealCard(card))}
           style={{ backgroundColor: '#1f6899' }}
           position="bottomRight"
         >
@@ -76,8 +67,8 @@ const StudyScreen = ({
       content = (
         <CardBody
           card={card}
-          playAudio={playAudio}
-          viewCardLink={viewCardLink}
+          playAudio={uri => dispatch(CacheActions.playAudio(uri))}
+          viewCardLink={uri => dispatch(CardsActions.viewCardLink(uri))}
         />
       );
 
@@ -106,23 +97,10 @@ const StudyScreen = ({
       {fab}
     </Container>
   );
-};
-
-const connected = connect(
-  ({ session }: TRState) => ({
-    card: session.rateStack[0] || session.reviewList[0],
-    loading: session.loading,
-    status: session.status,
-  }),
-  {
-    playAudio: CacheActions.playAudio,
-    revealCard: SessionActions.revealCard,
-    viewCardLink: CardsActions.viewCardLink,
-  },
-)(React.memo(StudyScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+StudyScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -134,4 +112,4 @@ connected.navigationOptions = {
   title: 'Study Session',
 };
 
-export default connected;
+export default StudyScreen;

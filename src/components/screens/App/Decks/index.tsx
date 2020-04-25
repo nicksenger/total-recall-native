@@ -2,29 +2,33 @@ import { Ionicons } from '@expo/vector-icons';
 import { Container, Fab, List, Spinner, Text } from 'native-base';
 import * as React from 'react';
 import { NavigationScreenProps } from 'react-navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import { ADD_DECK_SCREEN } from '_constants/screens';
-import { DecksActions } from 'actions';
+import { DecksActions, TRActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent } from 'components/styled';
 import { navigate, setDrawerNavigator } from 'navigation/service';
-import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Deck } from 'reducer/entities';
 import DeckItem from './DeckItem';
 
-export interface DecksScreenProps {
-  decks: Deck[];
-  getDecks: typeof DecksActions.getDecks;
-  loading: boolean;
-  username?: string;
-}
+const DecksScreen = React.memo(() => {
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const username = useSelector<TRState, string | undefined>(state => state.authentication.username);
+  const loading = useSelector<TRState, boolean>(({ ui }) => ui.decksScreen.loading);
+  const decks = useSelector<TRState, Deck[]>(
+    ({ entities }) => username ?
+      Object.keys(entities.decks)
+        .map((id: string) => entities.decks[parseInt(id, 10)])
+        .filter(deck => deck.owner === username) : [],
+  );
 
-const DecksScreen = ({ decks, getDecks, loading, username }: DecksScreenProps) => {
   React.useEffect(
     () => {
       if (username) {
-        getDecks(username);
+        dispatch(DecksActions.getDecks(username));
       }
     },
     [username],
@@ -57,27 +61,10 @@ const DecksScreen = ({ decks, getDecks, loading, username }: DecksScreenProps) =
       )}
     </Container>
   );
-};
-
-const connected = connect(
-  ({ authentication, entities, ui }: TRState) => {
-    const { username } = authentication;
-    const decks = username ?
-      Object.keys(entities.decks)
-        .map((id: string) => entities.decks[parseInt(id, 10)])
-        .filter(deck => deck.owner === username) : [];
-
-    return {
-      decks,
-      loading: ui.decksScreen.loading,
-      username,
-    };
-  },
-  { getDecks: DecksActions.getDecks },
-)(React.memo(DecksScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = ({ navigation }: NavigationScreenProps<{}>) => {
+DecksScreen.navigationOptions = ({ navigation }: NavigationScreenProps<{}>) => {
   setDrawerNavigator(navigation);
   return {
     headerRight: <Burger />,
@@ -92,4 +79,4 @@ connected.navigationOptions = ({ navigation }: NavigationScreenProps<{}>) => {
   };
 };
 
-export default connected;
+export default DecksScreen;

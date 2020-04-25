@@ -1,22 +1,22 @@
 import { Container, Form, Input, Item, Spinner, Text } from 'native-base';
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
-import { SetsActions } from 'actions';
+import { SetsActions, TRActions } from 'actions';
 import Burger from 'components/Burger';
 import { PaddedContent, SubmitButton } from 'components/styled';
-import { connect } from 'react-redux';
 import { TRState } from 'reducer';
 import { Card, Deck } from 'reducer/entities';
 
-export interface AddSetScreenProps {
-  addSet: typeof SetsActions['addSet'];
-  cards: Card[];
-  loading: boolean;
-  deck?: Deck;
-}
-
-export const AddSetScreen = ({ addSet, cards, loading, deck }: AddSetScreenProps) => {
+export const AddSetScreen = React.memo(() => {
   const [name, setName] = React.useState('');
+  const dispatch = useDispatch<Dispatch<TRActions>>();
+  const loading = useSelector<TRState, boolean>(state => state.ui.addSetScreen.loading);
+  const deck = useSelector<TRState, Deck | undefined>(
+    state => state.ui.deckDetailsScreen.selectedDeck,
+  );
+  const cards = useSelector<TRState, Card[]>(state => state.ui.addSetScreen.cards);
 
   if (!deck) {
     return <Text>No deck! Must be a bug.</Text>;
@@ -33,7 +33,9 @@ export const AddSetScreen = ({ addSet, cards, loading, deck }: AddSetScreenProps
       </Item>
       <SubmitButton
         block={true}
-        onPress={() => addSet(deck.id, name, cards.map(({ id }: Card) => id))}
+        onPress={() => dispatch(
+          SetsActions.addSet(deck.id, name, cards.map(({ id }: Card) => id)),
+        )}
       >
         <Text>Create Set</Text>
       </SubmitButton>
@@ -47,19 +49,10 @@ export const AddSetScreen = ({ addSet, cards, loading, deck }: AddSetScreenProps
       </PaddedContent>
     </Container>
   );
-};
-
-const connected = connect(
-  ({ ui }: TRState) => ({
-    cards: ui.addSetScreen.cards,
-    deck: ui.deckDetailsScreen.selectedDeck,
-    loading: ui.addSetScreen.loading,
-  }),
-  { addSet: SetsActions.addSet },
-)(React.memo(AddSetScreen));
+});
 
 // @ts-ignore
-connected.navigationOptions = {
+AddSetScreen.navigationOptions = {
   headerRight: <Burger />,
   headerStyle: {
     backgroundColor: '#1f6899',
@@ -72,4 +65,4 @@ connected.navigationOptions = {
   title: 'Create Set',
 };
 
-export default connected;
+export default AddSetScreen;
