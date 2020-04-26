@@ -843,7 +843,10 @@ export type UserSetsQuery = (
       & Pick<User, 'username'>
     ), cards: Array<(
       { __typename?: 'SetCard' }
-      & Pick<SetCard, 'id'>
+      & { card_id: (
+        { __typename?: 'Card' }
+        & Pick<Card, 'id'>
+      ) }
     )> }
   )> }
 );
@@ -978,7 +981,9 @@ export const UserSets = gql`
       username
     }
     cards {
-      id
+      card_id {
+        id
+      }
     }
   }
 }

@@ -6,7 +6,9 @@ query UserSets($deckId: Int!) {
       username
     }
     cards {
-      id
+      card_id {
+        id
+      }
     }
   }
 }
