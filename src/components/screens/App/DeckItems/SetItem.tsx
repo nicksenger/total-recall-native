@@ -1,10 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import memoizeOne from 'memoize-one';
-import { Body, Left, ListItem, Right, Text } from 'native-base';
+import { Body, CheckBox, Left, ListItem, Right, Text } from 'native-base';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { SessionActions, SetsActions, TRActions } from 'actions';
+import { SetsActions, TRActions } from 'actions';
 import RatingIcon from 'components/RatingIcon';
 import { TRState } from 'reducer';
 import { Card, Set } from 'reducer/entities';
@@ -12,9 +11,11 @@ import { Dispatch } from 'redux';
 
 export interface SetItemProps {
   set: Set;
+  selected: boolean;
+  onSelect: (set: Set) => void;
 }
 
-export default React.memo(({ set }: SetItemProps) => {
+export default React.memo(({ set, selected, onSelect }: SetItemProps) => {
   const dispatch = useDispatch<Dispatch<TRActions>>();
   const allCards = useSelector<TRState, { [key: string]: Card }>(
     ({ entities }) => entities.cards,
@@ -30,11 +31,9 @@ export default React.memo(({ set }: SetItemProps) => {
         <Text onPress={() => dispatch(SetsActions.viewSetDetails(set))}>{set.name}</Text>
       </Body>
       <Right>
-        <Ionicons
-          color="#1f6899"
-          name="md-pulse"
-          onPress={() => dispatch(SessionActions.study(getCards(allCards, setCards)))}
-          size={25}
+        <CheckBox
+          checked={selected}
+          onPress={() => onSelect(set)}
         />
       </Right>
     </ListItem>
