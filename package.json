@@ -20,7 +20,7 @@
     "expo-font": "~8.1.0",
     "expo-keep-awake": "~8.1.0",
     "graphql": "^15.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "memoize-one": "^5.0.5",
     "native-base": "^2.13.4",
     "react": "16.9.0",
